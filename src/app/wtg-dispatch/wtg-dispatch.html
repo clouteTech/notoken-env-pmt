@@ -1,0 +1,26 @@
+<div class="card">
+    <div class="dispatch-header">
+        <h2>WTG Dispatch</h2>
+        <p-button label="Plan Dispatch" icon="pi pi-truck" routerLink="/wtg-dispatch/plan" />
+    </div>
+    <div class="custom-container">
+        <p-table [value]="wtgDispatchPlanList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+            <ng-template #header>
+                <tr>
+                    <th>SL NO</th>
+                    <th>Plan Date</th>
+                    <th>Project Code</th>
+                    <th>WTG Count</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-dispatch let-i="rowIndex">
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ dispatch.planDate }}</td>
+                    <td>{{ dispatch.projectCode }}</td>
+                    <td>{{ dispatch.wtgCount }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

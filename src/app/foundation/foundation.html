@@ -1,0 +1,162 @@
+<p-toast position="top-right" />
+
+<div class="foundation-wrapper">
+
+  <!-- ══ PAGE HEADER ══ -->
+  <div class="page-header">
+    <div class="page-title-row">
+      <div>
+        <h2 class="page-title">Foundation Tracker</h2>
+        <p class="page-subtitle">
+          <span class="tag-pcode">{{ pCode }}</span>
+          <span class="tag-wtg">{{ wtgQty }} WTGs</span>
+          <span class="tag-progress">{{ getCompletedCount() }} / {{ steps.length }} Steps Completed</span>
+        </p>
+      </div>
+      <button pButton type="button" (click)="onSubmit()" class="submit-btn-top">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Submit All
+      </button>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" [style.width.%]="(getCompletedCount() / steps.length) * 100"></div>
+      </div>
+      <span class="progress-label">{{ ((getCompletedCount() / steps.length) * 100).toFixed(0) }}%</span>
+    </div>
+  </div>
+
+  <!-- ══ STEPS ══ -->
+  <div class="steps-container">
+
+    <ng-container *ngFor="let step of steps; let stepIdx = index; trackBy: trackByIndex">
+      <div class="step-card"
+           [class.step-completed]="stepCompleted[stepIdx]"
+           [class.step-active]="isStepEnabled(stepIdx) && !stepCompleted[stepIdx]"
+           [class.step-disabled]="!isStepEnabled(stepIdx)">
+
+        <!-- Step Header / Accordion toggle -->
+        <div class="step-header" (click)="isStepEnabled(stepIdx) && (activeStep = activeStep === stepIdx ? -1 : stepIdx)">
+          <div class="step-left">
+            <div class="step-badge"
+                 [class.badge-completed]="stepCompleted[stepIdx]"
+                 [class.badge-active]="isStepEnabled(stepIdx) && !stepCompleted[stepIdx]"
+                 [class.badge-disabled]="!isStepEnabled(stepIdx)">
+              <svg *ngIf="stepCompleted[stepIdx]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span *ngIf="!stepCompleted[stepIdx]">{{ step.id }}</span>
+            </div>
+            <div>
+              <div class="step-title">Step {{ step.id }}: {{ step.label }}</div>
+              <div class="step-meta" *ngIf="stepCompleted[stepIdx]">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Completed
+              </div>
+              <div class="step-meta locked" *ngIf="!isStepEnabled(stepIdx)">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+                Complete Step {{ step.id - 1 }} to unlock
+              </div>
+            </div>
+          </div>
+          <svg *ngIf="isStepEnabled(stepIdx)"
+               [class.chevron-open]="activeStep === stepIdx"
+               width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chevron">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+
+        <!-- Step Body (table + save) -->
+        <div class="step-body" *ngIf="activeStep === stepIdx && isStepEnabled(stepIdx)">
+
+          <div class="table-scroll-wrap">
+            <table class="foundation-table">
+              <thead>
+                <tr>
+                  <th class="col-fixed">WTG ID</th>
+                  <th class="col-fixed">Location No.</th>
+                  <th class="col-fixed">Maximo ID</th>
+                  <ng-container *ngFor="let col of stepColumnDefs[stepIdx]">
+                    <th>{{ col.header }}</th>
+                  </ng-container>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let wtg of wtgRows; let rowIdx = index; trackBy: trackByIndex">
+                  <td class="col-fixed wtg-cell">{{ wtg.wtgId }}</td>
+                  <td class="col-fixed">{{ wtg.locationNo }}</td>
+                  <td class="col-fixed">{{ wtg.maximoId }}</td>
+                  <ng-container *ngFor="let col of stepColumnDefs[stepIdx]">
+                    <td>
+                      <!-- Date input -->
+                      <p-datepicker
+                        *ngIf="col.type === 'date'"
+                        [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
+                        (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)"
+                        dateFormat="dd-mm-yy"
+                        [showIcon]="true"
+                        placeholder="DD-MM-YYYY"
+                        styleClass="table-datepicker"
+                        appendTo="body"
+                      />
+                      <!-- Number input -->
+                      <input
+                        *ngIf="col.type === 'number'"
+                        type="number"
+                        pInputText
+                        [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
+                        (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)"
+                        placeholder="0.00"
+                        class="table-input"
+                      />
+                      <!-- Text input -->
+                      <input
+                        *ngIf="col.type === 'text'"
+                        type="text"
+                        pInputText
+                        [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
+                        (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)"
+                        placeholder="Enter reason..."
+                        class="table-input table-input-text"
+                      />
+                    </td>
+                  </ng-container>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Step footer -->
+          <div class="step-footer">
+            <span class="step-footer-hint">Fill data for the WTGs above, then click Save to proceed to the next step.</span>
+            <button pButton type="button" class="save-step-btn" (click)="markStepComplete(stepIdx)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Save &amp; Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+
+  <!-- ══ BOTTOM SUBMIT ══ -->
+  <div class="bottom-submit-bar">
+    <span class="bottom-submit-info">{{ getCompletedCount() }} of {{ steps.length }} steps completed</span>
+    <button pButton type="button" (click)="onSubmit()" class="submit-btn-bottom">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Submit Foundation Data
+    </button>
+  </div>
+
+</div>

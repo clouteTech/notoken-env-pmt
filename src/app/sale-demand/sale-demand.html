@@ -1,0 +1,346 @@
+<p-toast></p-toast>
+
+<!-- ══ PAGE HEADER ══ -->
+<div class="sd-page-header">
+    <div>
+        <div class="sd-page-title">Sale Demand</div>
+    </div>
+</div>
+
+<!-- ══ ACCORDION WRAPPER ══ -->
+<p-accordion [multiple]="true" [value]="['0','1']">
+
+    <!-- ACCORDION 1 — Project Info -->
+    <p-accordion-panel value="0">
+        <p-accordion-header>
+            <span class="acc-header-title">
+                Project Information
+            </span>
+            <span *ngIf="accordion1Valid" class="acc-badge-ok"><i class="pi pi-check-circle"></i> Complete</span>
+        </p-accordion-header>
+        <p-accordion-content>
+            <div class="acc1-grid">
+
+                <div class="field-group">
+                    <label class="field-label">Tabs <span class="req">*</span></label>
+                    <p-select appendTo="body" [options]="tabsOpts" [(ngModel)]="form.tabs" optionLabel="label"
+                        optionValue="value" placeholder="Select Tab" [style]="{'width':'100%'}" />
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Customer <span class="req">*</span></label>
+                    <p-select appendTo="body" [options]="customerOpts" [(ngModel)]="form.customer" optionLabel="label"
+                        optionValue="value" placeholder="Select Customer" [style]="{'width':'100%'}"
+                        (onChange)="onCustomerChange()" />
+                </div>
+
+                <!-- FIX 1: State is always disabled; auto-selected when customer chosen -->
+                <div class="field-group">
+                    <label class="field-label">
+                        State <span class="req">*</span>
+                        <span *ngIf="!form.customer" class="field-hint">(auto-filled)</span>
+                    </label>
+                    <p-select appendTo="body" [options]="stateOpts" [(ngModel)]="form.state" optionLabel="label"
+                        optionValue="value" placeholder="Auto-filled on customer select" [disabled]="true"
+                        [style]="{'width':'100%'}" />
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">BD Manager <span class="req">*</span></label>
+                    <p-select appendTo="body" [options]="bdManagerOpts" [(ngModel)]="form.bdManager" optionLabel="label"
+                        optionValue="value" placeholder="Select BD Manager" [style]="{'width':'100%'}" />
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Project Name <span class="req">*</span></label>
+                    <input pInputText type="text" [(ngModel)]="form.projectName" placeholder="Enter project name"
+                        style="width:100%" />
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Project Terms <span class="req">*</span></label>
+                    <p-select appendTo="body" [options]="projectTermsOpts" [(ngModel)]="form.projectTerms"
+                        optionLabel="label" optionValue="value" placeholder="Select Terms" [style]="{'width':'100%'}" />
+                </div>
+
+            </div>
+        </p-accordion-content>
+    </p-accordion-panel>
+
+    <!-- ACCORDION 2 — SPV / WTG Configuration -->
+    <p-accordion-panel value="1">
+        <p-accordion-header>
+            <span class="acc-header-title">
+                <i class="pi pi-wind acc-icon"></i>
+                SPV &amp; WTG Configuration
+            </span>
+            <span class="acc-spv-count">{{ form.spvEntries.length }} SPV(s)</span>
+        </p-accordion-header>
+        <p-accordion-content>
+
+            <div *ngFor="let spvEntry of form.spvEntries; trackBy: trackById; let si = index" class="spv-block">
+
+                <div class="spv-block-head">
+                    <div class="spv-block-title">
+                        <span class="spv-idx">SPV {{ si + 1 }}</span>
+                        <p-select appendTo="body" [options]="getSpvOpts(spvEntry.id)" [(ngModel)]="spvEntry.spv"
+                            optionLabel="label" optionValue="value" placeholder="Select SPV"
+                            [style]="{'min-width':'160px'}" />
+                    </div>
+                    <button *ngIf="form.spvEntries.length > 1" class="spv-remove-btn"
+                        (click)="removeSpvEntry(spvEntry.id)" pTooltip="Remove SPV" tooltipPosition="top">
+                        <i class="pi pi-times"></i>
+                    </button>
+                </div>
+
+                <div *ngFor="let cfg of spvEntry.wtgConfigs; trackBy: trackById; let ci = index"
+                    class="wtg-config-block">
+
+                    <div class="wtg-config-head">
+                        <span class="wtg-cfg-label">WTG Configuration {{ ci + 1 }}</span>
+                        <button *ngIf="spvEntry.wtgConfigs.length > 1" class="wtg-remove-btn"
+                            (click)="removeWtgConfig(spvEntry, cfg.id)" pTooltip="Remove WTG Config"
+                            tooltipPosition="top">
+                            <i class="pi pi-minus"></i> Remove
+                        </button>
+                    </div>
+
+                    <!-- FIX 2: All fields including WTG Qty use same wtg-field class for uniform responsive grid -->
+                    <div class="wtg-fields-row">
+
+                        <div class="wtg-field">
+                            <label class="field-label">WTG Type <span class="req">*</span></label>
+                            <p-select appendTo="body" [options]="getWtgTypeOpts(spvEntry, cfg.id)"
+                                [(ngModel)]="cfg.wtgType" optionLabel="label" optionValue="value"
+                                placeholder="Select WTG" [style]="{'width':'100%'}" (onChange)="onWtgTypeChange(cfg)" />
+                        </div>
+
+                        <div class="wtg-field">
+                            <label class="field-label">Capacity/WTG (MW) <span class="req">*</span></label>
+                            <p-select appendTo="body" [options]="getCapacityOpts(cfg.wtgType)"
+                                [(ngModel)]="cfg.capacity" optionLabel="label" optionValue="value"
+                                placeholder="Select Capacity" [disabled]="!cfg.wtgType" [style]="{'width':'100%'}" />
+                        </div>
+
+                        <div class="wtg-field">
+                            <label class="field-label">Tower Type <span class="req">*</span></label>
+                            <p-select appendTo="body" [options]="towerTypeOpts" [(ngModel)]="cfg.towerType"
+                                optionLabel="label" optionValue="value" placeholder="Select Tower"
+                                [style]="{'width':'100%'}" />
+                        </div>
+
+                        <div class="wtg-field">
+                            <label class="field-label">Grid Connectivity <span class="req">*</span></label>
+                            <p-select appendTo="body" [options]="gridConnOpts" [(ngModel)]="cfg.gridConnectivity"
+                                optionLabel="label" optionValue="value" placeholder="Select Grid"
+                                [style]="{'width':'100%'}" />
+                        </div>
+
+                        <div class="wtg-field">
+                            <label class="field-label">PPA Type <span class="req">*</span></label>
+                            <p-select appendTo="body" [options]="ppaTypeOpts" [(ngModel)]="cfg.ppaType"
+                                optionLabel="label" optionValue="value" placeholder="Select PPA"
+                                [style]="{'width':'100%'}" />
+                        </div>
+
+                        <!-- WTG Qty: same class as others, inputStyle fills the input element itself -->
+                        <div class="wtg-field">
+                            <label class="field-label">WTG Qty <span class="req">*</span></label>
+                            <p-inputNumber [(ngModel)]="cfg.wtgQty" [min]="1" [max]="999" placeholder="Enter Qty"
+                                [style]="{'width':'100%'}" [inputStyle]="{'width':'100%'}"
+                                (onInput)="resetMonthly(cfg)" />
+                        </div>
+
+                    </div>
+
+                    <!-- Monthly Distribution -->
+                    <div *ngIf="hasMonthlyTable(cfg)" class="monthly-section">
+                        <div class="monthly-section-head">
+                            <i class="pi pi-calendar"></i>
+                            Monthly Distribution &nbsp;
+                            <span class="monthly-info">
+                                Total: <strong>{{ cfg.wtgQty }}</strong> &nbsp;|&nbsp;
+                                Allocated: <strong>{{ monthTotal(cfg) }}</strong> &nbsp;|&nbsp;
+                                Remaining: <strong [class.over]="remainingQty(cfg) < 0">{{ remainingQty(cfg) }}</strong>
+                            </span>
+                        </div>
+                        <div class="monthly-table-wrap">
+                            <table class="monthly-table">
+                                <thead>
+                                    <tr>
+                                        <th *ngFor="let lbl of getMonthLabels(cfg); trackBy: trackByIdx">{{ lbl }}</th>
+                                        <th class="total-col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td
+                                            *ngFor="let lbl of getMonthLabels(cfg); let mi = index; trackBy: trackByIdx">
+                                            <p-inputNumber [(ngModel)]="cfg.monthly[mi]" [min]="0"
+                                                [max]="cfg.wtgQty ?? 0" placeholder="0" [inputStyle]="{'width':'68px'}"
+                                                (onInput)="onMonthlyInput(cfg, mi, $event.value)" />
+                                        </td>
+                                        <td class="total-col total-val">
+                                            <span [class.total-ok]="monthTotal(cfg) === (cfg.wtgQty ?? 0)"
+                                                [class.total-warn]="monthTotal(cfg) < (cfg.wtgQty ?? 0)"
+                                                [class.total-over]="monthTotal(cfg) > (cfg.wtgQty ?? 0)">
+                                                {{ monthTotal(cfg) }} / {{ cfg.wtgQty }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="add-wtg-wrap" *ngIf="ci === spvEntry.wtgConfigs.length - 1">
+                        <p-button label="Add More WTG Configuration For this SPV" icon="pi pi-plus" severity="secondary"
+                            size="small" [outlined]="true" (onClick)="addWtgConfig(spvEntry)" />
+                    </div>
+
+                </div>
+
+                <p-divider *ngIf="si < form.spvEntries.length - 1" />
+            </div>
+
+            <div class="add-spv-wrap">
+                <p-button label="Add Next SPV" icon="pi pi-plus-circle" severity="success" size="small"
+                    (onClick)="addSpvEntry()" />
+            </div>
+
+        </p-accordion-content>
+    </p-accordion-panel>
+
+</p-accordion>
+
+<!-- FIX 3: Preview button below accordion -->
+<div class="bottom-action-bar">
+    <p-button label="Preview & Submit" icon="pi pi-eye" severity="info" (onClick)="openPreview()" />
+</div>
+
+<!-- FIX 3 & 4: Preview Dialog — large popup with all entered values + Submit -->
+<p-dialog header="Sale Demand Preview" [(visible)]="previewVisible" [modal]="true" [maximizable]="true"
+    [style]="{'width':'92vw','max-width':'1200px'}"
+    [contentStyle]="{'padding':'0','overflow-y':'auto','max-height':'75vh'}" (onHide)="closePreview()">
+
+    <div class="preview-body">
+
+        <!-- Project Info Section -->
+        <div class="preview-section">
+            <div class="preview-section-title">
+                <i class="pi pi-file-edit"></i>&nbsp; Project Information
+            </div>
+            <div class="preview-info-grid">
+                <div class="preview-info-item">
+                    <span class="pi-label">Tabs</span>
+                    <span class="pi-value">{{ form.tabs || '—' }}</span>
+                </div>
+                <div class="preview-info-item">
+                    <span class="pi-label">Customer</span>
+                    <span class="pi-value">{{ form.customer || '—' }}</span>
+                </div>
+                <div class="preview-info-item">
+                    <span class="pi-label">State</span>
+                    <span class="pi-value">{{ form.state || '—' }}</span>
+                </div>
+                <div class="preview-info-item">
+                    <span class="pi-label">BD Manager</span>
+                    <span class="pi-value">{{ form.bdManager || '—' }}</span>
+                </div>
+                <div class="preview-info-item">
+                    <span class="pi-label">Project Name</span>
+                    <span class="pi-value">{{ form.projectName || '—' }}</span>
+                </div>
+                <div class="preview-info-item">
+                    <span class="pi-label">Project Terms</span>
+                    <span class="pi-value">{{ form.projectTerms || '—' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SPV + WTG sections -->
+        <div class="preview-section" *ngFor="let spvEntry of form.spvEntries; trackBy: trackById; let si = index">
+            <div class="preview-section-title">
+                <i class="pi pi-wind"></i>&nbsp;
+                SPV {{ si + 1 }}: <strong>{{ spvEntry.spv || 'Not Selected' }}</strong>
+            </div>
+
+            <div *ngFor="let cfg of spvEntry.wtgConfigs; trackBy: trackById; let ci = index" class="preview-wtg-block">
+                <div class="preview-wtg-title">WTG Configuration {{ ci + 1 }}</div>
+
+                <div class="preview-info-grid">
+                    <div class="preview-info-item">
+                        <span class="pi-label">WTG Type</span>
+                        <span class="pi-value">{{ cfg.wtgType || '—' }}</span>
+                    </div>
+                    <div class="preview-info-item">
+                        <span class="pi-label">Capacity/WTG</span>
+                        <span class="pi-value">{{ cfg.capacity != null ? (cfg.capacity + ' MW') : '—' }}</span>
+                    </div>
+                    <div class="preview-info-item">
+                        <span class="pi-label">Tower Type</span>
+                        <span class="pi-value">{{ cfg.towerType || '—' }}</span>
+                    </div>
+                    <div class="preview-info-item">
+                        <span class="pi-label">Grid Connectivity</span>
+                        <span class="pi-value">{{ cfg.gridConnectivity || '—' }}</span>
+                    </div>
+                    <div class="preview-info-item">
+                        <span class="pi-label">PPA Type</span>
+                        <span class="pi-value">{{ cfg.ppaType || '—' }}</span>
+                    </div>
+                    <div class="preview-info-item">
+                        <span class="pi-label">WTG Qty</span>
+                        <span class="pi-value pi-value-highlight">{{ cfg.wtgQty ?? '—' }}</span>
+                    </div>
+                </div>
+
+                <div *ngIf="hasMonthlyTable(cfg)" class="preview-monthly-wrap">
+                    <table class="preview-monthly-table">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let lbl of getMonthLabels(cfg); trackBy: trackByIdx">{{ lbl }}</th>
+                                <th class="preview-total-col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td *ngFor="let lbl of getMonthLabels(cfg); let mi = index; trackBy: trackByIdx"
+                                    [class.cell-filled]="(cfg.monthly[mi] ?? 0) > 0">
+                                    {{ cfg.monthly[mi] ?? 0 }}
+                                </td>
+                                <td class="preview-total-col">
+                                    <span [class.total-ok]="monthTotal(cfg) === (cfg.wtgQty ?? 0)"
+                                        [class.total-warn]="monthTotal(cfg) < (cfg.wtgQty ?? 0)"
+                                        [class.total-over]="monthTotal(cfg) > (cfg.wtgQty ?? 0)">
+                                        {{ monthTotal(cfg) }} / {{ cfg.wtgQty }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div *ngIf="!hasMonthlyTable(cfg)" class="preview-no-monthly">
+                    No monthly distribution entered yet.
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Validation notice if incomplete -->
+        <div *ngIf="!canSubmit" class="preview-incomplete-notice">
+            <i class="pi pi-exclamation-triangle"></i>
+            Some required fields are missing. Please fill all fields before submitting.
+        </div>
+
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="preview-footer">
+            <p-button label="Close" icon="pi pi-times" severity="secondary" [outlined]="true"
+                (onClick)="closePreview()" />
+            <p-button label="Submit Demand" icon="pi pi-send" [disabled]="!canSubmit" (onClick)="submit()" />
+        </div>
+    </ng-template>
+
+</p-dialog>

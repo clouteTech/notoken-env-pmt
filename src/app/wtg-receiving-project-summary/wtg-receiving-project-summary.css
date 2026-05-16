@@ -1,0 +1,25 @@
+/* ══ Open WTG Button ══ */
+.open-wtg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.38rem 0.9rem;
+    border-radius: 7px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+}
+
+.open-wtg-btn:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+
+.open-wtg-btn:active {
+    transform: translateY(0);
+}

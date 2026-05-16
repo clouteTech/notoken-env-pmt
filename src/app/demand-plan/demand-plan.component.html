@@ -1,0 +1,285 @@
+<p-toast></p-toast>
+
+<!-- ══ PAGE HEADER ══ -->
+<div class="flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+  <div>
+    <div class="text-2xl font-bold" style="color:var(--text)">Yearly Demand Plan</div>
+    <div class="text-sm mt-1" style="color:var(--text3)">Manage wind turbine demand entries by project and SPV</div>
+  </div>
+  <p-tag [value]="badgeText" [severity]="badgeSeverity" />
+</div>
+
+<!-- ══ FILTER BAR ══ -->
+<div class="filter-bar mb-4">
+  <div class="flex align-items-end gap-4 flex-wrap">
+    <div class="flex flex-column gap-2">
+      <label class="filter-label">Plan Year</label>
+      <p-select appendTo="body" 
+        [options]="yearOptions"
+        [(ngModel)]="year"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select Year"
+        (onChange)="onYearChange()"
+        [style]="{'min-width':'160px'}"
+      />
+    </div>
+
+    <div class="flex flex-column gap-2">
+      <label class="filter-label">Customer</label>
+      <p-select appendTo="body"
+        [options]="customerOptions"
+        [(ngModel)]="customer"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select Customer"
+        (onChange)="onCustomerChange()"
+        [style]="{'min-width':'180px'}"
+      />
+    </div>
+
+    <div class="flex-1"></div>
+
+    <p-button
+      label="Add More Project"
+      icon="pi pi-plus"
+      severity="secondary"
+      size="small"
+      [outlined]="true"
+      [disabled]="!filtersReady"
+      (onClick)="addProject()"
+    />
+    <p-button
+      label="View Summary"
+      icon="pi pi-table"
+      size="small"
+      [disabled]="!hasData"
+      (onClick)="openSummary()"
+    />
+  </div>
+</div>
+
+<!-- ══ PROJECT CARDS ══ -->
+<div class="flex flex-column gap-4">
+
+  <!-- Empty state -->
+  <div *ngIf="!filtersReady || projects.length === 0" class="project-card">
+    <div class="empty-st">
+      <div class="empty-icon"><i class="pi pi-inbox" style="font-size:2rem;color:var(--text4)"></i></div>
+      <h3>Select Year &amp; Customer to begin</h3>
+      <p>Use the filters above to start entering demand data.</p>
+    </div>
+  </div>
+
+  <!-- Project Cards -->
+  <div *ngFor="let proj of projects; trackBy: trackByUid"
+       class="project-card" [id]="'card-' + proj.uid">
+
+    <!-- Card Head -->
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="idx-badge">{{ displayIndex(proj.uid) }}</div>
+        <div class="card-head-title">Project Entry #{{ displayIndex(proj.uid) }}</div>
+      </div>
+      <div class="card-head-right">
+
+        <!-- Project Code -->
+        <div class="sel-grp">
+          <label>Project Code</label>
+          <p-select appendTo="body"
+            [options]="getProjectOptions()"
+            [ngModel]="proj.projectCode"
+            (ngModelChange)="onProjectChange(proj.uid, $event)"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="-- Select --"
+            [style]="{'min-width':'148px','font-size':'12px'}"
+          />
+        </div>
+
+        <!-- SPV -->
+        <div class="sel-grp" *ngIf="proj.projectCode">
+          <label>SPV</label>
+          <p-select appendTo="body"
+            [options]="getSpvOptions(proj.projectCode, proj.uid)"
+            [ngModel]="proj.spv"
+            (ngModelChange)="onSPVChange(proj.uid, $event)"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="-- Select --"
+            [style]="{'min-width':'148px','font-size':'12px'}"
+          />
+        </div>
+
+        <!-- Remove -->
+        <p-button
+          *ngIf="projects.length > 1"
+          icon="pi pi-times"
+          label="Remove"
+          severity="danger"
+          size="small"
+          [text]="true"
+          (onClick)="removeProject(proj.uid)"
+        />
+      </div>
+    </div>
+
+    <!-- No SPV hint -->
+    <div *ngIf="!proj.spv" style="padding:24px;text-align:center;color:var(--text3);font-size:13px">
+      {{ proj.projectCode ? 'Select an SPV to load turbine data.' : 'Select a Project Code and SPV above.' }}
+    </div>
+
+    <!-- Demand Table using p-table -->
+    <div *ngIf="proj.spv && proj.rows.length > 0" class="table-wrap">
+      <p-table
+        [value]="proj.rows"
+        [tableStyle]="{'min-width':'900px'}"
+        styleClass="p-datatable-sm p-datatable-gridlines demand-table"
+        [rowHover]="true"
+      >
+        <ng-template #header>
+          <tr>
+            <th class="th-left">WTG Type</th>
+            <th class="th-left">Cap (MW)</th>
+            <th class="th-left">Tower Type</th>
+            <th class="th-left">Blade Type</th>
+            <th class="th-center">Total Qty</th>
+            <th *ngFor="let m of getMonthLabels(); trackBy: trackByIdx" class="th-month">{{m}}</th>
+            <th class="th-total">Row Total</th>
+          </tr>
+        </ng-template>
+
+        <ng-template #body let-row let-ri="rowIndex">
+          <tr>
+            <td>
+              <input pInputText [value]="row.wtg" class="n-inp" style="width:78px;text-align:left"
+                (change)="updField(proj.uid, ri, 'wtg', $any($event.target).value)" />
+            </td>
+            <td style="text-align:center">
+              <input pInputText type="number" [value]="row.cap" class="n-inp" style="width:54px"
+                (change)="updField(proj.uid, ri, 'cap', +$any($event.target).value)" />
+            </td>
+            <td>
+              <input pInputText [value]="row.tower" class="n-inp" style="width:100px;text-align:left"
+                (change)="updField(proj.uid, ri, 'tower', $any($event.target).value)" />
+            </td>
+            <td>
+              <input pInputText [value]="row.blade" class="n-inp" style="width:54px;text-align:left"
+                (change)="updField(proj.uid, ri, 'blade', $any($event.target).value)" />
+            </td>
+            <td style="text-align:center">
+              <input pInputText type="number" [value]="row.qty" min="0" class="n-inp" style="width:54px"
+                (change)="updField(proj.uid, ri, 'qty', +$any($event.target).value)" />
+            </td>
+            <td *ngFor="let v of row.mon; let mi = index; trackBy: trackByIdx" style="text-align:center;padding:4px 3px">
+              <input pInputText type="number" [value]="v || 0" min="0" class="n-inp" style="width:54px"
+                (input)="updMon(proj.uid, ri, mi, +$any($event.target).value)" />
+            </td>
+            <td class="rt-cell">{{ rowTotal(row) }}</td>
+            
+          </tr>
+        </ng-template>
+
+        <ng-template #footer>
+          <tr class="total-row">
+            <td colspan="4" class="total-label">TOTAL</td>
+            <td class="tv" style="text-align:center">{{ qtyTotal(proj.rows) }}</td>
+            <td *ngFor="let v of proj.rows[0]?.mon; let mi = index; trackBy: trackByIdx"
+                class="tv" style="text-align:center">{{ colTotal(proj.rows, mi) }}</td>
+            <td class="tv rt-cell">{{ grandTotal(proj.rows) }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Card Footer -->
+    <!-- <div *ngIf="proj.spv" class="card-foot">
+      <p-button
+        label="Add WTG Row"
+        icon="pi pi-plus"
+        severity="secondary"
+        size="small"
+        [outlined]="true"
+        (onClick)="addRow(proj.uid)"
+      />
+      <span class="foot-hint">WTG data auto-fetched · Enter monthly quantities manually</span>
+    </div> -->
+
+  </div><!-- /project-card -->
+</div><!-- /projects wrap -->
+
+
+<!-- ══ SUMMARY DIALOG ══ -->
+<p-dialog
+  [(visible)]="summaryVisible"
+  [modal]="true"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  header="Plan Summary"
+  [style]="{'width':'92vw','max-width':'1180px'}"
+>
+  <!-- Stats tiles -->
+  <div class="sum-tiles mb-4">
+    <div class="s-tile"><div class="s-tile-lbl">Projects</div><div class="s-tile-val">{{ summaryProjects.length }}</div></div>
+    <div class="s-tile"><div class="s-tile-lbl">WTG Rows</div><div class="s-tile-val">{{ getTotalRows() }}</div></div>
+    <div class="s-tile"><div class="s-tile-lbl">Total Qty</div><div class="s-tile-val">{{ summaryTotalQty }}</div></div>
+    <div class="s-tile"><div class="s-tile-lbl">Units Planned</div><div class="s-tile-val" style="color:var(--blue)">{{ summaryTotalUnits }}</div></div>
+  </div>
+
+  <div class="modal-section-label">Detailed Breakdown</div>
+
+  <div style="overflow-x:auto">
+    <p-table
+      [value]="summaryRows"
+      [tableStyle]="{'min-width':'900px'}"
+      styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+      [scrollable]="true"
+      scrollHeight="360px"
+    >
+      <ng-template #header>
+        <tr>
+          <th>Customer</th><th>Project</th><th>SPV</th><th>WTG Type</th>
+          <th>Cap</th><th>Tower</th><th>Blade</th><th>Qty</th>
+          <th *ngFor="let m of getMonthLabels(); trackBy: trackByIdx"
+              style="font-size:10px;min-width:58px">{{m}}</th>
+          <th style="color:var(--accent2)">Sum</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-row>
+        <tr>
+          <td>{{row.customer}}</td>
+          <td>{{row.project}}</td>
+          <td>{{row.spv}}</td>
+          <td>{{row.wtg}}</td>
+          <td>{{row.cap}}</td>
+          <td style="font-size:11px">{{row.tower}}</td>
+          <td>{{row.blade}}</td>
+          <td style="color:var(--blue);font-weight:600">{{row.qty}}</td>
+          <td *ngFor="let v of row.mon; trackBy: trackByIdx">{{v}}</td>
+          <td style="color:var(--accent2);font-weight:700">{{row.total}}</td>
+        </tr>
+      </ng-template>
+      <ng-template #footer>
+        <tr class="total-row">
+          <td colspan="7" class="total-label">GRAND TOTAL</td>
+          <td class="tv">{{ summaryTotalQty }}</td>
+          <td *ngFor="let m of getMonthLabels(); let mi = index; trackBy: trackByIdx" class="tv">
+            {{ summaryColTotal(mi) }}
+          </td>
+          <td class="tv">{{ summaryTotalUnits }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <ng-template #footer>
+    <div class="flex align-items-center justify-content-between w-full">
+      <span style="font-size:12px;color:var(--text3)">Review all entries before submitting.</span>
+      <div class="flex gap-2">
+        <p-button label="Close" severity="secondary" [outlined]="true" (onClick)="closeSummary()" />
+        <p-button label="Submit Plan" icon="pi pi-check" (onClick)="submitPlan()" />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,133 @@
+<div class="card">
+    <h2>WTG Production</h2>
+    <div class="custom-container">
+        <p-table [value]="wtgProductionList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+            <ng-template #header>
+                <tr>
+                    <th>SL NO</th>
+                    <th>Component</th>
+                    <th>Production Plan Start</th>
+                    <th>Production Plan Finish</th>
+                    <th>Production Actual Start</th>
+                    <th>Production Actual Finish</th>
+                    <th>Production Delay Reason</th>
+                    <th>Serial Number</th>
+                    <th>Final QC Date</th>
+                    <th>Project Code</th>
+                    <th>Production Status</th>
+                    <th>Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-prod let-i="rowIndex">
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ prod.component }}</td>
+                    <td>{{ prod.proStart }}</td>
+                    <td>{{ prod.proEnd }}</td>
+                    <td>{{ prod.proActualStart }}</td>
+                    <td>{{ prod.proActualEnd }}</td>
+                    <td>{{ prod.proDelayReason }}</td>
+                    <td>{{ prod.serialNo }}</td>
+                    <td>{{ prod.finalQCDate }}</td>
+                    <td>{{ prod.pCode }}</td>
+                    <td>{{ prod.status }}</td>
+                    <td>
+                        <p-menu #menu [model]="items" [popup]="true" appendTo="body">
+                            <ng-template #item let-item>
+                                <div class="dropdown-flex gap-2 px-3 py-1 cursor-pointer">
+                                    <span [innerHTML]="getSafeSvg(item.svgIcon)"></span>
+                                    <span>{{ item.label }}</span>
+                                </div>
+                            </ng-template>
+                        </p-menu>
+                        <button pButton pRipple text rounded severity="secondary" type="button" 
+                            (click)="menu.toggle($event)">
+                            <i pButtonIcon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
+                                    <rect width="24" height="24" fill="none" />
+                                    <path fill="currentColor"
+                                        d="M12 7a2 2 0 1 0-2-2a2 2 0 0 0 2 2m0 10a2 2 0 1 0 2 2a2 2 0 0 0-2-2m0-7a2 2 0 1 0 2 2a2 2 0 0 0-2-2" />
+                                </svg>
+                            </i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-dialog header="Production Form" [modal]="true" [(visible)]="showProductionModal" [style]="{ width: '55rem' }"
+    [draggable]="false">
+    <p-stepper [value]="1">
+        <p-step-item [value]="1">
+            <p-step [value]="1">Production Actual</p-step>
+            <p-step-panel [value]="1">
+                <ng-template #content let-activateCallback="activateCallback">
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="col-span-1">
+                            <p-floatlabel variant="on">
+                                <p-datepicker dateFormat="dd/mm/yy" showIcon iconDisplay="input" inputId="prod-actual-start"
+                                    appendTo="body" [readonlyInput]="true" styleClass="w-full" placeholder="DD/MM/YYYY" />
+                                <label for="prod-actual-start">Production Actual Start</label>
+                            </p-floatlabel>
+                        </div>
+                        <div class="col-span-1">
+                            <p-floatlabel variant="on">
+                                <p-datepicker dateFormat="dd/mm/yy" showIcon iconDisplay="input" inputId="prod-actual-end"
+                                    appendTo="body" [readonlyInput]="true" styleClass="w-full" placeholder="DD/MM/YYYY" />
+                                <label for="prod-actual-end">Production Actual End</label>
+                            </p-floatlabel>
+                        </div>
+                        <div class="col-span-1">
+                            <p-floatlabel variant="on">
+                                <input type="text" pInputText class="w-full" id="production-delay-reason" />
+                                <label for="production-delay-reason">Production Delay Reason</label>
+                            </p-floatlabel>
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-3">
+                        <p-button label="Submit" />
+                    </div>
+                </ng-template>
+            </p-step-panel>
+        </p-step-item>
+        <p-step-item [value]="2">
+            <p-step [value]="2">Serial Number</p-step>
+            <p-step-panel [value]="2">
+                <ng-template #content let-activateCallback="activateCallback">
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="col-span-1">
+                            <p-floatlabel variant="on">
+                                <input type="text" pInputText id="serial-number" class="w-full" />
+                                <label for="serial-number">Serial Number</label>
+                            </p-floatlabel>
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-3">
+                        <p-button label="Submit" />
+                    </div>
+                </ng-template>
+            </p-step-panel>
+        </p-step-item>
+        <p-step-item [value]="3">
+            <p-step [value]="3">Final QC Date</p-step>
+            <p-step-panel [value]="3">
+                <ng-template #content let-activateCallback="activateCallback">
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="col-span-1">
+                            <p-floatlabel variant="on">
+                                <p-datepicker dateFormat="dd/mm/yy" showIcon iconDisplay="input" inputId="final-qc-date" appendTo="body" 
+                                   [readonlyInput]="true" styleClass="w-full" placeholder="DD/MM/YYYY"  />
+                                <label for="final-qc-date">Final QC Date</label>
+                            </p-floatlabel>
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-3">
+                        <p-button label="Submit" />
+                    </div>
+                </ng-template>
+            </p-step-panel>
+        </p-step-item>
+    </p-stepper>
+</p-dialog>

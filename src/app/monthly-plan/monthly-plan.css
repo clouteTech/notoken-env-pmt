@@ -1,0 +1,113 @@
+.menu-action{
+    display: flex;
+    align-items: center;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.custom-container {
+    border: 1px solid var(--p-content-border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.form-grid {
+    display: grid;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #fff;
+    padding-bottom: 7px;
+}
+
+.summary-card {
+    position: sticky;
+    top: 64px;
+    z-index: 1;
+    background: #ffffff;
+    display: flex;
+    gap: 1rem;
+}
+
+.summary-item {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    background: #f1f5f9;
+    text-align: center;
+}
+
+.summary-item p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.summary-item h3 {
+    margin: 0.25rem 0 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.create-btn{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-top: 6px;
+}
+
+.component-tower-blade-list{
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.tower-blade-card{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.card-left .title {
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-left .subtitle {
+    font-size: 12px;
+    color: gray;
+    margin: 0;
+}
+
+.card-right{
+    display: flex;
+    gap: 20px;
+    text-align: center;
+}
+
+.card-right p {
+    font-size: 11px;
+    color: gray;
+    margin: 0;
+}
+
+.card-right h3 {
+    margin: 4px 0 0;
+}

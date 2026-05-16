@@ -1,0 +1,127 @@
+<div class="card">
+    <div class="header">
+        <h2>Monthly Demand Plan</h2>
+        <p-menu #menu [model]="actionItems" [popup]="true" appendTo="body" />
+        <button pButton pRipple type="button" (click)="menu.toggle($event)">
+            <span pButtonLabel>Actions</span>
+            <i pButtonIcon>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <rect width="24" height="24" fill="none" />
+                    <path fill="currentColor"
+                        d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42" />
+                </svg>
+            </i>
+        </button>
+    </div>
+
+    <div class="custom-container">
+        <p-table [value]="planList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+            <ng-template #header>
+                <tr>
+                    <th>SL NO</th>
+                    <th>Plan Month</th>
+                    <th>Project Code</th>
+                    <th>Customer Name</th>
+                    <th>Tower Type</th>
+                    <th>Blade Type</th>
+                    <th>WTG Count</th>
+                    <th>Created On</th>
+                    <th>Created By</th>
+                    <th>Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-plan let-i="rowIndex">
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ plan.planMonth }}</td>
+                    <td>{{ plan.projectCode }}</td>
+                    <td>{{ plan.customerName }}</td>
+                    <td>{{ plan.towerType }}</td>
+                    <td>{{ plan.bladeType }}</td>
+                    <td>{{ plan.wtgCount }}</td>
+                    <td>{{ plan.createdOn }}</td>
+                    <td>{{ plan.createdBy }}</td>
+                    <td>
+                        <p-menu #menu [model]="items" [popup]="true" appendTo="body">
+                            <ng-template #item let-item>
+                                <div class="menu-action gap-2 px-3 py-1 cursor-pointer">
+                                    <span [innerHTML]="getSafeSvg(item.svgIcon)"></span>
+                                    <span>{{ item.label }}</span>
+                                </div>
+                            </ng-template>
+                        </p-menu>
+                        <button pButton pRipple text rounded severity="secondary" type="button"
+                            (click)="menu.toggle($event)">
+                            <i pButtonIcon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    class="text-gray-500">
+                                    <rect width="24" height="24" fill="none" />
+                                    <path fill="currentColor"
+                                        d="M12 7a2 2 0 1 0-2-2a2 2 0 0 0 2 2m0 10a2 2 0 1 0 2 2a2 2 0 0 0-2-2m0-7a2 2 0 1 0 2 2a2 2 0 0 0-2-2" />
+                                </svg>
+                            </i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-dialog header="Create Component Serial" [modal]="true" [(visible)]="showComponentSerialModal" [style]="{ width: '40rem' }"
+    [draggable]="false">
+    <div class="form-grid">
+        <label for="month">Select Month</label>
+        <p-datepicker view="month" dateFormat="mm/yy" [readonlyInput]="true" inputId="month" showIcon 
+            [iconDisplay]="'input'" appendTo="body" placeholder="Select Month" (onSelect)="selectedMonth($event)" fluid />
+    </div>
+
+    @if(showComponentDetails){
+        <div class="summary-card">
+            <div class="summary-item">
+                <p>Total Records</p>
+                <h3>3</h3>
+            </div>
+        
+            <div class="summary-item">
+                <p>Total WTG Count</p>
+                <h3>9</h3>
+            </div>
+            <div class="summary-item">
+                <p>Total Component Count</p>
+                <h3>112</h3>
+            </div>
+        </div>
+    
+        <div class="component-tower-blade-list">
+            @for (item of breakdownList; track $index) {
+                <div class="tower-blade-card">
+                    <div class="card-left">
+                        <div>
+                            <p class="title">{{ item.towerType }}</p>
+                            <p class="subtitle">{{ item.bladeType }}</p>
+                        </div>
+                    </div>
+                    <div class="card-right">
+                        <div>
+                            <p>WTG</p>
+                            <h3>{{ item.wtgCount }}</h3>
+                        </div>
+                        <div>
+                            <p>Components</p>
+                            <h3>{{ item.wtgComponentCount }}</h3>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <ng-template #footer>
+        <div class="create-btn">
+            <button pButton pRipple type="button" [disabled]="!showComponentDetails">
+                <span>Create</span>
+            </button>
+        </div>
+    </ng-template>
+</p-dialog>

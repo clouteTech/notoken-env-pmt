@@ -1,0 +1,74 @@
+<div class="card">
+    <h2>WTG Quality</h2>
+    <div class="custom-container">
+        <p-table [value]="qualityList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+            <ng-template #header>
+                <tr>
+                    <th>SL NO</th>
+                    <th>Component</th>
+                    <th>Serial Number</th>
+                    <th>Final QC Date</th>
+                    <th>Project Code</th>
+                    <th>Inspection Call Plan</th>
+                    <th>Customer Inspection Actual</th>
+                    <th>MDCC Plan</th>
+                    <th>MDCC Actual</th>
+                    <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-quality let-i="rowIndex">
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ quality.component || '-' }}</td>
+                    <td>{{ quality.serialNumber || '-' }}</td>
+                    <td>{{ quality.finalQcDate || '-' }}</td>
+                    <td>{{ quality.projectCode || '-' }}</td>
+                    <td>{{ quality.inspectionCallPlan || '-' }}</td>
+                    <td>{{ quality.customerInspectionActual || '-' }}</td>
+                    <td>{{ quality.mdccPlan || '-' }}</td>
+                    <td>{{ quality.mdccActual || '-' }}</td>
+                    <td>
+                        <p-menu #menu [model]="items" [popup]="true" appendTo="body">
+                            <ng-template #item let-item>
+                                <div class="dropdown-flex gap-2 px-3 py-1 cursor-pointer">
+                                    <span [innerHTML]="getSafeSvg(item.svgIcon)"></span>
+                                    <span>{{ item.label }}</span>
+                                </div>
+                            </ng-template>
+                        </p-menu>
+                        <button pButton pRipple text rounded severity="secondary" type="button" (click)="menu.toggle($event)">
+                            <i pButtonIcon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
+                                    <rect width="24" height="24" fill="none" />
+                                    <path fill="currentColor"
+                                        d="M12 7a2 2 0 1 0-2-2a2 2 0 0 0 2 2m0 10a2 2 0 1 0 2 2a2 2 0 0 0-2-2m0-7a2 2 0 1 0 2 2a2 2 0 0 0-2-2" />
+                                </svg>
+                            </i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-dialog header="Edit Quality Details" [modal]="true" [(visible)]="showQualDetailsModal" [style]="{ width: '40rem' }"
+    [draggable]="false">
+    <div class="form-row">
+        <div class="form-field">
+            <label for="customer-inspection-actual">Customer Inspection Actual</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" 
+                inputId="customer-inspection-actual" placeholder="Select Date" appendTo="body" fluid />
+        </div>
+        <div class="form-field">
+            <label for="mdcc-actual">MDCC Actual</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" 
+                inputId="mdcc-actual" placeholder="Select Date" appendTo="body" fluid />
+        </div>
+    </div>
+    <div class="submit-btn">
+        <button pButton pRipple type="submit">
+            Submit
+        </button>
+    </div>
+</p-dialog>
