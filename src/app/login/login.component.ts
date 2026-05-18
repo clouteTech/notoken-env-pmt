@@ -33,7 +33,7 @@ export class LoginComponent {
       const ok = this.auth.login(this.username.trim(), this.password);
       this.loading = false;
       if (ok) {
-        this.router.navigate(['/create-project']);
+        this.router.navigate(['/foundation1']);
       } else {
         this.error = 'Invalid username or password. Please try again.';
       }

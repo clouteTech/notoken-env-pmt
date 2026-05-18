@@ -60,17 +60,20 @@
     <aside class="sidebar" [class.sidebar-open]="sidebarOpen()">
       <div>
         <div class="sb-label">PMO</div>
-        <button class="sb-item" [class.active]="activeMenu === 'saleDemand'" (click)="navigate('saleDemand')">
+        <!-- <button class="sb-item" [class.active]="activeMenu === 'saleDemand'" (click)="navigate('saleDemand')">
           <i class="pi pi-arrows-alt"></i>
           <span>Sale Demand</span>
-        </button>
+        </button> -->
         <button class="sb-item" [class.active]="activeMenu === 'create'" (click)="navigate('create')">
           <i class="pi pi-chart-line"></i>
           DPR Projects
         </button>
-        <button class="sb-item" [class.active]="activeMenu === 'demand'" (click)="navigate('demand')">
+
+        <!-- start uncomment this -->
+
+        <!-- <button class="sb-item" [class.active]="activeMenu === 'demand'" (click)="navigate('demand')">
           <i class="pi pi-chart-bar"></i>
-          Demand Plan
+          Yearly Demand Plan
         </button>
          <button class="sb-item" [class.active]="activeMenu === 'monthlyDemandPlan'" (click)="navigate('monthlyDemandPlan')">
           <i class="pi pi-calendar"></i>
@@ -96,7 +99,10 @@
         <button class="sb-item" [class.active]="activeMenu === 'WTGReceiving'" (click)="navigate('WTGReceiving')">
           <i class="pi pi-arrow-circle-down"></i>
           <span>WTG Receiving</span>
-        </button>
+        </button> -->
+
+        <!-- end -->
+
        <!--  <button class="sb-item" [class.active]="activeMenu === 'Foundation'" (click)="navigate('Foundation')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
@@ -122,14 +128,20 @@
           </svg>
           <span>Commissioning</span>
         </button> -->
-        <button class="sb-item" [class.active]="activeMenu === 'installation'" (click)="navigate('installation')">
+
+        <!-- start uncomment this -->
+
+        <!-- <button class="sb-item" [class.active]="activeMenu === 'installation'" (click)="navigate('installation')">
           <i class="pi pi-wrench"></i>
           Installation
         </button>
         <button class="sb-item" [class.active]="activeMenu === 'Commisioning1'" (click)="navigate('Commisioning1')">
           <i class="pi pi-bolt"></i>
           <span>Commissioning</span>
-        </button>
+        </button> -->
+
+        <!-- end -->
+
         <!-- <button class="sb-item" [class.active]="activeMenu === 'Commisioning_11'" (click)="navigate('Commisioning_11')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
@@ -137,6 +149,7 @@
           </svg>
           <span>Commissioning</span>
         </button> -->
+
         <button class="sb-item" (click)="showMastersMenu = !showMastersMenu">
           <i class="pi pi-database"></i>
           <span>Masters</span>
