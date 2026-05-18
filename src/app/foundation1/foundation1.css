@@ -1,8 +1,8 @@
 /* ══ Foundation Wrapper ══ */
 .foundation-wrapper {
-  padding: 1.25rem 1.5rem;
+  /* padding: 1.25rem 1.5rem; */
   min-height: 100vh;
-  background: var(--surface-ground, #f8f9fa);
+  /* background: var(--surface-ground, #f8f9fa); */
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
