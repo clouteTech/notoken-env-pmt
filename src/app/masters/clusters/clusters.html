@@ -1,29 +1,32 @@
 <div class="card">
-    <div class="ppa-header">
-        <h2>PPA Types</h2>
-        <p-button icon="pi pi-plus" label="Add PPA Type" (onClick)="openPpaModal()" />
+    <div class="card-header">
+        <h2>Clusters</h2>
+        <p-button icon="pi pi-plus" label="Create Cluster" (onClick)="openClusterModal()" />
     </div>
     <div class="custom-container">
-        <p-table [value]="ppaTypeList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <p-table [value]="clusterList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
             <ng-template #header>
                 <tr>
                     <th>SL No</th>
-                    <th>PPA Type</th>
+                    <th>Cluster Code</th>
+                    <th>Cluster Name</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
             </ng-template>
-            <ng-template #body let-ppa let-i="rowIndex">
+            <ng-template #body let-cluster let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
-                    <td>{{ ppa.ppaType }}</td>
+                    <td>{{ cluster.clusterCode }}</td>
+                    <td>{{ cluster.clusterName }}</td>
                     <td>
-                        <p-tag [value]="ppa.status ? 'Active' : 'Inactive'" [severity]="ppa.status ? 'success' : 'danger'">
+                        <p-tag [value]="cluster.status ? 'Active' : 'Inactive'" [severity]="cluster.status ? 'success' : 'danger'">
                         </p-tag>
                     </td>
                     <td>
                         <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
-                        <button pButton pRipple text rounded severity="secondary" type="button" (click)="ppaMenu($event, menu, ppa)">
+                        <button pButton pRipple text rounded severity="secondary" type="button"
+                            (click)="clusterMenu($event, menu, cluster)">
                             <i pButtonIcon>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
                                     <rect width="24" height="24" fill="none" />
@@ -44,23 +47,27 @@
     </div>
 </div>
 
-<p-dialog [header]="selectedPpaType ? 'Edit PPA Type' : 'Add PPA Type'" [modal]="true" [(visible)]="showPpaModal" [style]="{ width: '30rem' }"
-    [draggable]="false" (onHide)="onDialogClose()">
-    <form [formGroup]="ppaTypeForm" (ngSubmit)="submitPpaTypeForm()">
+<p-dialog [header]="selectedCluster ? 'Edit Cluster' : 'Create Cluster'" [modal]="true"
+    [(visible)]="showClusterModal" [style]="{ width: '40rem' }" [draggable]="false" (onHide)="onDialogClose()">
+    <form [formGroup]="clusterForm" (ngSubmit)="submitClusterForm()">
         <div class="form-grid">
             <div class="form-field">
-                <label for="ppa-type">PPA Type</label>
-                <input type="text" formControlName="ppaType" pInputText class="w-full" id="ppa-type" />
+                <label for="cluster-code">Cluster Code</label>
+                <input type="text" pInputText formControlName="clusterCode" class="w-full" id="cluster-code" />
+            </div>
+            <div class="form-field">
+                <label for="cluster-name">Cluster Name</label>
+                <input type="text" pInputText formControlName="clusterName" class="w-full" id="cluster-name" />
             </div>
         </div>
-        @if(selectedPpaType){
+        @if(selectedCluster){
         
             <div class="status-card">
             
                 <div>
             
                     <div class="status-title">
-                        PPA Type Availability
+                        Cluster Availability
                     </div>
             
                     <div class="status-subtitle">
@@ -75,12 +82,12 @@
             
                 <div class="status-toggle-wrap">
             
-                    <span class="status-label" [class.inactive]="!ppaTypeForm.get('status')?.value">
+                    <span class="status-label" [class.inactive]="!clusterForm.get('status')?.value">
             
                         {{
-                        ppaTypeForm.get('status')?.value
-                        ? 'Active'
-                        : 'Inactive'
+                            clusterForm.get('status')?.value
+                            ? 'Active'
+                            : 'Inactive'
                         }}
             
                     </span>
@@ -93,11 +100,10 @@
             </div>
         
         }
-        <div class="submit-btn">
+        <div class="create-btn">
             <button pButton pRipple type="submit">Submit</button>
         </div>
     </form>
-    
 </p-dialog>
 
 <p-toast />

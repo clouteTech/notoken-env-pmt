@@ -179,6 +179,16 @@
                 (click)="navigate('customers')">Customers</button>
               <button class="sb-sub-item" [class.active]="activeMenu === 'zone'" 
                 (click)="navigate('zone')">Zones</button>
+              <button class="sb-sub-item" [class.active]="activeMenu === 'department'" 
+                (click)="navigate('department')">Departments</button>
+              <button class="sb-sub-item" [class.active]="activeMenu === 'clusters'"
+                (click)="navigate('clusters')">Clusters</button>
+              <button class="sb-sub-item" [class.active]="activeMenu === 'companyUsers'"
+                  (click)="navigate('companyUsers')">Company Users</button>
+              <button class="sb-sub-item" [class.active]="activeMenu === 'userGroups'" 
+                (click)="navigate('userGroups')">User Groups</button>
+              <button class="sb-sub-item" [class.active]="activeMenu === 'roles'" 
+                (click)="navigate('roles')">Roles</button>
           </div>
         }
       </div>

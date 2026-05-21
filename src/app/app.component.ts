@@ -84,7 +84,12 @@ export class AppComponent implements OnInit, OnDestroy {
     else if(menu === 'plants') this.router.navigate(['/plants']);
     else if(menu === 'customers') this.router.navigate(['/customers']);
     else if(menu === 'zone') this.router.navigate(['/zones']);
+    else if(menu === 'department') this.router.navigate(['/departments']);
+    else if(menu === 'clusters') this.router.navigate(['/clusters']);
     else if(menu === 'installation') this.router.navigate(['/installation']);
+    else if(menu === 'companyUsers') this.router.navigate(['/company-users']);
+    else if(menu === 'userGroups') this.router.navigate(['/user-groups']);
+    else if(menu === 'roles') this.router.navigate(['/roles']);
     if (window.innerWidth <= 768) this.sidebarOpen.set(false);
   }
 

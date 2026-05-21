@@ -1,31 +1,34 @@
 <div class="card">
-    <div class="wtg-header">
-        <h2>WTG Types</h2>
-        <p-button icon="pi pi-plus" label="Add WTG Type" (onClick)="openWtgTypeModal()" />
+    <div class="card-header">
+        <h2>Company Users</h2>
+        <p-button icon="pi pi-plus" label="Create Company User" (onClick)="openCompanyUserModal()" />
     </div>
     <div class="custom-container">
-        <p-table [value]="wtgTypeList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <p-table [value]="companyUserList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
             <ng-template #header>
                 <tr>
                     <th>SL No</th>
-                    <th>WTG Type</th>
-                    <th>Is Near Shore</th>
+                    <th>Company User</th>
+                    <th>Email</th>
+                    <th>User Group</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
             </ng-template>
-            <ng-template #body let-wtg let-i="rowIndex">
+            <ng-template #body let-user let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
-                    <td>{{ wtg.wtgType }}</td>
-                    <td>{{ wtg.isNearShore ? 'Yes' : 'No' }}</td>
+                    <td>{{ user.userName }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.userGroups.length }}</td>
                     <td>
-                        <p-tag [value]="wtg.status ? 'Active' : 'Inactive'" [severity]="wtg.status ? 'success' : 'danger'">
+                        <p-tag [value]="user.status ? 'Active' : 'Inactive'" [severity]="user.status ? 'success' : 'danger'">
                         </p-tag>
                     </td>
                     <td>
                         <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
-                        <button pButton pRipple text rounded severity="secondary" type="button" (click)="wtgTypeMenu($event, menu, wtg)">
+                        <button pButton pRipple text rounded severity="secondary" type="button"
+                            (click)="companyUserMenu($event, menu, user)">
                             <i pButtonIcon>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
                                     <rect width="24" height="24" fill="none" />
@@ -46,28 +49,27 @@
     </div>
 </div>
 
-<p-dialog [header]="selectedWTGType ? 'Edit WTG Type' : 'Add WTG Type'" [modal]="true" [(visible)]="showWTGTypeModal" 
-    [style]="{ width: '40rem' }" [draggable]="false" (onHide)="onDialogClose()">
-    <form [formGroup]="wtgTypeForm" (ngSubmit)="submitWtgTypeForm()">
+<p-dialog [header]="selectedCompanyUser ? 'Update Company User' : 'Create Company User'" [(visible)]="showCompanyUserModal" 
+    [modal]="true" [draggable]="false" (onHide)="onDialogClose()" [style]="{ width: '40rem' }">
+    <form [formGroup]="companyUserForm" (ngSubmit)="submitCompanyUserForm()">
         <div class="form-grid">
             <div class="form-field">
-                <label for="wtg-type">WTG Type</label>
-                <input type="text" pInputText formControlName="wtgType" class="w-full" id="wtg-type" />
+                <label for="userName">Username</label>
+                <input type="text" pInputText formControlName="userName" id="userName" />
             </div>
             <div class="form-field">
-                <label for="near-shore">Is Near Shore</label>
-                <p-select [options]="nearShoreList" formControlName="isNearShore" inputId="near-shore" 
-                    placeholder="Select Yes/No" appendTo="body" />
+                <label for="email">Email</label>
+                <input type="text" pInputText formControlName="email" id="email" />
             </div>
         </div>
-        @if(selectedWTGType){
+        @if(selectedCompanyUser){
         
         <div class="status-card">
         
             <div>
         
                 <div class="status-title">
-                    WTG Type Availability
+                    Company User Availability
                 </div>
         
                 <div class="status-subtitle">
@@ -82,12 +84,12 @@
         
             <div class="status-toggle-wrap">
         
-                <span class="status-label" [class.inactive]="!wtgTypeForm.get('status')?.value">
+                <span class="status-label" [class.inactive]="!companyUserForm.get('status')?.value">
         
                     {{
-                    wtgTypeForm.get('status')?.value
-                    ? 'Active'
-                    : 'Inactive'
+                        companyUserForm.get('status')?.value
+                        ? 'Active'
+                        : 'Inactive'
                     }}
         
                 </span>
@@ -100,10 +102,29 @@
         </div>
         
         }
-        <div class="submit-btn">
+        <div class="create-btn">
             <button pButton pRipple type="submit">Submit</button>
         </div>
     </form>
+</p-dialog>
+
+<p-dialog header="Assign User Group" [(visible)]="assignUserGroupModal" [modal]="true" [draggable]="false" (onHide)="onDialogClose()"
+    [style]="{ width: '40rem' }">
+    <div>
+        Company User: Super Admin
+    </div>
+    <div>
+        @for (item of items; track $index) {
+            <p>SL No</p>
+            <p>User Group</p>
+            <div>
+                <p-button label="Assign" />
+            </div>
+        }
+    </div>
+    <div class="create-btn">
+        <button pButton pRipple type="submit">Submit</button>
+    </div>
 </p-dialog>
 
 <p-toast />

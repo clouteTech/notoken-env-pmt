@@ -1,0 +1,32 @@
+<div class="card">
+    <div class="card-header">
+        <h2>Roles</h2>
+    </div>
+    <div class="custom-container">
+        <p-table [value]="roleList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+            <ng-template #header>
+                <tr>
+                    <th>SL No</th>
+                    <th>Role</th>
+                    <th>Access</th>
+                    <th>Resource</th>
+                    <th>Description</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-role let-i="rowIndex">
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ role.roleKey }}</td>
+                    <td>{{ role.action }}</td>
+                    <td>{{ role.resource }}</td>
+                    <td>{{ role.description }}</td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

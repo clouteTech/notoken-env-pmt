@@ -178,6 +178,31 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'departments',
+    loadComponent: () => import('./masters/departments/departments').then(m => m.Departments),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'clusters',
+    loadComponent: () => import('./masters/clusters/clusters').then(m => m.Clusters),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'company-users',
+    loadComponent: () => import('./masters/company-users/company-users').then(m => m.CompanyUsers),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'user-groups',
+    loadComponent: () => import('./masters/user-groups/user-groups').then(m => m.UserGroups),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'roles',
+    loadComponent: () => import('./masters/roles/roles').then(m => m.Roles),
+    canActivate: [authGuard]
+  },
+  {
     path: 'installation',
     loadComponent: () => import('./installation/installation').then(m => m.Installation),
     canActivate: [authGuard]

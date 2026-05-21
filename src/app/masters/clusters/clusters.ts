@@ -5,43 +5,43 @@ import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 @Component({
-  selector: 'app-wtg-capacities',
+  selector: 'app-clusters',
   imports: [Shared],
-  templateUrl: './wtg-capacities.html',
-  styleUrl: './wtg-capacities.css',
+  templateUrl: './clusters.html',
+  styleUrl: './clusters.css',
 })
-export class WtgCapacities implements OnInit {
-  showWtgCapacityModal = false;
+export class Clusters implements OnInit {
+  showClusterModal = false;
 
-  selectedCapacity: any;
-
-  wtgCapacityList: any[] = [];
+  selectedCluster: any;
 
   items: MenuItem[] = [];
+
+  clusterList: any[] = [];
 
   private fb = inject(FormBuilder);
 
   constructor(private confirmationService: ConfirmationService, 
     private apiService: Apiservice, private messageService: MessageService){}
 
-  wtgCapacityForm = this.fb.group({
-    capacityId: [0],
-    capacity: [0],
-    unit: [''],
+  clusterForm = this.fb.group({
+    clusterId: [''],
+    clusterCode: [''],
+    clusterName: [''],
     status: [false]
   })
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
-    this.fetchAllCapacities();
+    this.fetchAllClusters();
   }
 
-  fetchAllCapacities(){
+  fetchAllClusters(){
     try {
-      this.apiService.fetchAllCapacities('').subscribe({
+      this.apiService.fetchAllClusters('').subscribe({
         next: val => {
           console.log(val);
-          this.wtgCapacityList = val.data;
+          this.clusterList = val.data;
         },
         error: err => {
           console.log(err);
@@ -56,38 +56,37 @@ export class WtgCapacities implements OnInit {
     }
   }
 
-  submitCapacityForm(){
+  submitClusterForm(){
     try {
-      if (!this.selectedCapacity) {  
-        const data = this.wtgCapacityForm.value;
+      if (!this.selectedCluster) {
+        const data = this.clusterForm.value;
         console.log(data);
-  
-        this.apiService.createCapacity(data).subscribe({
+
+        this.apiService.createCluster(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Capacity' });
-            this.showWtgCapacityModal = false;
-            this.fetchAllCapacities();
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Cluster' });
+            this.showClusterModal = false;
+            this.fetchAllClusters();
           },
           error: err => {
             console.log(err);
-  
+
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
             }
           }
         })
       } else {
-        const data = this.wtgCapacityForm.value;
-  
+        const data = this.clusterForm.value;
         console.log(data);
 
-        this.apiService.updateCapacity(data).subscribe({
+        this.apiService.updateCluster(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Capacity' });
-            this.showWtgCapacityModal = false;
-            this.fetchAllCapacities();
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Cluster' });
+            this.showClusterModal = false;
+            this.fetchAllClusters();
           },
           error: err => {
             console.log(err);
@@ -103,57 +102,19 @@ export class WtgCapacities implements OnInit {
     }
   }
 
-  unitList = [
-    {
-      label: 'MW',
-      value: 'MW'
-    },
-    {
-      label: 'KW',
-      value: 'KW'
-    },
-    {
-      label: 'GW',
-      value: 'GW'
-    },
-  ]
-
-  editCapacity(){
+  editCluster(){
     try {
-      this.showWtgCapacityModal = true;
-      this.wtgCapacityForm.patchValue(this.selectedCapacity);
+      this.showClusterModal = true;
+      this.clusterForm.patchValue(this.selectedCluster);
     } catch (error) {
       console.log(error);
     }
   }
 
-  openWTGCapacityModal(){
-    try {
-      this.showWtgCapacityModal = true;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  getMenuItems(){
-    return [
-      {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        command: () => this.editCapacity()
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-        command: () => this.deleteCapacity()
-      }
-    ]
-  }
-
-  deleteCapacity(){
+  deleteCluster(){
     this.confirmationService.confirm({
       message: 'Do you want to delete this record?',
-      header: `Delete WTG Capacity`,
+      header: `Delete Cluster`,
       icon: 'pi pi-info-circle',
       rejectLabel: 'Cancel',
       rejectButtonProps: {
@@ -167,15 +128,15 @@ export class WtgCapacities implements OnInit {
       },
       accept: () => {
           const data = {
-            capacityId: this.selectedCapacity.capacityId
+            clusterId: this.selectedCluster.clusterId
           }
-
           console.log(data);
 
-          this.apiService.deleteCapacity(data).subscribe({
+          this.apiService.deleteCluster(data).subscribe({
             next: val => {
               console.log(val);
-              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Capacity' });
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Cluster' });
+              this.fetchAllClusters();
             },
             error: err => {
               console.log(err);
@@ -189,13 +150,36 @@ export class WtgCapacities implements OnInit {
     });
   }
 
-  capacityMenu(event: Event, menu: any, capacity: any){
-    this.selectedCapacity = capacity;
+  getMenuItems(){
+    return [
+      {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => this.editCluster()
+      },
+      {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () => this.deleteCluster()
+      }
+    ]
+  }
+
+  openClusterModal(){
+    try {
+      this.showClusterModal = true
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  clusterMenu(event: Event, menu: any, cluster: any){
+    this.selectedCluster = cluster;
     menu.toggle(event);
   }
 
   onDialogClose(){
-    this.selectedCapacity = null;
-    this.wtgCapacityForm.reset();
+    this.selectedCluster = null;
+    this.clusterForm.reset();
   }
 }

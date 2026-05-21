@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ConfirmationService, MenuItem } from 'primeng/api';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
+import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 @Component({
@@ -11,22 +13,106 @@ import { Shared } from 'src/app/shared/services/shared';
 export class BladeTypes implements OnInit {
   showBladeTypeModal = false;
 
+  actionName = 'Create';
+
+  selectedBladeType: any;
+
+  bladeTypeList: any[] = [];
+
   items: MenuItem[] = [];
 
-  constructor(private confirmationService: ConfirmationService){}
+  private fb = inject(FormBuilder);
+
+  constructor(private confirmationService: ConfirmationService, 
+    private apiService: Apiservice, private messageService: MessageService){}
+
+  bladeTypeForm = this.fb.group({
+    bladeTypeId: [0],
+    bladeType: [''],
+    countPerWtg: [0],
+    status: [false]
+  })
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
+    this.fetchAllBladeTypes();
   }
 
-  bladeTypeList = [
-    {
-      bladeType: 'Small'
-    },
-    {
-      bladeType: 'Big'
+  fetchAllBladeTypes(){
+    try {
+      this.apiService.fetchAllBladeTypes('').subscribe({
+        next: val => {
+          console.log(val);
+          this.bladeTypeList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
     }
-  ]
+  }
+
+  createBladeType(){
+    try {
+      if (!this.selectedBladeType) {
+        const data = this.bladeTypeForm.value;
+        console.log(data);
+  
+        this.apiService.createBladeType(data).subscribe({
+          next: val => {
+            console.log(val);
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Blade Type' });
+            this.showBladeTypeModal = false;
+            this.fetchAllBladeTypes();
+          },
+          error: err => {
+            console.log(err);
+  
+            if (err.status === 400) {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            }
+          }
+        })
+      } else {
+        const data = this.bladeTypeForm.value;
+        console.log(data);
+
+        this.apiService.updateBladeType(data).subscribe({
+          next: val => {
+            console.log(val);
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Blade Type' });
+            this.showBladeTypeModal = false;
+            this.fetchAllBladeTypes();
+          },
+          error: err => {
+            console.log(err);
+  
+            if (err.status === 400) {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            }
+          }
+        })
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  editBladeType(){
+    try {
+      this.showBladeTypeModal = true;
+      this.actionName = 'Update';
+      this.bladeTypeForm.patchValue(this.selectedBladeType);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   openBladeTypeModal(){
     try {
@@ -40,7 +126,8 @@ export class BladeTypes implements OnInit {
     return [
       {
         label: 'Edit',
-        icon: 'pi pi-pencil'
+        icon: 'pi pi-pencil',
+        command: () => this.editBladeType()
       },
       {
         label: 'Delete',
@@ -48,6 +135,26 @@ export class BladeTypes implements OnInit {
         command: () => this.deleteBladeType()
       }
     ]
+  }
+
+  bladeTypeMenu(event: Event, menu: any, bladeTypes: any){
+    this.selectedBladeType = bladeTypes;
+
+    this.items = [
+      {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => this.editBladeType()
+      },
+
+      ...(bladeTypes.status ? [{
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () => this.deleteBladeType()
+      }] : [])
+    ];
+
+    menu.toggle(event);
   }
 
   deleteBladeType(){
@@ -66,8 +173,33 @@ export class BladeTypes implements OnInit {
           severity: 'danger'
       },
       accept: () => {
-          
+          const data = {
+            bladeTypeId: this.selectedBladeType.bladeTypeId
+          }
+
+          console.log(data);
+
+          this.apiService.deleteBladeType(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Blade Type' });
+              this.fetchAllBladeTypes();
+            },
+            error: err => {
+              console.log(err);
+
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
       }
     });
+  }
+
+  onDialogClose() {
+    this.selectedBladeType = null;
+    this.actionName = 'Create';
+    this.bladeTypeForm.reset();
   }
 }
