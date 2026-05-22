@@ -5,43 +5,55 @@ import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 @Component({
-  selector: 'app-wtg-capacities',
+  selector: 'app-user-groups',
   imports: [Shared],
-  templateUrl: './wtg-capacities.html',
-  styleUrl: './wtg-capacities.css',
+  templateUrl: './user-groups.html',
+  styleUrl: './user-groups.css',
 })
-export class WtgCapacities implements OnInit {
-  showWtgCapacityModal = false;
-
-  selectedCapacity: any;
-
-  wtgCapacityList: any[] = [];
+export class UserGroups implements OnInit {
+  showUserGroupModal = false;
 
   items: MenuItem[] = [];
+
+  userGroupList: any[] = [];
+
+  selectedUsergroup: any;
 
   private fb = inject(FormBuilder);
 
   constructor(private confirmationService: ConfirmationService, 
     private apiService: Apiservice, private messageService: MessageService){}
 
-  wtgCapacityForm = this.fb.group({
-    capacityId: [0],
-    capacity: [0],
-    unit: [''],
+  userGroupForm = this.fb.group({
+    userGroupId: [0],
+    groupName: [''],
+    description: [''],
     status: [false]
   })
-
+    
   ngOnInit(): void {
     this.items = this.getMenuItems();
-    this.fetchAllCapacities();
+    this.fetchAllUserGroups();
   }
 
-  fetchAllCapacities(){
+  fetchAllUserGroups(){
     try {
-      this.apiService.fetchAllCapacities('').subscribe({
+      const data = {
+        search: null,
+        status: null,
+        isDefault: null,
+        page: 0,
+        size: 10,
+        sortBy: 'createdOn',
+        sortDirection: 'asc'
+      }
+
+      console.log(data);
+
+      this.apiService.fetchAllUserGroups(data).subscribe({
         next: val => {
           console.log(val);
-          this.wtgCapacityList = val.data;
+          this.userGroupList = val.data.content;
         },
         error: err => {
           console.log(err);
@@ -56,38 +68,37 @@ export class WtgCapacities implements OnInit {
     }
   }
 
-  submitCapacityForm(){
+  submitUserGroupForm(){
     try {
-      if (!this.selectedCapacity) {  
-        const data = this.wtgCapacityForm.value;
+      if (!this.selectedUsergroup) {
+        const data = this.userGroupForm.value;
         console.log(data);
-  
-        this.apiService.createCapacity(data).subscribe({
+
+        this.apiService.createUserGroup(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Capacity' });
-            this.showWtgCapacityModal = false;
-            this.fetchAllCapacities();
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created User Group' });
+            this.showUserGroupModal = false;
+            this.fetchAllUserGroups();
           },
           error: err => {
             console.log(err);
-  
+
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
             }
           }
         })
       } else {
-        const data = this.wtgCapacityForm.value;
-  
+        const data = this.userGroupForm.value;
         console.log(data);
 
-        this.apiService.updateCapacity(data).subscribe({
+        this.apiService.updateUserGroup(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Capacity' });
-            this.showWtgCapacityModal = false;
-            this.fetchAllCapacities();
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated User Group' });
+            this.showUserGroupModal = false;
+            this.fetchAllUserGroups();
           },
           error: err => {
             console.log(err);
@@ -103,57 +114,19 @@ export class WtgCapacities implements OnInit {
     }
   }
 
-  unitList = [
-    {
-      label: 'MW',
-      value: 'MW'
-    },
-    {
-      label: 'KW',
-      value: 'KW'
-    },
-    {
-      label: 'GW',
-      value: 'GW'
-    },
-  ]
-
-  editCapacity(){
+  editUserGroup(){
     try {
-      this.showWtgCapacityModal = true;
-      this.wtgCapacityForm.patchValue(this.selectedCapacity);
+      this.showUserGroupModal = true;
+      this.userGroupForm.patchValue(this.selectedUsergroup);
     } catch (error) {
       console.log(error);
     }
   }
 
-  openWTGCapacityModal(){
-    try {
-      this.showWtgCapacityModal = true;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  getMenuItems(){
-    return [
-      {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        command: () => this.editCapacity()
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-        command: () => this.deleteCapacity()
-      }
-    ]
-  }
-
-  deleteCapacity(){
+  deleteUserGroup(){
     this.confirmationService.confirm({
       message: 'Do you want to delete this record?',
-      header: `Delete WTG Capacity`,
+      header: `Delete User Group`,
       icon: 'pi pi-info-circle',
       rejectLabel: 'Cancel',
       rejectButtonProps: {
@@ -167,15 +140,16 @@ export class WtgCapacities implements OnInit {
       },
       accept: () => {
           const data = {
-            capacityId: this.selectedCapacity.capacityId
+            userGroupId: this.selectedUsergroup.userGroupId
           }
 
           console.log(data);
 
-          this.apiService.deleteCapacity(data).subscribe({
+          this.apiService.deleteUserGroup(data).subscribe({
             next: val => {
               console.log(val);
-              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Capacity' });
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted User Group' });
+              this.fetchAllUserGroups();
             },
             error: err => {
               console.log(err);
@@ -189,13 +163,36 @@ export class WtgCapacities implements OnInit {
     });
   }
 
-  capacityMenu(event: Event, menu: any, capacity: any){
-    this.selectedCapacity = capacity;
+  openUserGroupModal(){
+    try {
+      this.showUserGroupModal = true;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  getMenuItems(){
+    return [
+      {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => this.editUserGroup()
+      },
+      {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () => this.deleteUserGroup()
+      }
+    ]
+  }
+
+  usergroupMenu(event: Event, menu: any, usergroup: any){
+    this.selectedUsergroup = usergroup;
     menu.toggle(event);
   }
 
   onDialogClose(){
-    this.selectedCapacity = null;
-    this.wtgCapacityForm.reset();
+    this.selectedUsergroup = null;
+    this.userGroupForm.reset();
   }
 }

@@ -6,10 +6,9 @@ export interface User {
   displayName: string;
 }
 
-const USERS: Record<string, { password: string; user: User }> = {
-  siteengineer_user1: {
-    password: '123456',
-    user: { username: 'siteengineer_user1', role: 'Site Engineer', displayName: 'Site Engineer' }
+const USERS: Record<string, User> = {
+  'ari.g@cloute.co.in': {
+    username: 'ari.g@cloute.co.in', role: 'Super Admin', displayName: 'Super Admin'
   }
 };
 
@@ -18,11 +17,11 @@ export class AuthService {
   private _user = signal<User | null>(null);
   readonly user = this._user.asReadonly();
 
-  login(username: string, password: string): boolean {
-    const entry = USERS[username];
-    if (entry && entry.password === password) {
-      this._user.set(entry.user);
-      sessionStorage.setItem('auth_user', JSON.stringify(entry.user));
+  login(username: string): boolean {
+    const user = USERS[username];
+    if (user) {
+      this._user.set(user);
+      sessionStorage.setItem('auth_user', JSON.stringify(user));
       return true;
     }
     return false;

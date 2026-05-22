@@ -391,3 +391,9 @@ option:disabled { color: #bbb !important; }
 .required-field {
   color: oklch(63.7% 0.237 25.331);
 }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

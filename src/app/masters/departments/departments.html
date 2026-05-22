@@ -1,0 +1,119 @@
+<div class="card">
+    <div class="department-header">
+        <h2>Departments</h2>
+        <p-button icon="pi pi-plus" label="Create Department" (onClick)="openDepartmentModal()" />
+    </div>
+    <div class="custom-container">
+        <p-table [value]="departmentList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+            <ng-template #header>
+                <tr>
+                    <th>SL No</th>
+                    <th>Department</th>
+                    <th>Department Head</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-department let-i="rowIndex">
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ department.departmentName }}</td>
+                    <td>{{ department.departmentHead.userName }}</td>
+                    <td>
+                        <p-tag [value]="department.status ? 'Active' : 'Inactive'" [severity]="department.status ? 'success' : 'danger'">
+                        </p-tag>
+                    </td>
+                    <td>
+                        <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
+                        <button pButton pRipple text rounded severity="secondary" type="button"
+                            (click)="departmentMenu($event, menu, department)">
+                            <i pButtonIcon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
+                                    <rect width="24" height="24" fill="none" />
+                                    <path fill="currentColor"
+                                        d="M12 7a2 2 0 1 0-2-2a2 2 0 0 0 2 2m0 10a2 2 0 1 0 2 2a2 2 0 0 0-2-2m0-7a2 2 0 1 0 2 2a2 2 0 0 0-2-2" />
+                                </svg>
+                            </i>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-dialog [header]="selectedDepartment ? 'Edit Department' : 'Create Department'" [(visible)]="showDepartmentModal" [modal]="true" 
+    [draggable]="false" (onHide)="onDialogClose()"
+    [style]="{ width: '40rem' }">
+    <form [formGroup]="departmentForm" (ngSubmit)="submitDepartmentForm()">
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="department">Department</label>
+                <input type="text" pInputText formControlName="departmentName" id="department" />
+            </div>
+            <div class="form-field">
+                <label for="department-head">User Group</label>
+                <p-select [options]="userGroupInfoList" formControlName="userGroupId" optionLabel="groupName" optionValue="userGroupId"
+                    [filter]="true" filterBy="groupName" [showClear]="true"
+                    placeholder="Select User Group" (onChange)="selectedUserGroup($event.value)" appendTo="body" />
+            </div>
+            <div class="form-field">
+                <label for="department-head">Department Head</label>
+                <p-select [options]="departmentHeadList" formControlName="departmentHeadId" optionLabel="user.userName" 
+                    optionValue="user.userId" [filter]="true" filterBy="user.userName" [showClear]="true"
+                    placeholder="Select Department Head" appendTo="body" />
+            </div>
+        </div>
+        @if(selectedDepartment){
+        
+            <div class="status-card">
+            
+                <div>
+            
+                    <div class="status-title">
+                        Department Availability
+                    </div>
+            
+                    <div class="status-subtitle">
+            
+                        Keep this blade type active if it is still in use.
+            
+                        Turn it off if it is no longer required.
+            
+                    </div>
+            
+                </div>
+            
+                <div class="status-toggle-wrap">
+            
+                    <span class="status-label" [class.inactive]="!departmentForm.get('status')?.value">
+            
+                        {{
+                            departmentForm.get('status')?.value
+                            ? 'Active'
+                            : 'Inactive'
+                        }}
+            
+                    </span>
+            
+                    <p-toggleswitch formControlName="status">
+                    </p-toggleswitch>
+            
+                </div>
+            
+            </div>
+        
+        }
+        <div class="create-btn">
+            <button pButton pRipple type="submit">Submit</button>
+        </div>
+    </form>
+</p-dialog>
+
+<p-toast />
+<p-confirmdialog />

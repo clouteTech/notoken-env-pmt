@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { ConfirmationService, MenuItem } from 'primeng/api';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
+import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 @Component({
@@ -8,25 +10,106 @@ import { Shared } from 'src/app/shared/services/shared';
   templateUrl: './ppa-types.html',
   styleUrl: './ppa-types.css',
 })
-export class PpaTypes {
+export class PpaTypes implements OnInit {
   showPpaModal = false;
+
+  selectedPpaType: any;
+
+  ppaTypeList: any[] = [];
 
   items: MenuItem[] = [];
 
-  constructor(private confirmationService: ConfirmationService){}
+  private fb = inject(FormBuilder);
+
+  constructor(private confirmationService: ConfirmationService, private apiService: Apiservice,
+    private messageService: MessageService
+  ){}
+
+  ppaTypeForm = this.fb.group({
+    ppaTypeId: [0],
+    ppaType: [''],
+    status: [false]
+  })
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
+    this.fetchAllPpaTypes();
   }
 
-  ppaTypeList = [
-    {
-      ppaTypeName: 'Auction'
-    },
-    {
-      ppaTypeName: 'C&I'
+  fetchAllPpaTypes(){
+    try {
+      this.apiService.fetchAllPpaTypes('').subscribe({
+        next: val => {
+          console.log(val);
+          this.ppaTypeList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
     }
-  ]
+  }
+
+  submitPpaTypeForm(){
+    try {
+      if (!this.selectedPpaType) { 
+        const data = this.ppaTypeForm.value;
+        console.log(data);
+  
+        this.apiService.createPpaType(data).subscribe({
+          next: val => {
+            console.log(val);
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
+            this.showPpaModal = false;
+            this.fetchAllPpaTypes();
+          },
+          error: err => {
+            console.log(err);
+  
+            if (err.status === 400) {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            }
+          }
+        })
+      } else {
+        const data = this.ppaTypeForm.value;
+        console.log(data);
+
+        this.apiService.updatePpaType(data).subscribe({
+          next: val => {
+            console.log(val);
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
+            this.showPpaModal = false;
+            this.fetchAllPpaTypes();
+          },
+          error: err => {
+            console.log(err);
+
+            if (err.status === 400) {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            }
+          }
+        })
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  editPpaType(){
+    try {
+      this.showPpaModal = true;
+      this.ppaTypeForm.patchValue(this.selectedPpaType);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   openPpaModal(){
     try {
@@ -40,7 +123,8 @@ export class PpaTypes {
     return [
       {
         label: 'Edit',
-        icon: 'pi pi-pencil'
+        icon: 'pi pi-pencil',
+        command: () => this.editPpaType()
       },
       {
         label: 'Delete',
@@ -66,8 +150,36 @@ export class PpaTypes {
           severity: 'danger'
       },
       accept: () => {
-          
+        const data = {
+          ppaTypeId: this.selectedPpaType.ppaTypeId
+        }
+        console.log(data);
+
+        this.apiService.deletePpaType(data).subscribe({
+          next: val => {
+            console.log(val);
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted PPA Type' });
+            this.fetchAllPpaTypes();
+          },
+          error: err => {
+            console.log(err);
+
+            if (err.status === 400) {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            }
+          }
+        })
       }
     });
+  }
+
+  ppaMenu(event: Event, menu: any, ppaType: any){
+    this.selectedPpaType = ppaType;
+    menu.toggle(event);
+  }
+
+  onDialogClose(){
+    this.selectedPpaType = null;
+    this.ppaTypeForm.reset();
   }
 }

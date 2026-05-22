@@ -44,6 +44,8 @@ import { SplitButtonModule } from 'primeng/splitbutton';
 import { TabsModule } from 'primeng/tabs';
 import { MessageModule } from 'primeng/message';
 import { TieredMenuModule } from 'primeng/tieredmenu';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+
 @NgModule({
   declarations: [],
   imports: [
@@ -92,7 +94,8 @@ import { TieredMenuModule } from 'primeng/tieredmenu';
     SplitButtonModule,
     TabsModule,
     MessageModule,
-    TieredMenuModule
+    TieredMenuModule,
+    ToggleSwitchModule
   ],
   providers:[
     MessageService,

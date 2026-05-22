@@ -5,41 +5,55 @@ import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 @Component({
-  selector: 'app-wtg-types',
+  selector: 'app-company-users',
   imports: [Shared],
-  templateUrl: './wtg-types.html',
-  styleUrl: './wtg-types.css',
+  templateUrl: './company-users.html',
+  styleUrl: './company-users.css',
 })
-export class WtgTypes implements OnInit {
-  showWTGTypeModal = false;
-
-  selectedWTGType: any;
+export class CompanyUsers implements OnInit {
+  showCompanyUserModal = false;
+  assignUserGroupModal = false;
 
   items: MenuItem[] = [];
+
+  selectedCompanyUser: any;
+
+  companyUserList: any[] = [];
 
   private fb = inject(FormBuilder);
 
   constructor(private confirmationService: ConfirmationService, 
     private apiService: Apiservice, private messageService: MessageService){}
 
-  wtgTypeForm = this.fb.group({
-    wtgTypeId: [0],
-    wtgType: [''],
-    isNearShore: [false],
+  companyUserForm = this.fb.group({
+    userId: [0],
+    userName: [''],
+    email: [''],
     status: [false]
   })
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
-    this.fetchAllWTGTypes();
+    this.fetchAllCompanyUser();
   }
 
-  fetchAllWTGTypes(){
+  fetchAllCompanyUser(){
     try {
-      this.apiService.fetchAllWTGTypes('').subscribe({
+      const data = {
+        search: null,
+        status: null,
+        page: 0,
+        size: 10,
+        sortBy: 'createdOn',
+        sortDirection: 'asc'
+      }
+
+      console.log(data);
+
+      this.apiService.fetchAllCompanyUsers(data).subscribe({
         next: val => {
           console.log(val);
-          this.wtgTypeList = val.data;
+          this.companyUserList = val.data.content;
         },
         error: err => {
           console.log(err);
@@ -54,18 +68,18 @@ export class WtgTypes implements OnInit {
     }
   }
 
-  submitWtgTypeForm(){
+  submitCompanyUserForm(){
     try {
-      if (!this.selectedWTGType) { 
-        const data = this.wtgTypeForm.value;
+      if (!this.selectedCompanyUser) {   
+        const data = this.companyUserForm.value;
         console.log(data);
   
-        this.apiService.createWTGTypes(data).subscribe({
+        this.apiService.createCompanyUsers(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created WTG Type' });
-            this.showWTGTypeModal = false;
-            this.fetchAllWTGTypes();
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Company User' });
+            this.showCompanyUserModal = false;
+            this.fetchAllCompanyUser();
           },
           error: err => {
             console.log(err);
@@ -76,15 +90,15 @@ export class WtgTypes implements OnInit {
           }
         })
       } else {
-        const data = this.wtgTypeForm.value;
+        const data = this.companyUserForm.value;
         console.log(data);
 
-        this.apiService.updateWTGType(data).subscribe({
+        this.apiService.updateCompanyUsers(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated WTG Type' });
-            this.showWTGTypeModal = false;
-            this.fetchAllWTGTypes();
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Company User' });
+            this.showCompanyUserModal = false;
+            this.fetchAllCompanyUser();
           },
           error: err => {
             console.log(err);
@@ -100,68 +114,27 @@ export class WtgTypes implements OnInit {
     }
   }
 
-  editWTGType(){
+  assignUserGroups(){
     try {
-      this.showWTGTypeModal = true;
-      this.wtgTypeForm.patchValue(this.selectedWTGType);
+      this.assignUserGroupModal = true;
     } catch (error) {
       console.log(error);
     }
   }
 
-  wtgTypeList = [
-    {
-      wtgTypeName: 'EN132',
-      isNearShore: 'Yes',
-    },
-    {
-      wtgTypeName: 'EN158',
-      isNearShore: 'No',
-    },
-    {
-      wtgTypeName: 'EN176',
-      isNearShore: 'Yes',
-    }
-  ]
-
-  nearShoreList = [
-    {
-      label: 'Yes',
-      value: true
-    },
-    {
-      label: 'No',
-      value: false
-    }
-  ]
-
-  openWtgTypeModal(){
+  editCompanyUser(){
     try {
-      this.showWTGTypeModal = true;
+      this.showCompanyUserModal = true;
+      this.companyUserForm.patchValue(this.selectedCompanyUser);
     } catch (error) {
       console.log(error);
     }
   }
 
-  getMenuItems(){
-    return [
-      {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        command: () => this.editWTGType()
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-        command: () => this.deleteWTGType()
-      }
-    ]
-  }
-
-  deleteWTGType(){
+  deleteCompanyUser(){
     this.confirmationService.confirm({
       message: 'Do you want to delete this record?',
-      header: `Delete WTG Type`,
+      header: `Delete Company User`,
       icon: 'pi pi-info-circle',
       rejectLabel: 'Cancel',
       rejectButtonProps: {
@@ -175,16 +148,16 @@ export class WtgTypes implements OnInit {
       },
       accept: () => {
         const data = {
-          wtgTypeId: this.selectedWTGType.wtgTypeId
+          userId: this.selectedCompanyUser.userId
         }
 
         console.log(data);
 
-        this.apiService.deleteWTGType(data).subscribe({
+        this.apiService.deleteCompanyUsers(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted WTG Type' });
-            this.fetchAllWTGTypes();
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Company User' });
+            this.fetchAllCompanyUser();
           },
           error: err => {
             console.log(err);
@@ -198,13 +171,41 @@ export class WtgTypes implements OnInit {
     });
   }
 
-  wtgTypeMenu(event: Event, menu: any, wtgTypes: any){
-    this.selectedWTGType = wtgTypes;
+  openCompanyUserModal(){
+    try {
+      this.showCompanyUserModal = true;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  getMenuItems(){
+    return [
+      {
+        label: 'Assign',
+        icon: 'pi pi-user-plus',
+        command: () => this.assignUserGroups()
+      },
+      {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => this.editCompanyUser()
+      },
+      {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () => this.deleteCompanyUser()
+      }
+    ]
+  }
+
+  companyUserMenu(event: Event, menu: any, companyUser: any){
+    this.selectedCompanyUser = companyUser;
     menu.toggle(event);
   }
 
   onDialogClose() {
-    this.selectedWTGType = null;
-    this.wtgTypeForm.reset();
+    this.selectedCompanyUser = null;
+    this.companyUserForm.reset();
   }
 }

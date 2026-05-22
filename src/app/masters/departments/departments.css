@@ -1,10 +1,17 @@
-.capacity-header {
+.department-header{
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.form-grid{
+.custom-container {
+    border: 1px solid var(--p-content-border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
@@ -14,26 +21,11 @@
     display: grid;
 }
 
-.submit-btn {
+.create-btn {
     display: flex;
     align-items: center;
     justify-content: end;
     margin-top: 10px;
-}
-
-.card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.custom-container {
-    border: 1px solid var(--p-content-border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 4px;
 }
 
 .status-card {

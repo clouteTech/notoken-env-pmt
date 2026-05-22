@@ -10,6 +10,7 @@
                     <th>SL No</th>
                     <th>Tower Type</th>
                     <th>Section Count</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </ng-template>
@@ -19,8 +20,12 @@
                     <td>{{ tower.towerType }}</td>
                     <td>{{ tower.sectionCount }}</td>
                     <td>
+                        <p-tag [value]="tower.status ? 'Active' : 'Inactive'" [severity]="tower.status ? 'success' : 'danger'">
+                        </p-tag>
+                    </td>
+                    <td>
                         <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
-                        <button pButton pRipple text rounded severity="secondary" type="button" (click)="menu.toggle($event)">
+                        <button pButton pRipple text rounded severity="secondary" type="button" (click)="towerTypeMenu($event, menu, tower)">
                             <i pButtonIcon>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
                                     <rect width="24" height="24" fill="none" />
@@ -41,21 +46,62 @@
     </div>
 </div>
 
-<p-dialog header="Create Tower Type" [modal]="true" [(visible)]="showTowerTypeModal"
-    [style]="{ width: '40rem' }" [draggable]="false">
-    <form>
+<p-dialog [header]="selectedTowerType ? 'Edit Tower Type' : 'Create Tower Type'" [modal]="true" [(visible)]="showTowerTypeModal"
+    [style]="{ width: '40rem' }" [draggable]="false" (onHide)="onDialogClose()">
+    <form [formGroup]="towerTypeForm" (ngSubmit)="submitTowerTypeForm()">
         <div class="form-grid">
             <div class="form-field">
                 <label for="tower-type">Tower Type</label>
-                <input type="text" pInputText class="w-full" id="tower-type" />
+                <input type="text" pInputText formControlName="towerType" class="w-full" id="tower-type" />
             </div>
             <div class="form-field">
                 <label for="section-count">Section Count</label>
-                <input type="text" pInputText class="w-full" id="section-count" />
+                <input type="text" pInputText formControlName="sectionCount" class="w-full" id="section-count" />
             </div>
         </div>
+
+        @if(selectedTowerType){
+        
+        <div class="status-card">
+        
+            <div>
+        
+                <div class="status-title">
+                    Tower Type Availability
+                </div>
+        
+                <div class="status-subtitle">
+        
+                    Keep this blade type active if it is still in use.
+        
+                    Turn it off if it is no longer required.
+        
+                </div>
+        
+            </div>
+        
+            <div class="status-toggle-wrap">
+        
+                <span class="status-label" [class.inactive]="!towerTypeForm.get('status')?.value">
+        
+                    {{
+                    towerTypeForm.get('status')?.value
+                    ? 'Active'
+                    : 'Inactive'
+                    }}
+        
+                </span>
+        
+                <p-toggleswitch formControlName="status">
+                </p-toggleswitch>
+        
+            </div>
+        
+        </div>
+        
+        }
         <div class="create-btn">
-            <button pButton pRipple type="submit">Create</button>
+            <button pButton pRipple type="submit">{{ actionName }}</button>
         </div>
     </form>
 </p-dialog>
