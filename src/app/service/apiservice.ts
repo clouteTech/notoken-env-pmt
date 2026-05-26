@@ -244,6 +244,13 @@ export class Apiservice {
     return this.postMethod('auth/user-user-group/assign-group', params);
   }
 
+    customer(params: any): Observable<any>{
+    return this.postMethod('master/customer/get', params);
+  }
+  createCustomer(params: any): Observable<any>{
+    return this.postMethod('master/customer/create', params);
+  }
+
   // auth/user-user-group/remove-group
 
   // auth/company-user/get

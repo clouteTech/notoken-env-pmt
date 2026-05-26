@@ -1,5 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 @Component({
@@ -12,6 +14,15 @@ export class AddCustomer {
   spvList: any[] = [];
 
   private fb = inject(FormBuilder);
+  customerCode:any = "";
+  customerName:any = "";
+
+
+  constructor(private confirmationService: ConfirmationService,private apiService:Apiservice,private messageService: MessageService){}
+
+   ngOnInit(): void {
+    
+  }
   
   spvForm = this.fb.group({
     spvName: [''],
@@ -29,5 +40,52 @@ export class AddCustomer {
 
   removeSpv(index: number) {
     this.spvList.splice(index, 1);
+  }
+
+  submitCustomer() {
+    try {
+      var spvForm = this.spvForm.value;
+      let data = {
+        "customerCode": this.customerCode,
+        "customerName": this.customerName,
+        "spvDetails": [
+          {
+            "customerSpvId": "1",
+            "spvName": spvForm.spvName,
+            "spvGstNumber": spvForm.spvGst,
+            "address1": spvForm.gstAddress,
+            "address2": spvForm.gstAddress,
+            "city": spvForm.city,
+            "state": spvForm.state,
+            "pinCode": spvForm.postalCode,
+            "country": spvForm.country,
+            "status": true
+          }
+
+        ]
+      }
+      console.log(data)
+      this.apiService.createCustomer(data)
+        .subscribe({
+          next: val => {
+            console.log(val.data.spvDetails);
+            //this.customerDetail = val.data;
+            //this.spvList = val.data.spvDetails;
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: val.detail });
+
+          },
+          error: err => {
+            console.log(err);
+            console.log(err.error);
+            console.log(err.error.detail);
+
+            if (err.error.status === 400) {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            }
+          }
+        })
+    } catch (e) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
   }
 }

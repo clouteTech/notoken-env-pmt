@@ -8,7 +8,7 @@
                 </div>
                 <div>
                     <p class="label">Customer Code</p>
-                    <p class="value">CUST001</p>
+                    <p class="value">{{customerDetail.customerCode}}</p>
                 </div>
             </div>
         </div>
@@ -19,7 +19,7 @@
                 </div>
                 <div>
                     <p class="label">Customer Name</p>
-                    <p class="value">Reliance Power Ltd</p>
+                    <p class="value">{{customerDetail.customerName}}</p>
                 </div>
             </div>
         </div>
@@ -47,10 +47,10 @@
                     <td>{{ i + 1 }}</td>
                     <td>{{ spv.spvName }}</td>
                     <td>{{ spv.spvGst }}</td>
-                    <td>{{ spv.gstAddressLine }}</td>
+                    <td>{{ spv.address1  }}, {{spv.address2}}</td>
                     <td>{{ spv.city }}</td>
                     <td>{{ spv.state }}</td>
-                    <td>{{ spv.postalCode }}</td>
+                    <td>{{ spv.pinCode }}</td>
                     <td>{{ spv.country }}</td>
                 </tr>
             </ng-template>
