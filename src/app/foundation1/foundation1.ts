@@ -16,6 +16,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { Shared } from '../shared/services/shared';
+import { Apiservice } from '../service/apiservice';
 
 
 export interface WtgRow {
@@ -74,6 +75,11 @@ export class Foundation1 {
   selectedSummaryRow: SummaryRow | null = null;
 
   items: MenuItem[] = [];
+  displayImportDialog: boolean = false;
+
+selectedRow: any;
+
+selectedFile: any;
 
   // Summary Table rows
   summaryRows: SummaryRow[] = [
@@ -228,7 +234,7 @@ export class Foundation1 {
     ]
   };
 
-  constructor(private fb: FormBuilder, private messageService: MessageService) {}
+  constructor(private fb: FormBuilder, private messageService: MessageService,private apiService:Apiservice) {}
 
   ngOnInit() {
     // Build enough WTG rows to cover the maximum wtgCount across all summary rows
@@ -252,7 +258,7 @@ export class Foundation1 {
       this.stepForms.push(rowForms);
     }
 
-    this.items = this.getMenuItems();
+    this.items = this.getMenuItems("");
   }
 
   // ─── ROW-LEVEL UNLOCK LOGIC ───────────────────────────────────────────────
@@ -461,16 +467,96 @@ export class Foundation1 {
     }));
   }
 
-  getMenuItems(){
+  getMenuItems(row:any){
     return [
       {
         label: 'Import',
-        icon: 'pi pi-upload'
+        icon: 'pi pi-upload',
+        command:() =>  this.openImportDialog(row)
       },
       {
         label: 'Export',
-        icon: 'pi pi-download'
+        icon: 'pi pi-download',
+        command:() =>  this.exportFoundation(row)
       }
     ]
   }
+
+  openImportDialog(row: any) {
+  this.selectedRow = row;
+  this.displayImportDialog = true;
+}
+
+onFileSelect(event: any) {
+  this.selectedFile = event.target.files[0];
+}
+
+
+  exportFoundation(val:any){
+    try{
+      var value = val
+      let data = {
+        "projectId": 1
+      }
+      this.apiService.foundationExport(data)
+      .subscribe({
+        next:val=>{
+          console.log(val)
+          window.open(val.fileUrl)
+        },error:err=>{
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Download failed'
+          });
+        }
+      })
+    }catch(e){
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  onUpload(event: any) {
+
+    this.selectedFile = event.files[0]
+
+  if (!this.selectedFile) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please select file'
+    });
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append('file', this.selectedFile);
+
+  formData.append('projectId', '1');
+
+  this.apiService.foundationImport(formData)
+    .subscribe({
+      next: (res) => {
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'File uploaded successfully'
+        });
+
+        this.displayImportDialog = false;
+
+        this.selectedFile = null;
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Upload failed'
+        });
+      }
+    });
+}
+
 }

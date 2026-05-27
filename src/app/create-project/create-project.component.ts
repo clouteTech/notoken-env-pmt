@@ -123,10 +123,12 @@ export class CreateProjectComponent implements OnInit {
 
   // ── Step 1 form fields ────────────────────────────────────────────────────
   pCode = '';
+  customerName = '';
   cityInfo = '';
   selectedState: any = '';
   selectedZone = '';
   projectQTY: number = 0;
+  projectTotalCapacity = '';
   selectedProjectManager = '';
   selectedBDManager = '';
   selectedSolutionManager = '';
@@ -135,6 +137,22 @@ export class CreateProjectComponent implements OnInit {
   selectedMultpleSPV = 'Yes';
   towerScopeChecked = true;
   diableStateDD = false;
+
+  // ── Step 1 date fields ────────────────────────────────────────────────────
+  dateAnchorCage: Date | null = null;
+  dateComponentSupply: Date | null = null;
+  dateSiteActivity: Date | null = null;
+  dateCommissioning: Date | null = null;
+  dateContractualCOD: Date | null = null;
+  dateExpectedCOD: Date | null = null;
+  dateTermSheet: Date | null = null;
+  dateAdvance1: Date | null = null;
+  dateAdvance2: Date | null = null;
+  dateAdvance3: Date | null = null;
+  dateBGRelease: Date | null = null;
+  dateSupplyContract: Date | null = null;
+  dateServiceSign: Date | null = null;
+  dateLTSASign: Date | null = null;
 
   // ── Step 1 dropdown options ───────────────────────────────────────────────
   states = [
@@ -234,9 +252,10 @@ export class CreateProjectComponent implements OnInit {
   }
 
   submitProject(): void {
-    // Build spvOptions from projectQTY
+    // Build spvOptions: always at least SPV1–SPV5, capped at projectQTY if set
+    const count = this.projectQTY > 0 ? Math.max(this.projectQTY, 5) : 5;
     this.spvOptions = [];
-    for (let i = 1; i <= this.projectQTY; i++) {
+    for (let i = 1; i <= count; i++) {
       this.spvOptions.push({ label: `SPV ${i}`, value: `SPV ${i}` });
     }
 
@@ -264,12 +283,11 @@ export class CreateProjectComponent implements OnInit {
     this.recalcOverallCapacity();
   }
 
-  /** Returns spvOptions with already-used SPVs marked disabled */
+  /** Returns spvOptions with already-used SPVs disabled (clean labels, no mutation) */
   getSpvOpts(myId: number): { label: string; value: string; disabled?: boolean }[] {
     const used = this.spvEntries.filter(s => s.id !== myId && s.spv).map(s => s.spv);
     return this.spvOptions.map(opt => ({
       ...opt,
-      label: used.includes(opt.value) ? `${opt.label} (used)` : opt.label,
       disabled: used.includes(opt.value)
     }));
   }
@@ -363,7 +381,18 @@ export class CreateProjectComponent implements OnInit {
   }
 
   onQtyChange(cfg: WtgConfig): void {
-    this.resetMonthly(cfg);
+    // Only reset monthly distribution when a valid positive qty is committed
+    if (cfg.wtgQty != null && cfg.wtgQty > 0) {
+      this.resetMonthly(cfg);
+    }
+    this.recalcOverallCapacity();
+  }
+
+  onQtyBlur(cfg: WtgConfig): void {
+    // If user clears the field, keep null (do not snap to 0)
+    if (cfg.wtgQty === 0) {
+      cfg.wtgQty = null;
+    }
     this.recalcOverallCapacity();
   }
 

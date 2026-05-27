@@ -244,11 +244,21 @@ export class Apiservice {
     return this.postMethod('auth/user-user-group/assign-group', params);
   }
 
-    customer(params: any): Observable<any>{
+    customerSearch(params: any): Observable<any>{
+    return this.postMethod('master/customer/search', params);
+  }
+  customerGet(params: any): Observable<any>{
     return this.postMethod('master/customer/get', params);
   }
   createCustomer(params: any): Observable<any>{
     return this.postMethod('master/customer/create', params);
+  }
+
+  foundationExport(params: any): Observable<any>{
+    return this.postMethod('foundation/export', params);
+  }
+   foundationImport(params: any): Observable<any>{
+    return this.postMethod('foundation/import', params);
   }
 
   // auth/user-user-group/remove-group

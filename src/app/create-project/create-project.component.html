@@ -1,59 +1,81 @@
 <p-toast></p-toast>
-<div class="card">
-    <h2>DPR Projects</h2>
-    <div class="custom-container">
-        <p-table #dt1 [value]="projectList" [paginator]="true" [rowsPerPageOptions]="[5, 10, 20]" stripedRows
-            dataKey="id" [rows]="10" [rowHover]="true" [showCurrentPageReport]="true"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            responsiveLayout="scroll">
-            <ng-template #caption>
-                <div class="flex justify-between items-center flex-column sm:flex-row">
-                    <p-iconfield iconPosition="left" class="mr-auto">
-                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-                        <input pInputText type="text" placeholder="Search keyword" />
-                    </p-iconfield>
-                    <button pButton label="Add New Project" class="mb-2" icon="pi pi-plus"
-                        (click)="addNewProject()"></button>
-                </div>
-            </ng-template>
-            <ng-template #header>
-                <tr>
-                    <th>SL NO</th><th>Project Code</th><th>Project Description</th>
-                    <th>Site Name</th><th>Customer</th><th>City</th><th>State</th>
-                    <th>WTG Qty</th><th>Capacity</th><th>Project Manager</th>
-                    <th>Cluster Head</th><th>Site Incharge</th><th>Start Date</th>
-                    <th>Complete Date</th><th>Contractual COD</th><th>Expected COD</th>
-                    <th>Actual COD</th><th>Delay</th><th>Remarks</th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-row>
-                <tr>
-                    <td>{{row.SlNo}}</td>
-                    <td style="min-width:7rem">{{row.Pcode}}</td>
-                    <td style="min-width:7rem">{{row.FPD}}</td>
-                    <td style="min-width:12rem">{{row.SiteName}}</td>
-                    <td style="min-width:7rem">{{row.Customer}}</td>
-                    <td style="min-width:7rem">{{row.Cityinfo}}</td>
-                    <td style="min-width:7rem">{{row.State}}</td>
-                    <td style="min-width:7rem">{{row.WTGQTY}}</td>
-                    <td style="min-width:7rem">{{row.Capacity}}</td>
-                    <td style="min-width:7rem">{{row.PM}}</td>
-                    <td style="min-width:12rem">{{row.StateHead}}</td>
-                    <td style="min-width:7rem">{{row.ConstructionManager}}</td>
-                    <td style="min-width:10rem">{{row.StartDate}}</td>
-                    <td style="min-width:10rem">{{row.CompleteDate}}</td>
-                    <td style="min-width:10rem">{{row.ContractualCoD}}</td>
-                    <td style="min-width:10rem">{{row.ExpectedCoD}}</td>
-                    <td style="min-width:10rem">{{row.ActualCoD}}</td>
-                    <td style="min-width:7rem">{{row.Delay}}</td>
-                    <td style="min-width:12rem">{{row.Remarks}}</td>
-                </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-                <tr><td colspan="19" style="text-align:center">No projects found.</td></tr>
-            </ng-template>
-        </p-table>
+<div class="dpr-card">
+    <div class="dpr-toolbar">
+        <h2 class="dpr-title">DPR Projects</h2>
+        <div class="dpr-toolbar-actions">
+            <p-iconfield iconPosition="left" class="dpr-search">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" placeholder="Search keyword" class="dpr-search-input" />
+            </p-iconfield>
+            <button pButton icon="pi pi-plus" label="Add New Project" class="dpr-add-btn"
+                (click)="addNewProject()"></button>
+        </div>
     </div>
+
+    <p-table #dt1 [value]="projectList" [paginator]="true" [rowsPerPageOptions]="[5, 10, 20]"
+        dataKey="id" [rows]="10" [rowHover]="true" [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        responsiveLayout="scroll" styleClass="dpr-table">
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="SlNo" style="min-width:3rem">Sl no <p-sortIcon field="SlNo"/></th>
+                <th pSortableColumn="Pcode" style="min-width:7rem">Project code <p-sortIcon field="Pcode"/></th>
+                <th style="min-width:14rem">Project description</th>
+                <th style="min-width:11rem">Site name</th>
+                <th style="min-width:7rem">Customer</th>
+                <th style="min-width:7rem">City</th>
+                <th style="min-width:8rem">State</th>
+                <th style="min-width:5rem">WTG qty</th>
+                <th style="min-width:6rem">Capacity</th>
+                <th style="min-width:9rem">Project manager</th>
+                <th style="min-width:11rem">Cluster head</th>
+                <th style="min-width:9rem">Site incharge</th>
+                <th style="min-width:8rem">Start date</th>
+                <th style="min-width:8rem">Complete date</th>
+                <th style="min-width:8rem">Contractual COD</th>
+                <th style="min-width:8rem">Expected COD</th>
+                <th style="min-width:8rem">Actual COD</th>
+                <th style="min-width:5rem">Delay</th>
+                <th style="min-width:12rem">Remarks</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-row>
+            <tr>
+                <td><span class="dpr-sl">{{ row.SlNo }}</span></td>
+                <td><span class="dpr-pcode">{{ row.Pcode }}</span></td>
+                <td><span class="dpr-desc" [title]="row.FPD">{{ row.FPD }}</span></td>
+                <td><span class="dpr-site">{{ row.SiteName }}</span></td>
+                <td><span class="dpr-cust-badge">{{ row.Customer }}</span></td>
+                <td>{{ row.Cityinfo }}</td>
+                <td>
+                    <span class="dpr-state">
+                        <i class="pi pi-map-marker" style="font-size:11px"></i>
+                        {{ row.State }}
+                    </span>
+                </td>
+                <td><span class="dpr-qty-pill">{{ row.WTGQTY }}</span></td>
+                <td>{{ row.Capacity }}</td>
+                <td>{{ row.PM }}</td>
+                <td>{{ row.StateHead }}</td>
+                <td>{{ row.ConstructionManager }}</td>
+                <td class="dpr-date">{{ row.StartDate }}</td>
+                <td class="dpr-date">{{ row.CompleteDate }}</td>
+                <td class="dpr-date">{{ row.ContractualCoD }}</td>
+                <td class="dpr-date">{{ row.ExpectedCoD }}</td>
+                <td class="dpr-date">{{ row.ActualCoD }}</td>
+                <td><span class="dpr-delay-chip">{{ row.Delay }}</span></td>
+                <td><span class="dpr-remarks" [title]="row.Remarks">{{ row.Remarks }}</span></td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="19" class="dpr-empty">
+                    <i class="pi pi-inbox" style="font-size:2rem;opacity:.3"></i>
+                    <p>No projects found.</p>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>
 
 <!-- ══ Add / Edit Project Dialog ══ -->
@@ -62,150 +84,163 @@
     [style]="{ width: '99vw' }" [contentStyle]="{ height: '80vh', overflowY: 'auto' }">
 
     <p-fluid>
-        <!-- ══ STEP 1 ══ -->
-        <div class="card" *ngIf="!isProjectCreated && step1">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
 
-                <div class="flex flex-col gap-2">
-                    <label>Project Code <span class="required-field">*</span></label>
-                    <input pInputText type="text" class="w-full" [(ngModel)]="pCode" />
+        <!-- ══ STEP 1 — Compact 4-column form ══ -->
+        <div *ngIf="!isProjectCreated && step1" class="s1-wrap">
+
+            <!-- Section: Project Info -->
+            <div class="s1-section-title">Project Information</div>
+            <div class="s1-grid">
+                <div class="s1-field">
+                    <label class="s1-label">Project Code <span class="s1-req">*</span></label>
+                    <input pInputText type="text" class="s1-input" [(ngModel)]="pCode" placeholder="Enter code" />
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label>Customer <span class="required-field">*</span></label>
-                    <input pInputText type="text" class="w-full" />
+                <div class="s1-field">
+                    <label class="s1-label">Customer <span class="s1-req">*</span></label>
+                    <input pInputText type="text" class="s1-input" [(ngModel)]="customerName" placeholder="Enter customer" />
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label>City Info <span class="required-field">*</span></label>
-                    <input pInputText type="text" class="w-full" [(ngModel)]="cityInfo"
-                        (input)="onCityChange($event)" />
+                <div class="s1-field">
+                    <label class="s1-label">City Info <span class="s1-req">*</span></label>
+                    <input pInputText type="text" class="s1-input" [(ngModel)]="cityInfo"
+                        (input)="onCityChange($event)" placeholder="Enter city" />
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label>State <span class="required-field">*</span></label>
+                <div class="s1-field">
+                    <label class="s1-label">State <span class="s1-req">*</span></label>
                     <p-select appendTo="body" [filter]="true" filterBy="label" [(ngModel)]="selectedState"
                         placeholder="Select State" [options]="states" optionLabel="label" optionValue="value"
-                        styleClass="w-full" [disabled]="diableStateDD" />
+                        styleClass="s1-select" [disabled]="diableStateDD" />
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label>Zone <span class="required-field">*</span></label>
+                <div class="s1-field">
+                    <label class="s1-label">Zone <span class="s1-req">*</span></label>
                     <p-select appendTo="body" [(ngModel)]="selectedZone" placeholder="Select Zone"
-                        [options]="zoneOptions" optionLabel="label" optionValue="value" styleClass="w-full" />
+                        [options]="zoneOptions" optionLabel="label" optionValue="value" styleClass="s1-select" />
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label>Project QTY <span class="required-field">*</span></label>
+                <div class="s1-field">
+                    <label class="s1-label">Project QTY <span class="s1-req">*</span></label>
                     <p-inputNumber [(ngModel)]="projectQTY" [min]="1" [max]="999" placeholder="Enter QTY"
                         [style]="{'width':'100%'}" [inputStyle]="{'width':'100%'}" />
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label>Project Total Capacity <span class="required-field">*</span></label>
-                    <input pInputText type="text" class="w-full" />
+                <div class="s1-field">
+                    <label class="s1-label">Project Total Capacity <span class="s1-req">*</span></label>
+                    <input pInputText type="text" class="s1-input" [(ngModel)]="projectTotalCapacity" placeholder="e.g. 300 MW" />
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label>Project Manager <span class="required-field">*</span></label>
-                    <p-select appendTo="body" [(ngModel)]="selectedProjectManager" placeholder="Select PM"
-                        [options]="PMOptions" optionLabel="label" optionValue="value" styleClass="w-full" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>BD Manager <span class="required-field">*</span></label>
-                    <p-select appendTo="body" [(ngModel)]="selectedBDManager" placeholder="Select BD Manager"
-                        [options]="BDOptions" optionLabel="label" optionValue="value" styleClass="w-full" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Solution Manager <span class="required-field">*</span></label>
-                    <p-select appendTo="body" [(ngModel)]="selectedSolutionManager"
-                        placeholder="Select Solution Manager" [options]="solutionOptions"
-                        optionLabel="label" optionValue="value" styleClass="w-full" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>State Head <span class="required-field">*</span></label>
-                    <p-select appendTo="body" [(ngModel)]="selectedStateHead" placeholder="Select State Head"
-                        [options]="stateHeadOptions" optionLabel="label" optionValue="value" styleClass="w-full" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Site Manager <span class="required-field">*</span></label>
-                    <p-select appendTo="body" [(ngModel)]="selectedSiteManager" placeholder="Select Site Manager"
-                        [options]="siteManagerOptions" optionLabel="label" optionValue="value" styleClass="w-full" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Start of First Anchor Cage Supply</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Start of First Component Supply</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Start of First Site Activity</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Start of First Commissioning Activity</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Contractual COD</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Expected COD</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Term Sheet Sign Date <span class="required-field">*</span></label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Advance 1 Payment <span class="required-field">*</span></label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Advance 2 Payment</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Advance 3 Payment</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>BG Release Date</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Supply Contract Sign Date</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Service Sign Date</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>LTSA Sign Date</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <label>Multiple SPV</label>
+                <div class="s1-field">
+                    <label class="s1-label">Multiple SPV</label>
                     <p-select appendTo="body" [options]="multipleSPVOptions" [(ngModel)]="selectedMultpleSPV"
-                        optionLabel="label" optionValue="value" styleClass="w-full" />
+                        optionLabel="label" optionValue="value" styleClass="s1-select" />
                 </div>
-                <div class="flex flex-wrap gap-2 items-center">
-                    <label>Tower Scope</label>
-                    <p-checkbox [(ngModel)]="towerScopeChecked" binary="true" />
-                </div>
-
             </div>
 
-            <div class="col-span-full flex justify-center gap-4 mt-6">
+            <!-- Section: Team -->
+            <div class="s1-section-title">Team</div>
+            <div class="s1-grid">
+                <div class="s1-field">
+                    <label class="s1-label">Project Manager <span class="s1-req">*</span></label>
+                    <p-select appendTo="body" [(ngModel)]="selectedProjectManager" placeholder="Select PM"
+                        [options]="PMOptions" optionLabel="label" optionValue="value" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">BD Manager <span class="s1-req">*</span></label>
+                    <p-select appendTo="body" [(ngModel)]="selectedBDManager" placeholder="Select BD Manager"
+                        [options]="BDOptions" optionLabel="label" optionValue="value" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Solution Manager <span class="s1-req">*</span></label>
+                    <p-select appendTo="body" [(ngModel)]="selectedSolutionManager"
+                        placeholder="Select Solution Manager" [options]="solutionOptions"
+                        optionLabel="label" optionValue="value" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">State Head <span class="s1-req">*</span></label>
+                    <p-select appendTo="body" [(ngModel)]="selectedStateHead" placeholder="Select State Head"
+                        [options]="stateHeadOptions" optionLabel="label" optionValue="value" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Site Manager <span class="s1-req">*</span></label>
+                    <p-select appendTo="body" [(ngModel)]="selectedSiteManager" placeholder="Select Site Manager"
+                        [options]="siteManagerOptions" optionLabel="label" optionValue="value" styleClass="s1-select" />
+                </div>
+                <div class="s1-field s1-field--inline">
+                    <label class="s1-label">Tower Scope</label>
+                    <p-checkbox [(ngModel)]="towerScopeChecked" binary="true" />
+                </div>
+            </div>
+
+            <!-- Section: Key Dates -->
+            <div class="s1-section-title">Key Dates</div>
+            <div class="s1-grid">
+                <div class="s1-field">
+                    <label class="s1-label">Start of First Anchor Cage Supply</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateAnchorCage" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Start of First Component Supply</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateComponentSupply" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Start of First Site Activity</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateSiteActivity" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Start of First Commissioning Activity</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateCommissioning" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Contractual COD</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateContractualCOD" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Expected COD</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateExpectedCOD" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Term Sheet Sign Date <span class="s1-req">*</span></label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateTermSheet" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Advance 1 Payment <span class="s1-req">*</span></label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateAdvance1" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Advance 2 Payment</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateAdvance2" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Advance 3 Payment</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateAdvance3" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">BG Release Date</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateBGRelease" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Supply Contract Sign Date</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateSupplyContract" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Service Sign Date</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateServiceSign" styleClass="s1-select" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">LTSA Sign Date</label>
+                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateLTSASign" styleClass="s1-select" />
+                </div>
+            </div>
+
+            <div class="s1-footer">
                 <button pButton label="Next: Add SPV Details" icon="pi pi-arrow-right"
                     (click)="submitProject()"></button>
                 <button pButton label="Cancel" class="p-button-outlined" icon="pi pi-times"
                     severity="danger" (click)="addProjectDialog = false"></button>
             </div>
         </div>
+        <!-- /step 1 -->
 
         <!-- ══ STEP 2 ══ -->
         <div *ngIf="isProjectCreated && !step1">
             <p-accordion [multiple]="true" [value]="['0','1']">
 
-                <!-- Accordion 1 — Project Details (read-only summary) -->
+                <!-- Accordion 1 — Project Details (read-only summary, compact) -->
                 <p-accordion-panel value="0">
                     <p-accordion-header>
                         <span class="acc-header-title">
@@ -214,48 +249,64 @@
                         </span>
                     </p-accordion-header>
                     <p-accordion-content>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div class="flex flex-col gap-2">
-                                <label>P-Code</label>
-                                <input pInputText type="text" class="w-full" [(ngModel)]="pCode" [disabled]="true" />
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <label>City Info</label>
-                                <input pInputText type="text" class="w-full" [(ngModel)]="cityInfo" [disabled]="true" />
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <label>State</label>
-                                <p-select appendTo="body" [(ngModel)]="selectedState" [options]="states"
-                                    optionLabel="label" optionValue="value" styleClass="w-full" [disabled]="true" />
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <label>Zone</label>
-                                <p-select appendTo="body" [(ngModel)]="selectedZone" [options]="zoneOptions"
-                                    optionLabel="label" optionValue="value" styleClass="w-full" [disabled]="true" />
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <label>Project QTY</label>
-                                <input pInputText type="text" class="w-full" [value]="projectQTY" [disabled]="true" />
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <label>Project Manager</label>
-                                <p-select appendTo="body" [(ngModel)]="selectedProjectManager" [options]="PMOptions"
-                                    optionLabel="label" optionValue="value" styleClass="w-full" [disabled]="true" />
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <label>BD Manager</label>
-                                <p-select appendTo="body" [(ngModel)]="selectedBDManager" [options]="BDOptions"
-                                    optionLabel="label" optionValue="value" styleClass="w-full" [disabled]="true" />
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <label>Tower Scope</label>
-                                <p-checkbox [(ngModel)]="towerScopeChecked" binary="true" [disabled]="true" />
+
+                        <!-- Project Info row -->
+                        <div class="s2-summary-section">
+                            <span class="s2-section-badge">Project Info</span>
+                            <div class="s2-kv-grid">
+                                <div class="s2-kv"><span class="s2-k">P-Code</span><span class="s2-v">{{ pCode || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Customer</span><span class="s2-v">{{ customerName || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">City Info</span><span class="s2-v">{{ cityInfo || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">State</span><span class="s2-v">{{ selectedState || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Zone</span><span class="s2-v">{{ selectedZone || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Project QTY</span><span class="s2-v">{{ projectQTY }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Total Capacity</span><span class="s2-v">{{ projectTotalCapacity || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Multiple SPV</span><span class="s2-v">{{ selectedMultpleSPV || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Tower Scope</span>
+                                    <span class="s2-v">
+                                        <i class="pi" [ngClass]="towerScopeChecked ? 'pi-check-circle s2-icon-yes' : 'pi-times-circle s2-icon-no'"></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Team row -->
+                        <div class="s2-summary-section">
+                            <span class="s2-section-badge">Team</span>
+                            <div class="s2-kv-grid">
+                                <div class="s2-kv"><span class="s2-k">Project Manager</span><span class="s2-v">{{ selectedProjectManager || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">BD Manager</span><span class="s2-v">{{ selectedBDManager || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Solution Manager</span><span class="s2-v">{{ selectedSolutionManager || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">State Head</span><span class="s2-v">{{ selectedStateHead || '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Site Manager</span><span class="s2-v">{{ selectedSiteManager || '—' }}</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Dates row -->
+                        <div class="s2-summary-section">
+                            <span class="s2-section-badge">Key Dates</span>
+                            <div class="s2-kv-grid">
+                                <div class="s2-kv"><span class="s2-k">Anchor Cage Supply</span><span class="s2-v">{{ dateAnchorCage ? (dateAnchorCage | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Component Supply</span><span class="s2-v">{{ dateComponentSupply ? (dateComponentSupply | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">First Site Activity</span><span class="s2-v">{{ dateSiteActivity ? (dateSiteActivity | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Commissioning</span><span class="s2-v">{{ dateCommissioning ? (dateCommissioning | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Contractual COD</span><span class="s2-v">{{ dateContractualCOD ? (dateContractualCOD | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Expected COD</span><span class="s2-v">{{ dateExpectedCOD ? (dateExpectedCOD | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Term Sheet Sign</span><span class="s2-v">{{ dateTermSheet ? (dateTermSheet | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Advance 1</span><span class="s2-v">{{ dateAdvance1 ? (dateAdvance1 | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Advance 2</span><span class="s2-v">{{ dateAdvance2 ? (dateAdvance2 | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Advance 3</span><span class="s2-v">{{ dateAdvance3 ? (dateAdvance3 | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">BG Release</span><span class="s2-v">{{ dateBGRelease ? (dateBGRelease | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Supply Contract</span><span class="s2-v">{{ dateSupplyContract ? (dateSupplyContract | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">Service Sign</span><span class="s2-v">{{ dateServiceSign ? (dateServiceSign | date:'dd-MM-yyyy') : '—' }}</span></div>
+                                <div class="s2-kv"><span class="s2-k">LTSA Sign</span><span class="s2-v">{{ dateLTSASign ? (dateLTSASign | date:'dd-MM-yyyy') : '—' }}</span></div>
+                            </div>
+                        </div>
+
                     </p-accordion-content>
                 </p-accordion-panel>
 
-                <!-- Accordion 2 — SPV & WTG Configuration (replaces old p-table) -->
+                <!-- Accordion 2 — SPV & WTG Configuration -->
                 <p-accordion-panel value="1">
                     <p-accordion-header>
                         <span class="acc-header-title">
@@ -276,8 +327,7 @@
                                     <span class="spv-idx">SPV {{ si + 1 }}</span>
                                     <p-select appendTo="body" [options]="getSpvOpts(spvEntry.id)"
                                         [(ngModel)]="spvEntry.spv" optionLabel="label" optionValue="value"
-                                        placeholder="Select SPV" [style]="{'min-width':'160px'}"
-                                         />
+                                        placeholder="Select SPV" [style]="{'min-width':'160px'}" />
                                 </div>
                                 <button *ngIf="spvEntries.length > 1" class="spv-remove-btn"
                                     (click)="removeSpvEntry(spvEntry.id)"
@@ -348,10 +398,11 @@
 
                                     <div class="wtg-field">
                                         <label class="field-label">WTG Qty <span class="req">*</span></label>
-                                        <p-inputNumber [(ngModel)]="cfg.wtgQty" [min]="1"
-                                            [max]="projectQTY" placeholder="Enter Qty"
+                                        <p-inputNumber [(ngModel)]="cfg.wtgQty"
+                                            [max]="projectQTY > 0 ? projectQTY : 9999" placeholder="Enter Qty"
                                             [style]="{'width':'100%'}" [inputStyle]="{'width':'100%'}"
-                                            (onInput)="onQtyChange(cfg)" />
+                                            (onInput)="onQtyChange(cfg)"
+                                            (onBlur)="onQtyBlur(cfg)" />
                                     </div>
 
                                     <!-- Auto-calculated read-only total -->
@@ -362,52 +413,6 @@
                                             placeholder="Auto" [disabled]="true" style="width:100%" />
                                     </div>
 
-                                </div>
-
-                                <!-- Monthly Distribution Table -->
-                                <div *ngIf="false" class="monthly-section">
-                                    <div class="monthly-section-head">
-                                        <i class="pi pi-calendar"></i>
-                                        Monthly Distribution &nbsp;
-                                        <span class="monthly-info">
-                                            Total: <strong>{{ cfg.wtgQty }}</strong> &nbsp;|&nbsp;
-                                            Allocated: <strong>{{ monthTotal(cfg) }}</strong> &nbsp;|&nbsp;
-                                            Remaining:
-                                            <strong [class.over]="remainingQty(cfg) < 0">
-                                                {{ remainingQty(cfg) }}
-                                            </strong>
-                                        </span>
-                                    </div>
-                                    <div class="monthly-table-wrap">
-                                        <table class="monthly-table">
-                                            <thead>
-                                                <tr>
-                                                    <th *ngFor="let lbl of getMonthLabels(cfg); trackBy: trackByIdx">
-                                                        {{ lbl }}
-                                                    </th>
-                                                    <th class="total-col">Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td *ngFor="let lbl of getMonthLabels(cfg); let mi = index; trackBy: trackByIdx">
-                                                        <p-inputNumber [(ngModel)]="cfg.monthly[mi]"
-                                                            [min]="0" [max]="cfg.wtgQty ?? 0"
-                                                            placeholder="0" [inputStyle]="{'width':'68px'}"
-                                                            (onInput)="onMonthlyInput(cfg, mi, $event.value)" />
-                                                    </td>
-                                                    <td class="total-col total-val">
-                                                        <span
-                                                            [class.total-ok]="monthTotal(cfg) === (cfg.wtgQty ?? 0)"
-                                                            [class.total-warn]="monthTotal(cfg) < (cfg.wtgQty ?? 0)"
-                                                            [class.total-over]="monthTotal(cfg) > (cfg.wtgQty ?? 0)">
-                                                            {{ monthTotal(cfg) }} / {{ cfg.wtgQty }}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 </div>
 
                                 <!-- Add WTG Config button — shown only on last config -->

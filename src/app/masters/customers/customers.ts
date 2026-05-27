@@ -25,13 +25,18 @@ export class Customers {
   getCustomerList(){
     try{
       let data = {
-        "customerId": 1
+        "search": null,
+        "status": null,
+        "page": 0,
+        "size": 10,
+        "sortBy": "createdOn",
+        "sortDirection": "asc"
       }
-       this.apiService.customer(data).subscribe({
+       this.apiService.customerSearch(data).subscribe({
         next: val => {
           console.log(val);
           console.log(val.data);
-          this.customerList = [val.data];
+          this.customerList = val.data.content;
         },
         error: err => {
           console.log(err);

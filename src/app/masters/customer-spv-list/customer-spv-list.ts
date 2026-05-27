@@ -72,7 +72,7 @@ customerDetail:any = "";
       let data = {
         "customerId": val
       }
-       this.apiService.customer(data).subscribe({
+       this.apiService.customerGet(data).subscribe({
         next: val => {
           console.log(val.data.spvDetails);
           this.customerDetail = val.data;

@@ -197,7 +197,7 @@
             <!-- Action -->
             <td class="summary-td text-center">
     
-              <p-menu #menu [model]="items" [popup]="true" appendTo="body">
+              <p-menu #menu [model]="getMenuItems(row)" [popup]="true" appendTo="body">
               </p-menu>
     
               <button pButton pRipple text rounded severity="secondary" type="button" (click)="menu.toggle($event)">
@@ -460,4 +460,40 @@
       </div>
     </div>
   </ng-template>
+</p-dialog>
+
+<p-dialog
+    header="Upload Document"
+    [(visible)]="displayImportDialog"
+    [modal]="true"
+    [style]="{ width: '40rem' }">
+
+    <p-fileUpload
+    name="file"
+    mode="advanced"
+    [multiple]="false"
+    accept=".xlsx,.xls,.pdf,.doc,.docx"
+    chooseLabel="Choose File"
+    uploadLabel="Upload"
+    cancelLabel="Cancel"
+    [customUpload]="true"
+    (uploadHandler)="onUpload($event)"
+    [auto]="false">
+
+    <!-- Empty State -->
+    <ng-template
+        pTemplate="empty">
+
+        <div class="flex flex-column align-items-center justify-content-center p-5">
+            <i class="pi pi-cloud-upload text-5xl text-primary mb-3"></i>
+
+            <span class="text-lg">
+                Drag and drop file here
+            </span>
+        </div>
+
+    </ng-template>
+
+</p-fileUpload>
+
 </p-dialog>
