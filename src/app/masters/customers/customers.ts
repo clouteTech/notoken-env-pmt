@@ -48,8 +48,7 @@ export class Customers {
       })
 
     }catch(e){
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
-
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 

@@ -105,7 +105,7 @@
             </td>
             <td class="summary-td">{{ row.projectName }}</td>
             <td class="summary-td">
-              <span class="summary-wtg-count">{{ row.wtgCount }}</span>
+              <span class="summary-wtg-count">{{ row.totalWtgs }}</span>
             </td>
             <td class="summary-td">
               <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
@@ -184,13 +184,13 @@
     
             <!-- Project Name -->
             <td class="summary-td">
-              {{ row.projectName }}
+              {{ row.customer?.customerName }}
             </td>
     
             <!-- WTG Count -->
             <td class="summary-td">
               <span class="summary-wtg-count">
-                {{ row.wtgCount }}
+                {{ row.totalWtgs }}
               </span>
             </td>
     
@@ -244,7 +244,7 @@
         <span class="view-popup-title">Foundation Data Overview</span>
         <span class="view-popup-subtitle">
           <span class="tag-pcode">{{ selectedSummaryRow?.projectCode }}</span>
-          <span class="tag-wtg">{{ selectedSummaryRow?.wtgCount }} WTGs</span>
+          <span class="tag-wtg">{{ selectedSummaryRow?.totalWtgs }} WTGs</span>
           <span class="tag-location">{{ selectedSummaryRow?.projectName }}</span>
           <span class="tag-progress">{{ getCompletedCount() }} / {{ steps.length }} Steps</span>
         </span>
@@ -291,7 +291,7 @@
     <div class="view-popup-footer">
       <span class="view-popup-footer-info">
         <i class="pi pi-info-circle" style="color:#6366f1;margin-right:0.3rem"></i>
-        Showing {{ selectedSummaryRow?.wtgCount }} WTG records for <strong>{{ selectedSummaryRow?.projectCode }}</strong> — {{ selectedSummaryRow?.projectName }}. This is a read-only view.
+        Showing {{ selectedSummaryRow?.totalWtgs }} WTG records for <strong>{{ selectedSummaryRow?.projectCode }}</strong> — {{ selectedSummaryRow?.projectName }}. This is a read-only view.
       </span>
       <button pButton type="button" class="view-close-btn" (click)="closeViewPopup()">Close</button>
     </div>
@@ -310,7 +310,7 @@
         <span class="view-popup-title">Foundation Tracker</span>
         <span class="view-popup-subtitle">
           <span class="tag-pcode">{{ selectedSummaryRow?.projectCode }}</span>
-          <span class="tag-wtg">{{ selectedSummaryRow?.wtgCount }} WTGs</span>
+          <span class="tag-wtg">{{ selectedSummaryRow?.totalWtgs }} WTGs</span>
           <span class="tag-location">{{ selectedSummaryRow?.projectName }}</span>
           <span class="tag-progress">{{ getCompletedCount() }} / {{ steps.length }} Steps Completed</span>
         </span>
@@ -350,10 +350,10 @@
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                     Completed
                   </div>
-                  <div class="step-meta locked" *ngIf="!isStepEnabled(stepIdx)">
+                  <!-- <div class="step-meta locked" *ngIf="!isStepEnabled(stepIdx)">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
                     Fill all fields in Step {{ step.id - 1 }} row to unlock
-                  </div>
+                  </div> -->
                 </div>
               </div>
               <svg *ngIf="isStepEnabled(stepIdx)" [class.chevron-open]="wtgPopupActiveStep === stepIdx" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chevron">
@@ -362,13 +362,13 @@
             </div>
             <div class="step-body" *ngIf="wtgPopupActiveStep === stepIdx && isStepEnabled(stepIdx)">
               <div class="table-scroll-wrap">
-                <p-table [value]="getWtgPopupRows()" [scrollable]="true" scrollHeight="380px" 
+                <p-table [value]="prjLocationDetails" [scrollable]="true" scrollHeight="380px" 
                   styleClass="p-datatable-sm foundation-ptable" 
                   [frozenColumns]="[{field:'wtgId'},{field:'locationNo'},{field:'maximoId'}]">
                   <ng-template pTemplate="caption">
                     <div class="table-caption">
                       <span class="table-caption-label"><i class="pi pi-table" style="margin-right:0.4rem"></i>{{ step.label }} — All fields per WTG row</span>
-                      <span class="table-row-count">{{ selectedSummaryRow?.wtgCount }} WTGs</span>
+                      <span class="table-row-count">{{ selectedSummaryRow?.totalWtgs }} WTGs</span>
                     </div>
                   </ng-template>
                   <ng-template pTemplate="header">
@@ -406,10 +406,10 @@
                   <ng-template pTemplate="body" let-wtg let-rowIdx="rowIndex">
                     <tr [class.row-even]="rowIdx % 2 === 0" [class.row-disabled]="!isRowEnabled(stepIdx, rowIdx)">
                       <td class="col-frozen col-wtg wtg-cell" pFrozenColumn>
-                        <span class="wtg-badge">{{ wtg.wtgId }}</span>
-                        <span class="row-lock-icon" *ngIf="!isRowEnabled(stepIdx, rowIdx)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+                        <span class="wtg-badge">P001-WTG-001</span>
+                        <!-- <span class="row-lock-icon" *ngIf="!isRowEnabled(stepIdx, rowIdx)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span> -->
                       </td>
-                      <td class="col-frozen col-location" pFrozenColumn>{{ wtg.locationNo }}</td>
+                      <td class="col-frozen col-location" pFrozenColumn>{{ wtg.locationCode }}</td>
                       <td class="col-frozen col-maximo" pFrozenColumn alignFrozen="left">{{ wtg.maximoId }}</td>
                       <td *ngFor="let col of stepColumnDefs[stepIdx]" class="col-field-cell" [class.cell-disabled]="!isRowEnabled(stepIdx, rowIdx)">
                         <p-datepicker *ngIf="col.type === 'date'" [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" dateFormat="dd-mm-yy" placeholder="DD-MM-YYYY" styleClass="table-datepicker" appendTo="body" [disabled]="!isRowEnabled(stepIdx, rowIdx)" />
@@ -443,7 +443,7 @@
     <div class="view-popup-footer">
       <span class="view-popup-footer-info">
         <i class="pi pi-info-circle" style="color:#6366f1;margin-right:0.3rem"></i>
-        Viewing Foundation Tracker for <strong style="margin-left: 0.25rem;">{{ selectedSummaryRow?.projectCode }}</strong> — {{ selectedSummaryRow?.wtgCount }} WTGs at {{ selectedSummaryRow?.projectName }}
+        Viewing Foundation Tracker for <strong style="margin-left: 0.25rem;">{{ selectedSummaryRow?.projectCode }}</strong> — {{ selectedSummaryRow?.totalWtgs }} WTGs at {{ selectedSummaryRow?.projectName }}
       </span>
       <div style="display:flex;gap:0.6rem;align-items:center;">
         <button pButton type="button" class="view-btn" (click)="openViewAllDataFromWtg()">
@@ -478,6 +478,106 @@
     cancelLabel="Cancel"
     [customUpload]="true"
     (uploadHandler)="onUpload($event)"
+    [auto]="false">
+
+    <!-- Empty State -->
+    <ng-template
+        pTemplate="empty">
+
+        <div class="flex flex-column align-items-center justify-content-center p-5">
+            <i class="pi pi-cloud-upload text-5xl text-primary mb-3"></i>
+
+            <span class="text-lg">
+                Drag and drop file here
+            </span>
+        </div>
+
+    </ng-template>
+
+</p-fileUpload>
+
+</p-dialog>
+
+<!-- ══ CHOOSE DOWNLOAD EXCEL ══ -->
+<p-dialog
+    header="Choose Download Excel"
+    [(visible)]="chooseDownloadTemplate"
+    [modal]="true"
+    [style]="{ width: '40vw' }"
+    [breakpoints]="{
+        '960px': '60vw',
+        '640px': '90vw'
+    }"
+>
+    <div class="flex justify-content-center gap-5 py-4">
+
+        <!-- Foundation -->
+        <div class="dl-item" (click)="downloadTemplate('foundation')"><!--  -->
+            <div class="dl-icon" style="background: #dbeafe; color: #1d4ed8;">
+                <i class="pi pi-download"></i>
+            </div>
+            <span class="dl-label">Foundation Template</span>
+        </div>
+
+        <!-- Location -->
+        <div class="dl-item" (click)="downloadTemplate('location')"><!--  -->
+            <div class="dl-icon" style="background: #ede9fe; color: #6d28d9;">
+                <i class="pi pi-download"></i>
+            </div>
+            <span class="dl-label">Location Template</span>
+        </div>
+
+    </div>
+</p-dialog>
+
+<!-- ══ CHOOSE UPLOAD EXCEL ══ -->
+<p-dialog
+    header="Choose Upload Excel"
+    [(visible)]="chooseUploadTemplate"
+    [modal]="true"
+    [style]="{ width: '40vw' }"
+    [breakpoints]="{
+        '960px': '60vw',
+        '640px': '90vw'
+    }"
+>
+    <div class="flex justify-content-center gap-5 py-4">
+
+        <!-- Foundation -->
+        <div class="dl-item" (click)="uploadTemplate('foundation')"><!--  -->
+            <div class="dl-icon" style="background: #dbeafe; color: #1d4ed8;">
+                <i class="pi pi-upload"></i>
+            </div>
+            <span class="dl-label">Upload Foundation Template</span>
+        </div>
+
+        <!-- Location -->
+        <div class="dl-item" (click)="uploadTemplate('location')"><!--  -->
+            <div class="dl-icon" style="background: #ede9fe; color: #6d28d9;">
+                <i class="pi pi-upload"></i>
+            </div>
+            <span class="dl-label">Upload Location Template</span>
+        </div>
+
+    </div>
+</p-dialog>
+
+<p-dialog
+    header="Upload Document"
+    [(visible)]="uploadLocationTemplate"
+    [modal]="true"
+    [style]="{ width: '40rem' }">
+
+    <p-fileUpload
+    name="file"
+    mode="advanced"
+    [multiple]="false"
+    accept=".xlsx,.xls,.pdf,.doc,.docx"
+    chooseLabel="Choose File"
+    uploadLabel="Upload"
+    cancelLabel="Cancel"
+    [customUpload]="true"
+    (uploadHandler)="onUploadLocation($event)"
     [auto]="false">
 
     <!-- Empty State -->

@@ -44,13 +44,49 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private updateActiveMenu(url: string) {
-    if (url.includes('create')) this.activeMenu = 'create';
-    if (url.includes('demand')) this.activeMenu = 'demand';
-    if (url.includes('componentAllocation')) this.activeMenu = 'componentAllocation';
-    if (url.includes('allocationApproval')) this.activeMenu = 'allocationApproval';
-    if (url.includes('WTGProduction')) this.activeMenu = 'WTGProduction';
+    const routeMenuMap: { segment: string; menu: string }[] = [
+      { segment: 'create-project',      menu: 'create' },
+      { segment: 'dashboard',           menu: 'demand' },
+      { segment: 'saleDemand',          menu: 'saleDemand' },
+      { segment: 'monthlyDemandPlan',   menu: 'monthlyDemandPlan' },
+      { segment: 'allocationApproval',  menu: 'allocationApproval' },
+      { segment: 'WTGProduction',       menu: 'WTGProduction' },
+      { segment: 'wtg-quality',         menu: 'WTGQuality' },
+      { segment: 'wtg-dispatch',        menu: 'WTGDispatch' },
+      { segment: 'wtg-receiving',       menu: 'WTGReceiving' },
+      { segment: 'foundation1',         menu: 'Foundation1' },
+      { segment: 'foundation',          menu: 'Foundation' },
+      { segment: 'commisioning1',       menu: 'Commisioning1' },
+      { segment: 'commisioning',        menu: 'Commisioning' },
+      { segment: 'installation',        menu: 'installation' },
+      { segment: 'components',          menu: 'components' },
+      { segment: 'tower-types',         menu: 'towerType' },
+      { segment: 'blade-types',         menu: 'bladeType' },
+      { segment: 'wtg-types',           menu: 'wtgType' },
+      { segment: 'grid-connectivities', menu: 'gridConnectivities' },
+      { segment: 'wtg-capacities',      menu: 'wtgCapacities' },
+      { segment: 'ppa-types',           menu: 'ppaTypes' },
+      { segment: 'plants',              menu: 'plants' },
+      { segment: 'customers',           menu: 'customers' },
+      { segment: 'zones',               menu: 'zone' },
+      { segment: 'departments',         menu: 'department' },
+      { segment: 'clusters',            menu: 'clusters' },
+      { segment: 'company-users',       menu: 'companyUsers' },
+      { segment: 'user-groups',         menu: 'userGroups' },
+      { segment: 'roles',               menu: 'roles' },
+    ];
 
-    else this.activeMenu = 'create';
+    const match = routeMenuMap.find(r => url.includes(r.segment));
+    if (match) {
+      this.activeMenu = match.menu;
+      // Auto-open Masters submenu when a master route is active
+      const masterMenus = ['components','towerType','bladeType','wtgType','gridConnectivities',
+        'wtgCapacities','ppaTypes','plants','customers','zone','department',
+        'clusters','companyUsers','userGroups','roles'];
+      if (masterMenus.includes(match.menu)) {
+        this.showMastersMenu = true;
+      }
+    }
   }
 
   get isLoginRoute(): boolean {
