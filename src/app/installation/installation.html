@@ -183,13 +183,13 @@
     
             <!-- Project Name -->
             <td class="summary-td">
-              {{ row.projectName }}
+              {{ row.customer.customerName }}
             </td>
     
             <!-- WTG Count -->
             <td class="summary-td">
               <span class="summary-wtg-count">
-                {{ row.wtgCount }}
+                {{ row.totalWtgs }}
               </span>
             </td>
     
@@ -198,7 +198,7 @@
               <p-menu #menu [model]="items" [popup]="true" appendTo="body">
               </p-menu>
     
-              <button pButton pRipple text rounded severity="secondary" type="button" (click)="menu.toggle($event)">
+              <button pButton pRipple text rounded severity="secondary" type="button" (click)="openMenu(menu, $event, row)">
     
                 <i pButtonIcon>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
@@ -324,7 +324,8 @@
         </span>
       </div>
       <span class="view-popup-readonly-badge wtg-popup-live-badge">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Live View
       </span>
     </div>
@@ -370,7 +371,7 @@
             </div>
             <div class="step-body" *ngIf="wtgPopupActiveStep === stepIdx && isStepEnabled(stepIdx)">
               <div class="table-scroll-wrap">
-                <p-table [value]="getWtgPopupRows()" [scrollable]="true" scrollHeight="380px" 
+                <p-table [value]="prjWTGDetails" [scrollable]="true" scrollHeight="380px" 
                   styleClass="p-datatable-sm foundation-ptable" 
                   [frozenColumns]="[{field:'wtgId'},{field:'locationNo'},{field:'maximoId'}]">
                   <ng-template pTemplate="caption">
@@ -418,24 +419,24 @@
                   <ng-template pTemplate="body" let-wtg let-rowIdx="rowIndex">
                     <tr [class.row-even]="rowIdx % 2 === 0" [class.row-disabled]="!isRowEnabled(stepIdx, rowIdx)">
                       <td class="col-frozen col-wtg wtg-cell" pFrozenColumn>
-                        <span class="wtg-badge">{{ wtg.wtgId }}</span>
+                        <span class="wtg-badge">{{ wtg?.projectWtg?.wtgCode }}</span>
                         <span class="row-lock-icon" *ngIf="!isRowEnabled(stepIdx, rowIdx)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
                       </td>
-                      <td class="col-frozen col-location" pFrozenColumn>{{ wtg.locationNo }}</td>
-                      <td class="col-frozen col-maximo" pFrozenColumn>{{ wtg.maximoId }}</td>
-                      <td class="col-wtgtype">{{ wtg.wtgType }}</td>
-                      <td *ngIf="shouldShowTowerFields()" class="col-towertype">{{ wtg.towerType }}</td>
-                      <td *ngIf="shouldShowTowerFields()" class="col-sectionCount">{{ wtg.sectionCount }}</td>
+                      <td class="col-frozen col-location" pFrozenColumn>{{ wtg?.location?.locationCode || '-' }}</td>
+                      <td class="col-frozen col-maximo" pFrozenColumn>{{ wtg?.location?.maximoId || '-' }}</td>
+                      <td class="col-wtgtype">{{ wtg?.projectWtg?.wtgType?.wtgType }}</td>
+                      <td *ngIf="shouldShowTowerFields()" class="col-towertype">{{ wtg?.projectWtg?.towerType?.towerType }}</td>
+                      <td *ngIf="shouldShowTowerFields()" class="col-sectionCount">{{ wtg?.projectWtg?.towerType?.sectionCount }}</td>
                       <td class="col-cranesupplier crane-supplier-cell">
                         <!-- P-8002 rows: fixed 0, no dropdown -->
                         <span *ngIf="isCraneSupplierFixed(rowIdx)" class="crane-supplier-badge crane-zero">0</span>
                         <!-- Other projects: dropdown with 5 / 6 -->
                         <p-select *ngIf="!isCraneSupplierFixed(rowIdx)"
                           appendTo="body"
-                          [options]="craneSupplierOptions"
+                          [options]="prjCraneDetails"
                           [ngModel]="getCraneSupplierDisplay(rowIdx)"
                           (ngModelChange)="onCraneSupplierChange(rowIdx, $event)"
-                          optionLabel="label" optionValue="value"
+                          optionLabel="supplier.supplierName" optionValue="supplier.supplierId"
                           placeholder="Select Supplier" />
                       </td>
                       <ng-container *ngFor="let col of stepColumnDefs[stepIdx]">
@@ -473,10 +474,10 @@
                           <!-- Main Crane Model dropdown -->
                           <p-select *ngIf="col.type === 'select' && col.field === 'mainCraneModel'"
                             appendTo="body"
-                            [options]="craneModelOptions"
+                            [options]="prjCraneDetails"
                             [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
                             (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)"
-                            optionLabel="label" optionValue="value"
+                            optionLabel="crane.craneModel" optionValue="crane.craneId"
                             placeholder="Select Model..."
                             [disabled]="!isRowEnabled(stepIdx, rowIdx)"
                             styleClass="table-select" />
@@ -491,8 +492,6 @@
                             placeholder="Select Method..."
                             [disabled]="!isRowEnabled(stepIdx, rowIdx)"
                             styleClass="table-select" />
-
-
                         </td>
                         <!-- Collapsed cell shown when field is hidden (keeps table structure) -->
                         <td *ngIf="!isFieldVisible(stepIdx, rowIdx, col.field)"
@@ -545,4 +544,63 @@
       </div>
     </div>
   </ng-template>
+</p-dialog>
+
+<p-dialog header="Download Excel" [(visible)]="chooseDownloadTemplate" [modal]="true" [style]="{ width: '40vw' }"
+  [breakpoints]="{
+      '960px': '60vw',
+      '640px': '90vw'
+  }">
+  <div class="flex justify-content-center gap-5 py-4">
+
+    <div class="dl-item" (click)="downloadTemplate()">
+      <div class="dl-icon" style="background: #dbeafe; color: #1d4ed8;">
+        <i class="pi pi-download"></i>
+      </div>
+      <span class="dl-label">Installation Template</span>
+    </div>
+
+  </div>
+</p-dialog>
+
+
+<p-dialog header="Upload Excel" [(visible)]="chooseUploadTemplate" [modal]="true" [style]="{ width: '40vw' }"
+  [breakpoints]="{
+      '960px': '60vw',
+      '640px': '90vw'
+    }">
+  <div class="flex justify-content-center gap-5 py-4">
+
+    <!-- Location -->
+    <div class="dl-item" (click)="uploadTemplate()">
+      <div class="dl-icon" style="background: #ede9fe; color: #6d28d9;">
+        <i class="pi pi-upload"></i>
+      </div>
+      <span class="dl-label">Installation Template</span>
+    </div>
+
+  </div>
+</p-dialog>
+
+<p-dialog header="Upload Document" [(visible)]="displayImportDialog" [modal]="true" [style]="{ width: '40rem' }">
+
+  <p-fileUpload name="file" mode="advanced" [multiple]="false" accept=".xlsx,.xls,.pdf,.doc,.docx"
+    chooseLabel="Choose File" uploadLabel="Upload" cancelLabel="Cancel" [customUpload]="true"
+    (uploadHandler)="onUpload($event)" [auto]="false">
+
+    <!-- Empty State -->
+    <ng-template pTemplate="empty">
+
+      <div class="flex flex-column align-items-center justify-content-center p-5">
+        <i class="pi pi-cloud-upload text-5xl text-primary mb-3"></i>
+
+        <span class="text-lg">
+          Drag and drop file here
+        </span>
+      </div>
+
+    </ng-template>
+
+  </p-fileUpload>
+
 </p-dialog>

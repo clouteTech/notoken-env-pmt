@@ -17,6 +17,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { Shared } from '../shared/services/shared';
+import { Apiservice } from '../service/apiservice';
 
 export interface WtgRow {
   wtgId: string;
@@ -57,7 +58,6 @@ export interface ViewColumn {
   styleUrl: './installation.css',
 })
 export class Installation implements OnInit {
-
   pCode = 'P-8001';
   wtgQty = 2;
 
@@ -67,39 +67,44 @@ export class Installation implements OnInit {
   stepForms: FormGroup[][] = [];
   wtgRows: WtgRow[] = [];
 
+  selectedProject: any;
+  selectedFile: any;
+  prjDetails: any;
+  prjLocationDetails: any[] = [];
+  tableData: any[] = [];
+  prjCraneDetails: any[] = [];
+  prjWTGDetails: any[] = [];
+
   // View Popup
   viewVisible = false;
 
   // Open WTG Popup
   wtgPopupVisible = false;
+  chooseDownloadTemplate = false;
+  chooseUploadTemplate = false;
+  displayImportDialog = false;
+
   wtgPopupActiveStep = 0;
   selectedSummaryRow: SummaryRow | null = null;
 
   items: MenuItem[] = [];
 
   // Summary Table rows
-  summaryRows: SummaryRow[] = [
-    { projectCode: 'P-8001', projectName: 'India_TataPower_Chennai_TamilNadu_Phase1_250MW', wtgCount: 2 },
-    { projectCode: 'P-8002', projectName: 'India_AdaniEnergy_Belagavi_Karnataka_Phase2_180MW', wtgCount: 3 },
-    { projectCode: 'P-8003', projectName: 'India_ReNewPower_Jaisalmer_Rajasthan_Phase1_320MW', wtgCount: 4 },
-  ];
+  summaryRows: SummaryRow[] = [];
 
   assemblyMethodOptions = [
-    { label: 'Rotor', value: 'Rotor' },
+    { label: 'ROTOR', value: 'ROTOR' },
     { label: 'Hub', value: 'Hub' },
   ];
 
   // Crane Model dropdown options
-  craneModelOptions = [
-    { label: 'Crane Model 1', value: 'Crane Model 1' },
-    { label: 'Crane Model 2', value: 'Crane Model 2' },
-  ];
+  // craneModelOptions = [
+  //   { label: 'Crane Model 1', value: 'Crane Model 1' },
+  //   { label: 'Crane Model 2', value: 'Crane Model 2' },
+  // ];
 
   // Crane supplier dropdown options (5 or 6 tower sections)
-  craneSupplierOptions = [
-    { label: 'Crane Supplier 1', value: 'Crane Supplier 1' },
-    { label: 'Crane Supplier 2', value: 'Crane Supplier 2' },
-  ];
+  // craneSupplierOptions = [];
 
   // Per-row crane supplier form values (stepIdx=0, rowIdx → value)
   // P-8001 rows get a dropdown (5/6), P-8002 rows get fixed 0 (no dropdown)
@@ -113,7 +118,7 @@ export class Installation implements OnInit {
     // If this row has a fixed 0 (P-8002), all tower sections are N/A
     if (this.rowCraneSupplierFixed[rowIdx]) return 0;
     // Otherwise read the dropdown value (5 or 6), default 5
-    return this.rowCraneSupplierValues[rowIdx] ?? 5;
+    return this.prjWTGDetails[rowIdx]?.projectWtg?.towerType?.sectionCount ?? 5;
   }
 
   onCraneSupplierChange(rowIdx: number, value: number) {
@@ -143,12 +148,12 @@ export class Installation implements OnInit {
     this.rowAssemblyMethod[rowIdx] = value;
     this.setStepFormValue(stepIdx, rowIdx, 'assemblyMethod', value);
     // Clear fields that belong to the other method
-    if (value === 'Rotor') {
+    if (value === 'ROTOR') {
       // Clear hub-only fields
       ['hubAssemblyDate','blade1Installation','blade2Installation','blade3Installation',
        'maxOfThreeBlade','blade1Bolts10pct','blade2Bolts10pct','blade3Bolts10pct'].forEach(f =>
         this.setStepFormValue(stepIdx, rowIdx, f, null));
-    } else if (value === 'Hub(DD)') {
+    } else if (value === 'Hub') {
       // Clear rotor-only fields
       ['rotorAssemblyDate','rotorInstallationDate','rotorBolts10pct'].forEach(f =>
         this.setStepFormValue(stepIdx, rowIdx, f, null));
@@ -212,12 +217,12 @@ export class Installation implements OnInit {
 
     // Rotor-only fields: only show if method is Rotor
     if (this.isRotorField(field)) {
-      return method === 'Rotor';
+      return method === 'ROTOR';
     }
 
     // Hub-only fields: only show if method is Hub(DD)
     if (this.isHubField(field)) {
-      return method === 'Hub(DD)';
+      return method === 'Hub';
     }
 
     // All other fields always visible
@@ -299,7 +304,7 @@ export class Installation implements OnInit {
     ],
   };
 
-  constructor(private fb: FormBuilder, private messageService: MessageService) {}
+  constructor(private fb: FormBuilder, private messageService: MessageService, private apiService: Apiservice) {}
 
   ngOnInit() {
     const maxWtg = Math.max(this.wtgQty, ...this.summaryRows.map(r => r.wtgCount));
@@ -323,10 +328,49 @@ export class Installation implements OnInit {
         cols.forEach(col => { group[col.field] = [null]; });
         return this.fb.group(group);
       });
+      console.log(rowForms);
       this.stepForms.push(rowForms);
+      console.log(this.stepForms);
     }
 
+    this.fetchProjectList();
+
     this.items = this.getMenuItems();
+  }
+
+  fetchProjectList(){
+    try {
+      let data = {
+        "search": null,
+        "customerId": null,
+        "clusterId": null,
+        "zoneId": null,
+        "projectManagerId": null,
+        "projectTerm": null,
+        "probability": null,
+        "page": 0,
+        "size": 10,
+        "sortBy": "createdOn",
+        "sortDirection": "asc"
+      }
+
+      this.apiService.projectSearch(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.summaryRows = val.data.content;
+        },
+        error: err => {
+          console.log(err);
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please Try Again.'
+      });
+    }
   }
 
   // ─── ROW-LEVEL UNLOCK LOGIC ───────────────────────────────────────────────
@@ -381,17 +425,165 @@ export class Installation implements OnInit {
     return this.isAnyRowFilledInStep(stepIdx);
   }
 
+  buildInstallationPayload(){
+    return this.prjWTGDetails.map((wtg: any, rowIdx: number) => {
+
+    const form = this.stepForms[0][rowIdx];
+      
+    const sectionCount = wtg.projectWtg?.towerType?.sectionCount ?? 0;
+
+    const towerInstallations = [];
+
+    for (let i = 1; i <= sectionCount; i++) {
+      towerInstallations.push({
+        section: i,
+        installationDate: form.get(`s${i}TowerInstallation`)?.value,
+        torqueCheckDate: form.get(`s${i}UpperBolts10pct`)?.value
+      });
+    }
+
+    const bladeInstallations = [];
+
+    for (let i = 1; i <= 3; i++) {
+      bladeInstallations.push({
+        bladeNo: i,
+        installationDate: form.get(`blade${i}Installation`)?.value,
+        torqueCheckDate: form.get(`blade${i}Bolts10pct`)?.value
+      });
+    }
+
+      return {
+
+        projectLocationId: wtg.location?.locationId ?? 0,
+
+        projectCraneDetailId:
+          form.get('mainCraneModel')?.value,
+
+        assemblyMethod:
+          form.get('assemblyMethod')?.value,
+
+        craneMobilization:
+          form.get('mainCraneMob')?.value,
+
+        craneAssemblyStart:
+          form.get('startOfMainCraneAssembly')?.value,
+
+        craneAssemblyFinish:
+          form.get('finishOfMainCraneAssembly')?.value,
+
+        bottomPlatformAssembly:
+          form.get('bottomPlatformAssembly')?.value,
+
+        craneBoomUp:
+          form.get('mainCraneBoomUp')?.value,
+
+        converterPanelInstallation:
+          form.get('converterPanelInstallation')?.value,
+
+        installationPlanStart:
+          form.get('installationPlanStart')?.value,
+
+        installationActualStart:
+          form.get('installationActualStart')?.value,
+
+        installationForeCastStart:
+          form.get('installationForecastStart')?.value,
+
+        installationStartDelayReason:
+          form.get('installationStartDelayReason')?.value,
+
+        installationPlanFinish:
+          form.get('installationPlanFinish')?.value,
+
+        installationActualFinish:
+          form.get('installationActualFinish')?.value,
+
+        installationForeCastFinish:
+          form.get('installationForecastFinish')?.value,
+
+        installationFinishDelayReason:
+          form.get('installationFinishDelayReason')?.value,
+
+        craneBoomDown:
+          form.get('mainCraneBoomDown')?.value,
+
+        nacelleInstallation:
+          form.get('nacelleInstallation')?.value,
+
+        rotorAssemblyDate:
+          form.get('rotorAssemblyDate')?.value,
+
+        hubAssemblyDate:
+          form.get('hubAssemblyDate')?.value,
+
+        generatorAlignment:
+          form.get('generatorAlignmentDate')?.value,
+
+        cableLaying:
+          form.get('cableLaying')?.value,
+
+        mechanicalCompletion:
+          form.get('mechanicalCompletion')?.value,
+
+        electricalCompletion:
+          form.get('electricalCompletion')?.value,
+
+        liftInstallation:
+          form.get('liftInstallation')?.value,
+
+        qaInspectionFinish:
+          form.get('qaInspectionFinish')?.value,
+
+        mccPlan:
+          form.get('mccPlan')?.value,
+
+        mccActual:
+          form.get('mccActual')?.value,
+
+        mccForecast:
+          form.get('mccForecast')?.value,
+
+        mccDelayReason:
+          form.get('mccDelayReason')?.value,
+
+        mccSignOff:
+          form.get('mccSignOffDate')?.value,
+
+        towerInstallations,
+
+        bladeInstallations
+
+      };
+
+    });
+  }
+
   markStepComplete(stepIdx: number) {
     if (this.isStepRowsFilled(stepIdx)) {
       this.stepCompleted[stepIdx] = true;
-      if (stepIdx + 1 < this.steps.length) {
-        this.wtgPopupActiveStep = stepIdx + 1;
+      if (stepIdx === this.steps.length - 1) {
+        const payload = this.buildInstallationPayload();
+
+        console.log(payload);
+
+        this.apiService.installationCreate(payload).subscribe({
+          next: val => {
+            console.log(val);
+
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Step Saved',
+              detail: `${this.steps[stepIdx].label} data saved successfully.`
+            });
+          },
+          error: err => {
+            console.log(err);
+          }
+        });
+        return;
       }
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Step Saved',
-        detail: `${this.steps[stepIdx].label} data saved successfully.`
-      });
+      this.wtgPopupActiveStep = stepIdx + 1;
+      
     } else {
       this.messageService.add({
         severity: 'warn',
@@ -437,7 +629,76 @@ export class Installation implements OnInit {
   closeViewPopup() { this.viewVisible = false; }
   openViewAllDataFromWtg() { this.viewVisible = true; }
 
+  createForms(){
+    this.stepForms = [];
+
+    for (let stepIdx = 0; stepIdx < this.steps.length; stepIdx++) {
+      const cols = this.stepColumnDefs[stepIdx];
+      
+      const rowForms = this.prjWTGDetails.map(() => {
+        const group: any = {};
+
+        cols.forEach(col => group[col.field] = [null]);
+
+        return this.fb.group(group);
+      });
+
+      // console.log(rowForms);
+      
+      this.stepForms.push(rowForms);
+      console.log(this.stepForms);
+    }
+  }
+
+  fetchPrjWTGDetails(){
+    try {
+      const data = {
+        projectId: this.selectedProject.projectId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchPrjWTGDetails(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.prjWTGDetails = val.data;
+
+          this.createForms();
+        },
+        error: err => {
+          console.log(err);
+        }
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  fetchPrjCraneDetails(){
+    try {
+      const data = {
+        projectId: this.selectedProject.projectId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchPrjCraneDetails(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.prjCraneDetails = val.data;
+        },
+        error: err => {
+          console.log(err);
+        }
+      })
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   openWtgPopup(row: SummaryRow) {
+    this.selectedProject = row;
     this.selectedSummaryRow = row;
     this.wtgPopupActiveStep = 0;
     this.wtgPopupVisible = true;
@@ -457,6 +718,9 @@ export class Installation implements OnInit {
         this.rowCraneSupplierValues[rowIdx] = 5;
       }
     }
+
+    this.fetchPrjCraneDetails();
+    this.fetchPrjWTGDetails();
   }
 
   closeWtgPopup() {
@@ -517,20 +781,132 @@ export class Installation implements OnInit {
     return this.wtgRows.slice(0, count).map(r => ({ label: r.maximoId, value: r.maximoId }));
   }
 
+  downloadTemplate(){
+    try {
+      const data = {
+        projectId: this.selectedProject.projectId
+      }
+
+      console.log(data);
+
+      this.apiService.installationExport(data).subscribe({
+        next: (val: Blob) => {
+          console.log(val);
+          const url = window.URL.createObjectURL(val);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Installation.xlsx`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Installation excel template downloaded successfully.' });
+          this.chooseDownloadTemplate = false;
+        },
+        error: async(err) => {
+          console.log(err);
+          if (err.error instanceof Blob) {
+            const text = await err.error.text();
+            const json = JSON.parse(text);
+
+            this.messageService.add({severity: 'error', summary: 'Error', detail: json.detail || 'Something went wrong' });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail || 'Something went wrong' });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  onFileSelect(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  onUpload(event: any){
+    this.selectedFile = event.files[0];
+
+    if (!this.selectedFile) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please select file'
+      });
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append('file', this.selectedFile);
+
+    formData.append('projectId', this.selectedProject.projectId);
+
+    this.apiService.installationImport(formData).subscribe({
+      next: val => {
+        console.log(val);
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'File uploaded successfully'
+        });
+
+        this.displayImportDialog = false;
+        this.chooseUploadTemplate = false;
+
+        this.selectedFile = null;
+      },
+      error: err => {
+        console.log(err);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error.detail
+        });
+      }
+    })
+  }
+
+  uploadTemplate(){
+    try {
+      this.displayImportDialog = true;
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   getMenuItems(){
     return [
       {
         label: 'Import',
-        icon: 'pi pi-upload'
+        icon: 'pi pi-upload',
+        command: () => this.openImportDialog()
       },
       {
         label: 'Export',
-        icon: 'pi pi-download'
+        icon: 'pi pi-download',
+        command: () => this.exportInstallation()
       }
     ]
   }
 
+  openImportDialog(){
+    this.chooseUploadTemplate = true;
+  }
+
+  exportInstallation(){
+    this.chooseDownloadTemplate = true;
+  }
+
   shouldShowTowerFields(): boolean {
     return this.selectedSummaryRow?.projectCode !== 'P-8002';
+  }
+
+  openMenu(menu: any, event: any, project: any){
+    this.selectedProject = project;
+    console.log(this.selectedProject);
+    this.items = this.getMenuItems();
+    menu.toggle(event);
   }
 }

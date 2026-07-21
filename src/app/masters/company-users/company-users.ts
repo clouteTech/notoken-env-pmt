@@ -19,6 +19,7 @@ export class CompanyUsers implements OnInit {
   selectedCompanyUser: any;
 
   companyUserList: any[] = [];
+  assignList:any[] = [];
 
   private fb = inject(FormBuilder);
 
@@ -117,8 +118,18 @@ export class CompanyUsers implements OnInit {
   assignUserGroups(){
     try {
       this.assignUserGroupModal = true;
+      let data = {};
+      this.apiService.userGroupInfo(data)
+      .subscribe({
+        next:val=>{
+          this.assignList = val.data;
+        },error:(err)=>{
+
+        }
+      })
     } catch (error) {
-      console.log(error);
+       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+
     }
   }
 
@@ -184,7 +195,7 @@ export class CompanyUsers implements OnInit {
       {
         label: 'Assign',
         icon: 'pi pi-user-plus',
-        command: () => this.assignUserGroups()
+        command: () => this.assignUserGroups(),
       },
       {
         label: 'Edit',
@@ -207,5 +218,28 @@ export class CompanyUsers implements OnInit {
   onDialogClose() {
     this.selectedCompanyUser = null;
     this.companyUserForm.reset();
+  }
+
+  assignUsers(){
+    try{
+      var uID = this.selectedCompanyUser.userId;
+      var gID = this.selectedCompanyUser.userGroups[0].userGroupId
+      let data = {
+        "userId": uID,
+        "userGroupId": gID
+      }
+      this.apiService.assignGroup(data)
+      .subscribe({
+        next:(val)=>{
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Assigned Successfully' });
+
+        },error:(err)=>{
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+        }
+      })
+    }catch(e){
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+
+    }
   }
 }

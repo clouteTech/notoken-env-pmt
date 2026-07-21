@@ -16,6 +16,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { Shared } from '../shared/services/shared';
+import { Apiservice } from '../service/apiservice';
 
 
 export interface WtgRow {
@@ -27,7 +28,7 @@ export interface WtgRow {
 export interface SummaryRow {
   projectCode: string;
   projectName: string;
-  wtgCount: number;
+  totalWtgs: number;
 }
 
 export interface ViewColumn {
@@ -74,12 +75,21 @@ export class Foundation1 {
   selectedSummaryRow: SummaryRow | null = null;
 
   items: MenuItem[] = [];
+  displayImportDialog: boolean = false;
+
+  selectedRow: any;
+
+  selectedFile: any;
+
+  selectedProject: any;
+
+  prjLocationDetails: any[] = [];
 
   // Summary Table rows
   summaryRows: SummaryRow[] = [
-    { projectCode: 'P-8001', projectName: 'India_TataPower_Chennai_TamilNadu_Phase1_250MW', wtgCount: 2 },
-    { projectCode: 'P-8002', projectName: 'India_AdaniEnergy_Belagavi_Karnataka_Phase2_180MW', wtgCount: 5 },
-    { projectCode: 'P-8003', projectName: 'India_ReNewPower_Jaisalmer_Rajasthan_Phase1_320MW', wtgCount: 3 },
+    /* { projectCode: 'P-8001', projectName: 'India_TataPower_Chennai_TamilNadu_Phase1_250MW', totalWtgs: 2 },
+    { projectCode: 'P-8002', projectName: 'India_AdaniEnergy_Belagavi_Karnataka_Phase2_180MW', totalWtgs: 5 },
+    { projectCode: 'P-8003', projectName: 'India_ReNewPower_Jaisalmer_Rajasthan_Phase1_320MW', totalWtgs: 3 }, */
   ];
 
   steps = [
@@ -92,28 +102,28 @@ export class Foundation1 {
     { id: 5, label: 'Reinforcement', fields: ['reinforcementStartDate', 'reinforcementStartActual', 'reinforcementFinishDate', 'reinforcementFinishActual', 'reinforcementDelayReason'] },
     { id: 6, label: 'Earthing Strip', fields: ['earthingStripDate', 'earthingStripActual', 'earthingStripDelayReason'] },
     { id: 7, label: 'Shuttering', fields: ['shutteringDate', 'shutteringActual', 'shutteringDelayReason'] },
-    { id: 8, label: 'Foundation Casting Raft', fields: ['foundationCastingRaftDate', 'foundationCastingRaftActual', 'foundationCastingRaftDelayReason'] },
-    { id: 9, label: 'Foundation Casting Pedestal', fields: ['foundationCastingPedestalDate', 'foundationCastingPedestalActual', 'foundationCastingPedestalDelayReason'] },
+    { id: 8, label: 'Foundation Casting Raft', fields: ['foundationCastingRaftDate', 'raftCastingActual', 'raftCastingDelayReason'] },
+    { id: 9, label: 'Foundation Casting Pedestal', fields: ['foundationCastingPedestalDate', 'pedestalCastingActual', 'pedestalCastingDelayReason'] },
     { id: 10, label: 'Foundation Cube Test', fields: ['foundation7DayCubeTestDate', 'foundation21DayCubeTestDate', 'foundation28DayCubeTestDate', 'foundationCubeTestDelayReason'] },
     { id: 11, label: 'Grouting', fields: ['groutingDate', 'groutingActual', 'groutingDelayReason'] },
-    { id: 12, label: 'Grouting Cube Test', fields: ['grouting7DayCubeTestDate', 'grouting28DayCubeTestDate', 'groutingCubeTestDelayReason'] },
+    { id: 12, label: 'Grouting Cube Test', fields: ['groutingCubeTest7Days', 'groutingCubeTest28Days', 'groutingCubeTestDelayReason'] },
     { id: 13, label: 'Backfilling', fields: ['backfillingDate', 'backfillingActual', 'backfillingDelayReason'] },
     { id: 14, label: 'Approach Road', fields: ['approachRoadDate', 'approachRoadActual', 'approachRoadDelayReason'] },
-    { id: 15, label: 'Crane Platform', fields: ['cranePlatformDate', 'cranePlatformActual', 'cranePlatformDelayReason', 'locClearForErectionDate', 'locClearForErectionActual', 'locClearForErectionDelayReason'] },
-    { id: 16, label: 'Location Clearance', fields: ['locClearForErectionDate', 'locClearForErectionActual', 'locClearForErectionDelayReason'] },
+    { id: 15, label: 'Crane Platform', fields: ['cranePlatformDate', 'cranePlatformActual', 'cranePlatformDelayReason', 'locClearForErectionDate', 'locationClearanceActual', 'locClearForErectionDelayReason'] },
+    { id: 16, label: 'Location Clearance', fields: ['locClearForErectionDate', 'locationClearanceActual', 'locClearForErectionDelayReason'] },
   ];
 
   stepColumnDefs: { [stepIdx: number]: { field: string; header: string; type: 'date' | 'text' | 'number' }[] } = {
     0: [
       // { field: 'soilTestStartDate', header: 'Soil Test Plan Start', type: 'date' },
-      { field: 'soilTestStartActual', header: 'Soil Test Actual Start', type: 'date' },
+      { field: 'soilTestActualStart', header: 'Soil Test Actual Start', type: 'date' },
       // { field: 'soilTestForecastStart', header: 'Soil Test Forecast Start', type: 'date' },
       // { field: 'soilTestStartDelayReason', header: 'Soil Test Start Delay Reason', type: 'text' },
       // { field: 'soilTestPlanFinish', header: 'Soil Test Plan Finish', type: 'date' },
       { field: 'soilTestActualFinish', header: 'Soil Test Actual Finish', type: 'date' },
       // { field: 'soilTestForecastFinish', header: 'Soil Test Forecast Finish', type: 'date' },
       // { field: 'soilTestFinishDelayReason', header: 'Soil Test Finish Delay Reason', type: 'text' },
-      { field: 'designSBC', header: 'Design SBC', type: 'number' },
+      // { field: 'designSBC', header: 'Design SBC', type: 'number' },
       { field: 'actualSBC', header: 'Actual SBC (t/m²)', type: 'number' }
     ],
     // 1: [
@@ -174,21 +184,21 @@ export class Foundation1 {
       // { field: 'shutteringDelayReason', header: 'Shuttering Delay Reason', type: 'text' },
     ],
     7: [
-      { field: 'foundationCastingRaftPlan', header: 'Foundation Casting Raft Plan', type: 'date' },
-      { field: 'foundationCastingRaftActual', header: 'Foundation Casting Raft Actual', type: 'date' },
-      { field: 'foundationCastingRaftForecast', header: 'Foundation Casting Raft Forecast', type: 'date' },
-      { field: 'foundationCastingRaftDelayReason', header: 'Foundation Casting Raft Delay Reason', type: 'text' },
+      { field: 'raftCastingPlan', header: 'Foundation Casting Raft Plan', type: 'date' },
+      { field: 'raftCastingActual', header: 'Foundation Casting Raft Actual', type: 'date' },
+      { field: 'raftCastingForecast', header: 'Foundation Casting Raft Forecast', type: 'date' },
+      { field: 'raftCastingDelayReason', header: 'Foundation Casting Raft Delay Reason', type: 'text' },
     ],
     8: [
-      { field: 'foundationCastingPedestalPlan', header: 'Foundation Casting Pedestal Plan', type: 'date' },
-      { field: 'foundationCastingPedestalActual', header: 'Foundation Casting Pedestal Actual', type: 'date' },
-      { field: 'foundationCastingPedestalForecast', header: 'Foundation Casting Pedestal Forecast', type: 'date' },
-      { field: 'foundationCastingPedestalDelayReason', header: 'Foundation Casting Pedestal Delay Reason', type: 'text' },
+      { field: 'pedestalCastingPlan', header: 'Foundation Casting Pedestal Plan', type: 'date' },
+      { field: 'pedestalCastingActual', header: 'Foundation Casting Pedestal Actual', type: 'date' },
+      { field: 'pedestalCastingForecast', header: 'Foundation Casting Pedestal Forecast', type: 'date' },
+      { field: 'pedestalCastingDelayReason', header: 'Foundation Casting Pedestal Delay Reason', type: 'text' },
     ],
     9: [
-      { field: 'foundation7DaysCubeTestDate', header: 'Foundation 7 Days Cube Test Date', type: 'date' },
-      { field: 'foundation21DaysCubeTestDate', header: 'Foundation 21 Days Cube Test Date', type: 'date' },
-      { field: 'foundation28DaysCubeTestDate', header: 'Foundation 28 Days Cube Test Date', type: 'date' },
+      { field: 'foundationCubeTest7Days', header: 'Foundation 7 Days Cube Test Date', type: 'date' },
+      { field: 'foundationCubeTest21Days', header: 'Foundation 21 Days Cube Test Date', type: 'date' },
+      { field: 'foundationCubeTest28Days', header: 'Foundation 28 Days Cube Test Date', type: 'date' },
       // { field: 'foundationCubeTestDelayReason', header: 'Foundation Cube Test Delay Reason', type: 'text' },
     ],
     10: [
@@ -198,8 +208,8 @@ export class Foundation1 {
       // { field: 'groutingDelayReason', header: 'Grouting Delay Reason', type: 'text' },
     ],
     11: [
-      { field: 'grouting7DayCubeTestDate', header: 'Grouting 7 Days Cube Test Date', type: 'date' },
-      { field: 'grouting28DayCubeTestDate', header: 'Grouting 28 Days Cube Test Date', type: 'date' },
+      { field: 'groutingCubeTest7Days', header: 'Grouting 7 Days Cube Test Date', type: 'date' },
+      { field: 'groutingCubeTest28Days', header: 'Grouting 28 Days Cube Test Date', type: 'date' },
       // { field: 'groutingCubeTestDelayReason', header: 'Grouting Cube Test Delay Reason', type: 'text' },
     ],
     12: [
@@ -222,17 +232,96 @@ export class Foundation1 {
     ],
     15: [
       // { field: 'locClearForErectionPlan', header: 'Loc Clear for Erection Plan', type: 'date' },
-      { field: 'locClearForErectionActual', header: 'Loc Clear for Erection Actual', type: 'date' },
+      { field: 'locationClearanceActual', header: 'Loc Clear for Erection Actual', type: 'date' },
       // { field: 'locClearForErectionForecast', header: 'Loc Clear for Erection Forecast', type: 'date' },
       // { field: 'locClearForErectionDelayReason', header: 'Loc Clear for Erection Delay Reason', type: 'text' },
     ]
   };
 
-  constructor(private fb: FormBuilder, private messageService: MessageService) {}
+  chooseDownloadTemplate:boolean = false;
+  chooseUploadTemplate:boolean = false;
+  downloadLineItem:any;
+  DocName:any = "";
+  uploadLocationTemplate:boolean = false;
+
+
+  stepConfig: {
+    [key: number]: {
+      key: string;
+      api: (payload: any) => any;
+    };
+  } = {
+    0: {
+      key: 'soilTest',
+      api: (payload: any) => this.apiService.createFoundationSoilTest(payload)
+    },
+    1: {
+      key: 'excavation',
+      api: (payload: any) => this.apiService.createFoundationExcavation(payload)
+    },
+    2: {
+      key: 'pcc',
+      api: (payload: any) => this.apiService.createFoundationPCC(payload)
+    },
+    3: {
+      key: 'flange',
+      api: (payload: any) => this.apiService.createFoundationFlange(payload)
+    },
+    4: {
+      key: 'reinforcement',
+      api: (payload: any) => this.apiService.createFoundationReinforcement(payload)
+    },
+    5: {
+      key: 'earthing',
+      api: (payload: any) => this.apiService.createFoundationEarthing(payload)
+    }, 
+    6: {
+      key: 'shuttering',
+      api: (payload: any) => this.apiService.createFoundationShuttering(payload)
+    },
+    7: {
+      key: 'raftCasting',
+      api: (payload: any) => this.apiService.createFoundationRaftCasting(payload)
+    },
+    8: {
+      key: 'pedestalCasting',
+      api: (payload: any) => this.apiService.createFoundationPedestalCasting(payload)
+    },
+    9: {
+      key: 'foundationCubeTest',
+      api: (payload: any) => this.apiService.createFoundationCubeTest(payload)
+    },
+    10: {
+      key: 'grouting',
+      api: (payload: any) => this.apiService.createFoundationGrouting(payload)
+    },
+    11: {
+      key: 'groutingCubeTest',
+      api: (payload: any) => this.apiService.createFoundationGroutingCubeTest(payload)
+    },
+    12: {
+      key: 'backfilling',
+      api: (payload: any) => this.apiService.createFoundationBackfilling(payload)
+    },
+    13: {
+      key: 'approachRoad',
+      api: (payload: any) => this.apiService.createFoundationApproachRoad(payload)
+    },
+    14: {
+      key: 'cranePlatform',
+      api: (payload: any) => this.apiService.createFoundationCranePlatform(payload)
+    },
+    15: {
+      key: 'locationClearance',
+      api: (payload: any) => this.apiService.createFoundationLocationClearance(payload)
+    }
+  };
+
+  constructor(private fb: FormBuilder, private messageService: MessageService,private apiService:Apiservice) {}
 
   ngOnInit() {
-    // Build enough WTG rows to cover the maximum wtgCount across all summary rows
-    const maxWtg = Math.max(this.wtgQty, ...this.summaryRows.map(r => r.wtgCount));
+    // Build enough WTG rows to cover the maximum totalWtgs across all summary rows
+   /*  const maxWtg = Math.max(this.wtgQty, ...this.summaryRows.map(r => r.totalWtgs));
     for (let i = 1; i <= maxWtg; i++) {
       this.wtgRows.push({
         wtgId: `WTG-${String(i).padStart(2, '0')}`,
@@ -252,9 +341,69 @@ export class Foundation1 {
       this.stepForms.push(rowForms);
     }
 
-    this.items = this.getMenuItems();
+    this.items = this.getMenuItems("");
+    this.getProjectList(); */
+    // Don't build wtgRows/stepForms here anymore — wait for API
+  this.items = this.getMenuItems("");
+  this.getProjectList();
+}
+
+// Call this after you know the WTG count from the selected row
+rebuildWtgRowsAndForms(totalWtgs: number) {
+  this.wtgRows = [];
+  this.stepForms = [];
+
+  for (let i = 1; i <= totalWtgs; i++) {
+    this.wtgRows.push({
+      wtgId: `WTG-${String(i).padStart(2, '0')}`,
+      locationNo: `LOC-${String(i).padStart(2, '0')}`,
+      maximoId: `MAX-${String(i).padStart(3, '0')}`
+    });
   }
 
+  for (let stepIdx = 0; stepIdx < this.steps.length; stepIdx++) {
+    const cols = this.stepColumnDefs[stepIdx];
+    const rowForms: FormGroup[] = this.wtgRows.map(() => {
+      const group: any = {};
+      cols.forEach(col => { group[col.field] = [null]; });
+      return this.fb.group(group);
+    });
+    this.stepForms.push(rowForms);
+  }
+  }
+
+  getProjectList(){
+    try{
+      let data = {
+        "search": null,
+        "customerId": null,
+        "clusterId": null,
+        "zoneId": null,
+        "projectManagerId": null,
+        "projectTerm": null,
+        "probability": null,
+        "page": 0,
+        "size": 10,
+        "sortBy": "createdOn",
+        "sortDirection": "asc"
+      }
+      this.apiService.projectSearch(data)
+      .subscribe({
+        next:(res)=>{
+          console.log(res);
+          this.summaryRows = res.data.content
+        },error:(err)=>{
+
+        }
+      })
+    }catch(e){
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please Try Again.'
+      });
+    }
+  }
   // ─── ROW-LEVEL UNLOCK LOGIC ───────────────────────────────────────────────
   /**
    * A specific row in stepIdx is enabled only if the SAME rowIdx
@@ -262,8 +411,9 @@ export class Foundation1 {
    * Step 0 rows are always enabled.
    */
   isRowEnabled(stepIdx: number, rowIdx: number): boolean {
-    if (stepIdx === 0) return true;
-    return this.isPreviousStepRowFullyFilled(stepIdx - 1, rowIdx);
+    /* if (stepIdx === 0) return true;
+    return this.isPreviousStepRowFullyFilled(stepIdx - 1, rowIdx); */
+    return true;
   }
 
   isPreviousStepRowFullyFilled(stepIdx: number, rowIdx: number): boolean {
@@ -276,8 +426,9 @@ export class Foundation1 {
   }
 
   isStepEnabled(stepIdx: number): boolean {
-    if (stepIdx === 0) return true;
-    return this.stepCompleted[stepIdx - 1] || this.isAnyRowFullyFilledInStep(stepIdx - 1);
+    /* if (stepIdx === 0) return true;
+    return this.stepCompleted[stepIdx - 1] || this.isAnyRowFullyFilledInStep(stepIdx - 1); */
+    return true;
   }
 
   isAnyRowFullyFilledInStep(stepIdx: number): boolean {
@@ -312,17 +463,53 @@ export class Foundation1 {
     return this.isAnyRowFilledInStep(stepIdx);
   }
 
+  getStepPayload(stepIdx: number){
+    const key = this.stepConfig[stepIdx].key;
+
+    return this.stepForms[stepIdx].map((form, index) => ({
+      locationId: this.prjLocationDetails[index].locationId,
+      [key]: {
+        ...form.value
+      }
+    }));
+  }
+
   markStepComplete(stepIdx: number) {
     if (this.isStepRowsFilled(stepIdx)) {
-      this.stepCompleted[stepIdx] = true;
-      if (stepIdx + 1 < this.steps.length) {
-        this.activeStep = stepIdx + 1;
-      }
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Step Saved',
-        detail: `${this.steps[stepIdx].label} data saved successfully.`
-      });
+      const payload = this.getStepPayload(stepIdx);
+      console.log(payload);
+
+      this.stepConfig[stepIdx].api(payload).subscribe({
+        next: (val: any) => {
+          console.log(val);
+
+          console.log('API Success');
+          console.log('Current Step:', stepIdx);
+
+          this.stepCompleted[stepIdx] = true;
+
+          if (stepIdx + 1 < this.steps.length) {
+            this.wtgPopupActiveStep = stepIdx + 1;
+          }
+
+          console.log('New Active Step:', this.activeStep);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Step Saved',
+            detail: `${this.steps[stepIdx].label} data saved successfully.`
+          });
+        },
+        error: (err: any) => {
+          console.log(err);
+
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Save Failed',
+            detail: err?.error?.detail || 'Unable to save data.'
+          });
+        }
+      })
     } else {
       this.messageService.add({
         severity: 'warn',
@@ -376,12 +563,149 @@ export class Foundation1 {
   /** Opens View All Data from inside the Open WTG popup — keeps selectedSummaryRow set */
   openViewAllDataFromWtg() {
     this.viewVisible = true;
+    console.log(this.summaryRows);
   }
 
-  openWtgPopup(row: SummaryRow) {
+  viewAllData(val:any){
+    try{
+      let data = {
+        "projectId": val.projectId
+      }
+      this.apiService.foundationActivities(data)
+      .subscribe({
+        next:(res)=>{
+          console.log(res);
+          // If res.data is empty or null, skip binding
+          if (!res.data || res.data.length === 0) return;
+
+          this.rebuildWtgRowsAndForms(res.data.length);
+
+          this.bindApiDataToStepForms(res.data);
+        },error:(err)=>{
+
+        }
+      })
+    }catch(e){
+      this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Please Try Again'
+        });
+    }
+  }
+
+bindApiDataToStepForms(data: any[]) {
+  console.log('bindApiDataToStepForms called, data length:', data.length);
+  console.log('wtgRows length:', this.wtgRows.length);
+  console.log('stepForms length:', this.stepForms.length);
+
+  data.forEach((wtgData: any, rowIdx: number) => {
+    console.log(`--- rowIdx: ${rowIdx}, wtgCode: ${wtgData.wtgCode}`);
+    console.log('soilTest raw:', wtgData.soilTest);
+
+    if (this.wtgRows[rowIdx]) {
+      if (wtgData.wtgCode)      this.wtgRows[rowIdx].wtgId      = wtgData.wtgCode;
+      if (wtgData.locationCode) this.wtgRows[rowIdx].locationNo = wtgData.locationCode;
+    } else {
+      console.warn(`wtgRows[${rowIdx}] does not exist!`);
+    }
+
+    const stepDataMap: { [stepIdx: number]: any } = {
+      0:  wtgData.soilTest?.soilTest,
+      1:  wtgData.excavation?.excavation,
+      2:  wtgData.pcc?.pcc,
+      3:  wtgData.flange?.flange,
+      4:  wtgData.reinforcement?.reinforcement,
+      5:  wtgData.earthing?.earthing,
+      6:  wtgData.shuttering?.shuttering,
+      7:  wtgData.raftCasting?.raftCasting,
+      8:  wtgData.pedestalCasting?.pedestalCasting,
+      9:  wtgData.foundationCubeTest?.foundationCubeTest,
+      10: wtgData.grouting?.grouting,
+      11: wtgData.groutingCubeTest?.groutingCubeTest,
+      12: wtgData.backfilling?.backfilling,
+      13: wtgData.approachRoad?.approachRoad,
+      14: wtgData.cranePlatform?.cranePlatform,
+      15: wtgData.locationClearance?.locationClearance,
+    };
+
+    // Only log step 0 for WTG-006 (rowIdx 5)
+    if (rowIdx === 5) {
+      console.log('stepDataMap[0] (soilTest):', stepDataMap[0]);
+      console.log('stepForms[0][5] exists:', !!this.stepForms[0]?.[5]);
+    }
+
+    this.steps.forEach((step, stepIdx) => {
+      const cols = this.stepColumnDefs[stepIdx];
+      if (!this.stepForms[stepIdx]?.[rowIdx]) {
+        console.warn(`stepForms[${stepIdx}][${rowIdx}] missing!`);
+        return;
+      }
+
+      const apiStepData = stepDataMap[stepIdx];
+      if (!apiStepData) return;
+
+      const patchObj: any = {};
+      cols.forEach(col => {
+        const apiKey = Object.keys(apiStepData).find(
+          k => k.toLowerCase() === col.field.toLowerCase()
+        );
+        const val = apiKey ? apiStepData[apiKey] : undefined;
+
+        if (rowIdx === 5 && stepIdx === 0) {
+          console.log(`col.field: ${col.field}, apiKey: ${apiKey}, val: ${val}`);
+        }
+
+        if (val !== undefined && val !== null) {
+          patchObj[col.field] = (col.type === 'date' && typeof val === 'string')
+            ? new Date(val)
+            : val;
+        }
+      });
+
+      if (rowIdx === 5 && stepIdx === 0) {
+        console.log('patchObj for WTG-006 step 0:', patchObj);
+        console.log('form value BEFORE patch:', this.stepForms[0][5].value);
+      }
+
+      this.stepForms[stepIdx][rowIdx].patchValue(patchObj);
+
+      if (rowIdx === 5 && stepIdx === 0) {
+        console.log('form value AFTER patch:', this.stepForms[0][5].value);
+      }
+    });
+  });
+} 
+
+  fetchPrjLocationInfo(){
+    try {
+      const data = {
+        projectId: this.selectedProject.projectId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchPrjLocationInfo(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.prjLocationDetails = val.data;
+        },
+        error: err => {
+          console.log(err);
+        }
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  openWtgPopup(row: any) {
+    this.selectedProject = row;
     this.selectedSummaryRow = row;
     this.wtgPopupActiveStep = 0;
     this.wtgPopupVisible = true;
+    this.viewAllData(this.selectedSummaryRow);
+    this.fetchPrjLocationInfo();
   }
 
   closeWtgPopup() {
@@ -394,7 +718,7 @@ export class Foundation1 {
    * Sliced to only the WTG count of the currently selected summary row.
    */
   getViewWtgRows(): WtgRow[] {
-    const count = this.selectedSummaryRow?.wtgCount ?? this.wtgRows.length;
+    const count = this.selectedSummaryRow?.totalWtgs ?? this.wtgRows.length;
     return this.wtgRows.slice(0, count);
   }
 
@@ -404,7 +728,7 @@ export class Foundation1 {
    * rowIndex from p-table is used directly as the form index.
    */
   getWtgPopupRows(): WtgRow[] {
-    const count = this.selectedSummaryRow?.wtgCount ?? this.wtgRows.length;
+    const count = this.selectedSummaryRow?.totalWtgs ?? this.wtgRows.length;
     return this.wtgRows.slice(0, count);
   }
 
@@ -444,7 +768,7 @@ export class Foundation1 {
   }
 
   getLocationOptions(): any[] {
-    const count = this.selectedSummaryRow?.wtgCount ?? this.wtgRows.length;
+    const count = this.selectedSummaryRow?.totalWtgs ?? this.wtgRows.length;
 
     return this.wtgRows.slice(0, count).map(r => ({
       label: r.locationNo,
@@ -453,7 +777,7 @@ export class Foundation1 {
   }
 
   getMaximoOptions(): any[] {
-    const count = this.selectedSummaryRow?.wtgCount ?? this.wtgRows.length;
+    const count = this.selectedSummaryRow?.totalWtgs ?? this.wtgRows.length;
 
     return this.wtgRows.slice(0, count).map(r => ({
       label: r.maximoId,
@@ -461,16 +785,211 @@ export class Foundation1 {
     }));
   }
 
-  getMenuItems(){
+  getMenuItems(row:any){
     return [
       {
         label: 'Import',
-        icon: 'pi pi-upload'
+        icon: 'pi pi-upload',
+        command:() =>  this.openImportDialog(row,'Import')
       },
       {
         label: 'Export',
-        icon: 'pi pi-download'
+        icon: 'pi pi-download',
+        command:() =>  this.exportFoundation(row,'Export')
       }
     ]
   }
+
+  openImportDialog(row: any,chooseTye:any) {
+  this.selectedRow = row;
+  /* this.displayImportDialog = true; */
+  this.chooseUploadTemplate = true;
+  
+}
+
+onFileSelect(event: any) {
+  this.selectedFile = event.target.files[0];
+}
+
+
+  exportFoundation(val:any,chooseTye:any){
+    try{
+      if(val){
+        this.chooseDownloadTemplate = true;
+        this.downloadLineItem = val;
+      }
+     /*  */
+    }catch(e){
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  downloadTemplate(val:any){
+    try{
+      if(val == 'foundation'){
+         let data = {
+        "projectId": this.downloadLineItem.projectId
+      }
+      console.log("foundation", data);
+      this.apiService.foundationExport(data)
+      .subscribe({
+        next: (val: Blob) => {
+          const url = window.URL.createObjectURL(val);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Production_Quality_${`FoundationTracker`}.xlsx`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+         // this.selectedDprProject = [];
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Production & Quality excel template downloaded successfully.' });
+          this.chooseDownloadTemplate = false;
+        },
+        error: async(err) => {
+          console.log(err);
+          if (err.error instanceof Blob) {
+            const text = await err.error.text();
+            const json = JSON.parse(text);
+
+            this.messageService.add({severity: 'error', summary: 'Error', detail: json.detail || 'Something went wrong' });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail || 'Something went wrong' });
+          }
+        }
+      })
+      }else if(val == 'location'){
+        let data = {
+        "projectId": this.downloadLineItem.projectId
+      }
+      console.log("location", data);
+      this.apiService.locationExport(data)
+      .subscribe({
+        next: (val: Blob) => {
+          const url = window.URL.createObjectURL(val);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${`Location Template`}.xlsx`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+         // this.selectedDprProject = [];
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Location template downloaded successfully.' });
+          this.chooseDownloadTemplate = false;
+        },
+        error: async(err) => {
+          console.log(err);
+          if (err.error instanceof Blob) {
+            const text = await err.error.text();
+            const json = JSON.parse(text);
+
+            this.messageService.add({severity: 'error', summary: 'Error', detail: json.detail || 'Something went wrong' });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail || 'Something went wrong' });
+          }
+        }
+      })
+      }
+    }catch(e){
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  uploadTemplate(val:any){
+    try{
+      if(val == 'foundation'){
+       
+     this.displayImportDialog = true;
+      }else if(val == 'location'){
+        this.uploadLocationTemplate = true;
+        
+      } 
+    }catch(e){
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+
+  onUpload(event: any) {
+
+    this.selectedFile = event.files[0]
+
+    if (!this.selectedFile) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please select file'
+      });
+      return;
+    }
+
+  const formData = new FormData();
+
+  formData.append('file', this.selectedFile);
+
+  formData.append('projectId', this.selectedRow.projectId);
+
+  this.apiService.foundationImport(formData)
+    .subscribe({
+      next: (res) => {
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'File uploaded successfully'
+        });
+
+        this.displayImportDialog = false;
+
+        this.selectedFile = null;
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error.detail
+        });
+      }
+    });
+}
+
+onUploadLocation(event: any) {
+
+    this.selectedFile = event.files[0]
+
+  if (!this.selectedFile) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please select file'
+    });
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append('file', this.selectedFile);
+
+  formData.append('projectId', this.selectedRow.projectId);
+
+  this.apiService.locationImport(formData)
+    .subscribe({
+      next: (res) => {
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'File uploaded successfully'
+        });
+
+        this.uploadLocationTemplate = false;
+
+        this.selectedFile = null;
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error.detail
+        });
+      }
+    });
+}
 }

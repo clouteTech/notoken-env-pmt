@@ -109,22 +109,35 @@
 </p-dialog>
 
 <p-dialog header="Assign User Group" [(visible)]="assignUserGroupModal" [modal]="true" [draggable]="false" (onHide)="onDialogClose()"
-    [style]="{ width: '40rem' }">
-    <div>
-        Company User: Super Admin
-    </div>
-    <div>
-        @for (item of items; track $index) {
-            <p>SL No</p>
-            <p>User Group</p>
-            <div>
-                <p-button label="Assign" />
-            </div>
-        }
-    </div>
-    <div class="create-btn">
-        <button pButton pRipple type="submit">Submit</button>
-    </div>
+    [style]="{ width: '50rem' }">
+
+    <!--  -->
+    <p-table [value]="assignList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+            <ng-template #header>
+                <tr>
+                    <th>SL No</th>
+                    <th>User Group</th>
+                    
+                    <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-user let-i="rowIndex">
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{user.groupName}}</td>
+                    <td>
+                        <p-button label="Assign" (click)="assignUsers()" [disabled]="assignList"/>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    <!--  -->
+    
 </p-dialog>
 
 <p-toast />

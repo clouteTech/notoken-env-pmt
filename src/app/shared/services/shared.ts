@@ -95,7 +95,9 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
     TabsModule,
     MessageModule,
     TieredMenuModule,
-    ToggleSwitchModule
+    ToggleSwitchModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
   providers:[
     MessageService,

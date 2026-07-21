@@ -244,6 +244,205 @@ export class Apiservice {
     return this.postMethod('auth/user-user-group/assign-group', params);
   }
 
+  customerSearch(params: any): Observable<any>{
+    return this.postMethod('master/customer/search', params);
+  }
+  customerGet(params: any): Observable<any>{
+    return this.postMethod('master/customer/get', params);
+  }
+  createCustomer(params: any): Observable<any>{
+    return this.postMethod('master/customer/create', params);
+  }
+
+  foundationExport(params: any): Observable<any>{
+     return this.postMethod(
+    'foundation/export',
+    params,
+    { responseType: 'blob' }
+  );
+  }
+   foundationImport(params: any): Observable<any>{
+    return this.postMethod('foundation/import', params);
+  }
+
+  spvAdd(params: any): Observable<any>{
+    return this.postMethod('master/customer/spv/add', params);
+  }
+  spvUpdate(params: any): Observable<any>{
+    return this.postMethod('master/customer/spv/update', params);
+  }
+  spvDelete(params: any): Observable<any>{
+    return this.postMethod('master/customer/spv/delete', params);
+  }
+  userGroupInfo(params: any): Observable<any>{
+    return this.postMethod('auth/user-group/info', params);
+  }
+  assignGroup(params: any): Observable<any>{
+    return this.postMethod('auth/user-user-group/assign-group', params);
+  }
+
+  projectSearch(params: any): Observable<any>{
+    return this.postMethod('project/search', params);
+  }
+  projectCreate(params: any): Observable<any>{
+    return this.postMethod('project/create', params);
+  }
+  foundationActivities(params: any): Observable<any>{
+    return this.postMethod('foundation/activities', params);
+  }
+  zoneInfo(params: any): Observable<any>{
+    return this.postMethod('master/zone/info', params);
+  }
+  wtgTypeInfo(params: any): Observable<any>{
+    return this.postMethod('master/wtg-type/info', params);
+  }
+  capacityInfo(params: any): Observable<any>{
+    return this.postMethod('master/capacity/info', params);
+  }
+  towerTypeInfo(params: any): Observable<any>{
+    return this.postMethod('master/tower-type/info', params);
+  }
+  bladeTypeInfo(params: any): Observable<any>{
+    return this.postMethod('master/blade-type/info', params);
+  }
+  gridConnectivityInfo(params: any): Observable<any>{
+    return this.postMethod('master/grid-connectivity/info', params);
+  }
+  ppaTypeInfo(params: any): Observable<any>{
+    return this.postMethod('master/ppa-type/info', params);
+  }
+  customerInfo(params: any): Observable<any>{
+    return this.postMethod('master/customer/info', params);
+  }
+  clusterInfo(params: any): Observable<any>{
+    return this.postMethod('master/organization/cluster/info', params);
+  }
+  companyUserInfo(params: any): Observable<any>{
+    return this.postMethod('auth/company-user/info', params);
+  }
+  customerSpvInfo(params: any): Observable<any>{
+    return this.postMethod('master/customer/spv/info', params);
+  }
+  locationExport(params: any): Observable<any>{
+    return this.postMethod(
+    'project/location/export',
+    params,
+    { responseType: 'blob' }
+    );
+  }
+
+  locationImport(params: any): Observable<any>{
+    return this.postMethod('project/location/import', params);
+  }
+
+  // Installation
+
+  installationList(params: any): Observable<any>{
+    return this.http.get(`${this.baseUrl}installation/all`);
+  }
+
+  installationExport(params: any): Observable<any>{
+    return this.postMethod('installation/export', params, { responseType: 'blob' });
+  }
+
+  installationImport(params: any): Observable<any>{
+    return this.postMethod('installation/import', params);
+  }
+
+  installationCreate(params: any): Observable<any>{
+    return this.postMethod('installation/create-with-details', params);
+  }
+
+  // project
+
+  fetchProjectDetails(params: any): Observable<any>{
+    return this.postMethod('project/get', params);
+  }
+
+  // project location 
+
+  fetchPrjLocationInfo(params: any): Observable<any>{
+    return this.postMethod('project/location/info', params);
+  }
+
+  // Foundation
+
+  createFoundationSoilTest(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/soil-test', params);
+  }
+
+  createFoundationExcavation(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/excavation', params);
+  }
+
+  createFoundationPCC(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/pcc', params);
+  }
+
+  createFoundationFlange(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/flange', params);
+  }
+
+  createFoundationReinforcement(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/reinforcement', params);
+  }
+
+  createFoundationEarthing(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/earthing', params);
+  }
+
+  createFoundationShuttering(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/shuttering', params);
+  }
+
+  createFoundationRaftCasting(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/raft-casting', params);
+  }
+
+  createFoundationPedestalCasting(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/pedestal-casting', params);
+  }
+
+  createFoundationCubeTest(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/foundation-cube-test', params);
+  }
+
+  createFoundationGrouting(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/grouting', params);
+  }
+
+  createFoundationGroutingCubeTest(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/grouting-cube-test', params);
+  }
+
+  createFoundationBackfilling(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/backfilling', params);
+  }
+
+  createFoundationApproachRoad(params: any): Observable<any>{
+    return this.postMethod('foundation/activity/approach-road', params);
+  }
+
+  createFoundationCranePlatform(params: any){
+    return this.postMethod('foundation/activity/crane-platform', params);
+  }
+
+  createFoundationLocationClearance(params: any){
+    return this.postMethod('foundation/activity/location-clearance', params);
+  }
+
+  // Project Crane Detail
+
+  fetchPrjCraneDetails(params: any): Observable<any>{
+    return this.postMethod('project/crane-detail/get-project-cranes', params);
+  }
+
+  // Project WTG Detail
+
+  fetchPrjWTGDetails(params: any): Observable<any>{
+    return this.postMethod('project/wtg/get-all', params);
+  }
+
   // auth/user-user-group/remove-group
 
   // auth/company-user/get

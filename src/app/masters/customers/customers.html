@@ -19,7 +19,7 @@
                     <td>{{ customer.customerCode }}</td>
                     <td>{{ customer.customerName }}</td>
                     <td>
-                        <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
+                        <p-menu #menu [model]="getMenuItems(customer)" [popup]="true" appendTo="body" />
                         <button pButton pRipple text rounded severity="secondary" type="button" (click)="menu.toggle($event)">
                             <i pButtonIcon>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">

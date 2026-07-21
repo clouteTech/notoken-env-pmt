@@ -1,14 +1,22 @@
+<p-toast></p-toast>
 <div class="card">
-    <h2>Add Customer</h2>
+    <div class="flex justify-content-between align-item-center">
+        <div>
+            <h2>Add Customer</h2>
+        </div>
+        <div>
+            <p-button label="Back" icon="pi pi-arrow-circle-left" routerLink="/customers"></p-button>
+        </div>
+    </div>
     <h3 class="customer-heading">Customer Details</h3>
     <div class="form-row">
         <div class="form-field">
             <label for="customer-code">Customer Code</label>
-            <input type="text" pInputText id="customer-code" />
+            <input type="text" pInputText id="customer-code" [(ngModel)]="customerCode"/>
         </div>
         <div class="form-field">
             <label for="customer-name">Customer Name</label>
-            <input type="text" pInputText id="customer-name" />
+            <input type="text" pInputText id="customer-name" [(ngModel)]="customerName" />
         </div>
     </div>
 </div>
@@ -101,7 +109,7 @@
         </ng-template>
     </p-table>
     <div class="submit-btn">
-        <button pButton pRipple type="submit">
+        <button pButton pRipple type="submit" (click)="submitCustomer()">
             Submit
         </button>
     </div>
