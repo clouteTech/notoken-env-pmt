@@ -5,44 +5,47 @@ import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 @Component({
-  selector: 'app-zones',
+  selector: 'app-cranes',
   imports: [Shared],
-  templateUrl: './zones.html',
-  styleUrl: './zones.css',
+  templateUrl: './cranes.html',
+  styleUrl: './cranes.css',
 })
-export class Zones implements OnInit {
-  showZoneModal = false;
+export class Cranes implements OnInit {
+  items: MenuItem[] = [];
 
-  zoneList: any[] = [];
-
-  selectedZone: any;
+  craneList: any[] = [];
 
   actionName = 'Create';
 
-  items: MenuItem[] = [];
+  selectedCrane: any;
+
+  showCraneModal = false;
 
   private fb = inject(FormBuilder);
+  
+  constructor(private messageService: MessageService, private apiService: Apiservice,
+    private confirmationService: ConfirmationService
+  ){}
 
-  constructor(private apiService: Apiservice, 
-    private messageService: MessageService, private confirmationService: ConfirmationService){} 
-
-  zoneForm = this.fb.group({
-    zoneId: [0],
-    zone: [''],
+  craneForm = this.fb.group({
+    craneId: [0],
+    craneType: [''],
+    craneModel: [''],
+    craneMake: [''],
     status: [false]
   })
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
-    this.fetchAllZones();
+    this.fetchAllCranes();
   }
 
-  fetchAllZones(){
+  fetchAllCranes(){
     try {
-      this.apiService.fetchAllZones('').subscribe({
+      this.apiService.fetchAllCranes('').subscribe({
         next: val => {
           console.log(val);
-          this.zoneList = val.data;
+          this.craneList = val.data;
         },
         error: err => {
           console.log(err);
@@ -58,18 +61,18 @@ export class Zones implements OnInit {
     }
   }
 
-  submitZoneForm(){
+  submitCraneForm(){
     try {
-      if (!this.selectedZone) {
-        const data = this.zoneForm.value;
+      if (!this.selectedCrane) {
+        const data = this.craneForm.value;
         console.log(data);
-
-        this.apiService.createZone(data).subscribe({
+  
+        this.apiService.createCrane(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
-            this.showZoneModal = false;
-            this.fetchAllZones();
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Crane' });
+            this.showCraneModal = false;
+            this.fetchAllCranes();
           },
           error: err => {
             console.log(err);
@@ -80,19 +83,19 @@ export class Zones implements OnInit {
           }
         })
       } else {
-        const data = this.zoneForm.value;
+        const data = this.craneForm.value;
         console.log(data);
 
-        this.apiService.updateZone(data).subscribe({
+        this.apiService.updateCrane(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
-            this.showZoneModal = false;
-            this.fetchAllZones();
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Crane' });
+            this.showCraneModal = false;
+            this.fetchAllCranes();
           },
           error: err => {
             console.log(err);
-
+  
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
             }
@@ -101,25 +104,14 @@ export class Zones implements OnInit {
       }
     } catch (error) {
       console.log(error);
-
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
-  editZone(){
-    try {
-      this.showZoneModal = true;
-      this.actionName = 'Update';
-      this.zoneForm.patchValue(this.selectedZone);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  deleteZone(){
+  deleteCrane(){
     this.confirmationService.confirm({
       message: 'Do you want to delete this record?',
-      header: `Delete Zone`,
+      header: `Delete Crane`,
       icon: 'pi pi-info-circle',
       rejectLabel: 'Cancel',
       rejectButtonProps: {
@@ -132,17 +124,17 @@ export class Zones implements OnInit {
           severity: 'danger'
       },
       accept: () => {
+        try {
           const data = {
-            zoneId: this.selectedZone.zoneId
+            craneId: this.selectedCrane.craneId
           }
-
           console.log(data);
 
-          this.apiService.deleteZone(data).subscribe({
+          this.apiService.deleteCrane(data).subscribe({
             next: val => {
               console.log(val);
-              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Zone' });
-              this.fetchAllZones();
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Crane' });
+              this.fetchAllCranes();
             },
             error: err => {
               console.log(err);
@@ -152,13 +144,28 @@ export class Zones implements OnInit {
               }
             }
           })
+        } catch (error) {
+          console.log(error);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        }
       }
     });
   }
 
-  openZoneModal(){
+  openCraneModal(){
     try {
-      this.showZoneModal = true;
+      this.showCraneModal = true;
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  editCrane(){
+    try {
+      this.showCraneModal = true;
+      this.actionName = 'Update';
+      this.craneForm.patchValue(this.selectedCrane);
     } catch (error) {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
@@ -170,24 +177,24 @@ export class Zones implements OnInit {
       {
         label: 'Edit',
         icon: 'pi pi-pencil',
-        command: () => this.editZone()
+        command: () => this.editCrane()
       },
       {
         label: 'Delete',
         icon: 'pi pi-trash',
-        command: () => this.deleteZone()
+        command: () => this.deleteCrane()
       }
     ]
   }
 
-  zoneMenu(event: Event, menu: any, zone: any){
-    this.selectedZone = zone;
+  craneMenu(event: Event, menu: any, crane: any){
+    this.selectedCrane = crane;
     menu.toggle(event);
   }
 
   onDialogClose(){
-    this.selectedZone = null;
+    this.selectedCrane = null;
     this.actionName = 'Create';
-    this.zoneForm.reset();
+    this.craneForm.reset();
   }
 }

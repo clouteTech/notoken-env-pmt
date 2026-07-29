@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -74,6 +74,8 @@ export class Installation implements OnInit {
   tableData: any[] = [];
   prjCraneDetails: any[] = [];
   prjWTGDetails: any[] = [];
+  installationActivityDetails: any[] = [];
+  projectList: any[] = [];
 
   // View Popup
   viewVisible = false;
@@ -94,7 +96,7 @@ export class Installation implements OnInit {
 
   assemblyMethodOptions = [
     { label: 'ROTOR', value: 'ROTOR' },
-    { label: 'Hub', value: 'Hub' },
+    { label: 'HUB', value: 'HUB' },
   ];
 
   // Crane Model dropdown options
@@ -153,7 +155,7 @@ export class Installation implements OnInit {
       ['hubAssemblyDate','blade1Installation','blade2Installation','blade3Installation',
        'maxOfThreeBlade','blade1Bolts10pct','blade2Bolts10pct','blade3Bolts10pct'].forEach(f =>
         this.setStepFormValue(stepIdx, rowIdx, f, null));
-    } else if (value === 'Hub') {
+    } else if (value === 'HUB') {
       // Clear rotor-only fields
       ['rotorAssemblyDate','rotorInstallationDate','rotorBolts10pct'].forEach(f =>
         this.setStepFormValue(stepIdx, rowIdx, f, null));
@@ -222,7 +224,7 @@ export class Installation implements OnInit {
 
     // Hub-only fields: only show if method is Hub(DD)
     if (this.isHubField(field)) {
-      return method === 'Hub';
+      return method === 'HUB';
     }
 
     // All other fields always visible
@@ -357,7 +359,7 @@ export class Installation implements OnInit {
       this.apiService.projectSearch(data).subscribe({
         next: val => {
           console.log(val);
-          this.summaryRows = val.data.content;
+          this.projectList = val.data.content;
         },
         error: err => {
           console.log(err);
@@ -418,15 +420,49 @@ export class Installation implements OnInit {
   }
 
   setStepFormValue(stepIdx: number, rowIdx: number, field: string, value: any) {
-    this.stepForms[stepIdx]?.[rowIdx]?.get(field)?.setValue(value);
+    const control = this.stepForms[stepIdx]?.[rowIdx]?.get(field);
+
+    if (control) {
+      control.setValue(value);
+      control.markAsDirty();
+      control.markAsTouched();
+      control.updateValueAndValidity();
+    }
   }
 
   isStepRowsFilled(stepIdx: number): boolean {
     return this.isAnyRowFilledInStep(stepIdx);
   }
 
+  formatDate(date: any): string | null {
+    if(!date) return null;
+
+    const d = new Date(date);
+    console.log(d);
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
   buildInstallationPayload(){
-    return this.prjWTGDetails.map((wtg: any, rowIdx: number) => {
+    return this.prjWTGDetails
+      .map((wtg: any, rowIdx: number) => ({
+        wtg,
+        rowIdx
+      }))
+      .filter(({rowIdx}) => {
+        const form = this.stepForms[0][rowIdx];
+
+        return Object.values(form.value).some(v => 
+          v !== null &&
+          v !== '' &&
+          v !== undefined
+        );
+      })
+      .map(({ wtg, rowIdx }) => {
 
     const form = this.stepForms[0][rowIdx];
       
@@ -437,8 +473,8 @@ export class Installation implements OnInit {
     for (let i = 1; i <= sectionCount; i++) {
       towerInstallations.push({
         section: i,
-        installationDate: form.get(`s${i}TowerInstallation`)?.value,
-        torqueCheckDate: form.get(`s${i}UpperBolts10pct`)?.value
+        installationDate: this.formatDate(form.get(`s${i}TowerInstallation`)?.value),
+        torqueCheckDate: this.formatDate(form.get(`s${i}UpperBolts10pct`)?.value)
       });
     }
 
@@ -447,8 +483,8 @@ export class Installation implements OnInit {
     for (let i = 1; i <= 3; i++) {
       bladeInstallations.push({
         bladeNo: i,
-        installationDate: form.get(`blade${i}Installation`)?.value,
-        torqueCheckDate: form.get(`blade${i}Bolts10pct`)?.value
+        installationDate: this.formatDate(form.get(`blade${i}Installation`)?.value),
+        torqueCheckDate: this.formatDate(form.get(`blade${i}Bolts10pct`)?.value)
       });
     }
 
@@ -463,91 +499,112 @@ export class Installation implements OnInit {
           form.get('assemblyMethod')?.value,
 
         craneMobilization:
-          form.get('mainCraneMob')?.value,
+          this.formatDate(form.get('mainCraneMob')?.value),
 
         craneAssemblyStart:
-          form.get('startOfMainCraneAssembly')?.value,
+          this.formatDate(form.get('startOfMainCraneAssembly')?.value),
 
         craneAssemblyFinish:
-          form.get('finishOfMainCraneAssembly')?.value,
+          this.formatDate(form.get('finishOfMainCraneAssembly')?.value),
 
         bottomPlatformAssembly:
-          form.get('bottomPlatformAssembly')?.value,
+          this.formatDate(form.get('bottomPlatformAssembly')?.value),
 
         craneBoomUp:
-          form.get('mainCraneBoomUp')?.value,
+          this.formatDate(form.get('mainCraneBoomUp')?.value),
 
         converterPanelInstallation:
-          form.get('converterPanelInstallation')?.value,
+          this.formatDate(form.get('converterPanelInstallation')?.value),
 
         installationPlanStart:
-          form.get('installationPlanStart')?.value,
+          this.formatDate(form.get('installationPlanStart')?.value),
 
         installationActualStart:
-          form.get('installationActualStart')?.value,
+          this.formatDate(form.get('installationActualStart')?.value),
 
         installationForeCastStart:
-          form.get('installationForecastStart')?.value,
+          this.formatDate(form.get('installationForecastStart')?.value),
 
         installationStartDelayReason:
           form.get('installationStartDelayReason')?.value,
 
         installationPlanFinish:
-          form.get('installationPlanFinish')?.value,
+          this.formatDate(form.get('installationPlanFinish')?.value),
 
         installationActualFinish:
-          form.get('installationActualFinish')?.value,
+          this.formatDate(form.get('installationActualFinish')?.value),
 
         installationForeCastFinish:
-          form.get('installationForecastFinish')?.value,
+          this.formatDate(form.get('installationForecastFinish')?.value),
 
         installationFinishDelayReason:
           form.get('installationFinishDelayReason')?.value,
 
         craneBoomDown:
-          form.get('mainCraneBoomDown')?.value,
+          this.formatDate(form.get('mainCraneBoomDown')?.value),
 
         nacelleInstallation:
-          form.get('nacelleInstallation')?.value,
+          this.formatDate(form.get('nacelleInstallation')?.value),
 
         rotorAssemblyDate:
-          form.get('rotorAssemblyDate')?.value,
+          this.formatDate(form.get('rotorAssemblyDate')?.value),
 
         hubAssemblyDate:
-          form.get('hubAssemblyDate')?.value,
+          this.formatDate(form.get('hubAssemblyDate')?.value),
 
         generatorAlignment:
-          form.get('generatorAlignmentDate')?.value,
+          this.formatDate(form.get('generatorAlignmentDate')?.value),
 
         cableLaying:
-          form.get('cableLaying')?.value,
+          this.formatDate(form.get('cableLaying')?.value),
 
         mechanicalCompletion:
-          form.get('mechanicalCompletion')?.value,
+          this.formatDate(form.get('mechanicalCompletion')?.value),
 
         electricalCompletion:
-          form.get('electricalCompletion')?.value,
+          this.formatDate(form.get('electricalCompletion')?.value),
 
         liftInstallation:
-          form.get('liftInstallation')?.value,
+          this.formatDate(form.get('liftInstallation')?.value),
 
         qaInspectionFinish:
-          form.get('qaInspectionFinish')?.value,
+          this.formatDate(form.get('qaInspectionFinish')?.value),
 
         mccPlan:
-          form.get('mccPlan')?.value,
+          this.formatDate(form.get('mccPlan')?.value),
 
         mccActual:
-          form.get('mccActual')?.value,
+          this.formatDate(form.get('mccActual')?.value),
 
         mccForecast:
-          form.get('mccForecast')?.value,
+          this.formatDate(form.get('mccForecast')?.value),
 
         mccDelayReason:
           form.get('mccDelayReason')?.value,
 
         mccSignOff:
-          form.get('mccSignOffDate')?.value,
+          this.formatDate(form.get('mccSignOffDate')?.value),
+
+        maxOfThreeBlade: 
+          this.formatDate(form.get('maxOfThreeBlade')?.value),
+
+        rotorInstallationDate: 
+          this.formatDate(form.get('rotorInstallationDate')?.value),
+
+        anchorBolt10PercentTorqueCheck: 
+          this.formatDate(form.get('anchorBolts10pct')?.value),
+
+        towerNacelle10PercentTorqueCheck:
+          this.formatDate(form.get('towerNacelleBolts10pct')?.value),
+
+        nacelleHub10PercentTorqueCheck:
+          this.formatDate(form.get('nacelleHubBolts10pct')?.value),
+
+        rotorBolt10PercentTorqueCheck:
+          this.formatDate(form.get('rotorBolts10pct')?.value),
+
+        final10PercentTorqueCheck:
+          this.formatDate(form.get('finalTorquingCompleted')?.value),
 
         towerInstallations,
 
@@ -555,62 +612,123 @@ export class Installation implements OnInit {
 
       };
 
-    });
+    })
+    // .filter(item => {
+    //   if(item.projectLocationId <= 0) return false;
+
+    //   const { projectLocationId, ...rest } = item;
+
+    //   return Object.values(rest).some(v => 
+    //     v !== null &&
+    //     v !== '' &&
+    //     !(Array.isArray(v) && v.length === 0)
+    //   )
+    // });
   }
 
   markStepComplete(stepIdx: number) {
-    if (this.isStepRowsFilled(stepIdx)) {
-      this.stepCompleted[stepIdx] = true;
-      if (stepIdx === this.steps.length - 1) {
-        const payload = this.buildInstallationPayload();
-
-        console.log(payload);
-
-        this.apiService.installationCreate(payload).subscribe({
-          next: val => {
-            console.log(val);
-
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Step Saved',
-              detail: `${this.steps[stepIdx].label} data saved successfully.`
-            });
-          },
-          error: err => {
-            console.log(err);
+    try {
+      const requiredFields = [
+        'installationPlanStart',
+        'installationPlanFinish',
+        'mainCraneMob',
+        'assemblyMethod'
+      ];
+  
+      let hasError = false;
+  
+      this.stepForms[stepIdx].forEach(form => {
+        const rowStarted = Object.values(form.value).some(
+          value => value !== null && value !== '' && value !== undefined
+        );
+  
+        if(!rowStarted){
+          return;
+        }
+  
+        requiredFields.forEach(field => {
+          const control = form.get(field);
+  
+          control?.markAsTouched();
+          control?.updateValueAndValidity();
+  
+          if(control?.invalid){
+            hasError = true;
           }
+        })
+      })
+  
+      if (hasError) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Validation Error',
+          detail: 'Please fill all required fields.'
         });
         return;
       }
-      this.wtgPopupActiveStep = stepIdx + 1;
+  
+      if (this.isStepRowsFilled(stepIdx)) {
+        this.stepCompleted[stepIdx] = true;
+        if (stepIdx === this.steps.length - 1) {
+          const payload = this.buildInstallationPayload();
+  
+          console.log(payload);
+  
+          this.apiService.installationCreate(payload).subscribe({
+            next: val => {
+              console.log(val);
+  
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Step Saved',
+                detail: `${this.steps[stepIdx].label} data saved successfully.`
+              });
+            },
+            error: err => {
+              console.log(err);
+  
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          });
+          return;
+        }
+        this.wtgPopupActiveStep = stepIdx + 1;
+        
+      } else {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'No Data',
+          detail: 'Please fill at least one field before saving this step.'
+        });
+      }
       
-    } else {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'No Data',
-        detail: 'Please fill at least one field before saving this step.'
-      });
+    } catch (error) {
+      console.log(error);
+
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
-  onSubmit() {
-    const allData: any = { pCode: this.pCode, wtgQty: this.wtgQty, steps: [] };
-    this.steps.forEach((step, stepIdx) => {
-      allData.steps.push({
-        stepLabel: step.label,
-        rows: this.wtgRows.map((wtg, rowIdx) => ({
-          wtgId: wtg.wtgId,
-          locationNo: wtg.locationNo,
-          maximoId: wtg.maximoId,
-          wtgType: wtg.wtgType,
-          towerType: wtg.towerType,
-          ...this.stepForms[stepIdx][rowIdx].value
-        }))
-      });
-    });
-    console.log('Installation Submit:', allData);
-    this.messageService.add({ severity: 'success', summary: 'Submitted', detail: 'Installation data submitted successfully!' });
-  }
+  // onSubmit() {
+  //   const allData: any = { pCode: this.pCode, wtgQty: this.wtgQty, steps: [] };
+  //   this.steps.forEach((step, stepIdx) => {
+  //     allData.steps.push({
+  //       stepLabel: step.label,
+  //       rows: this.wtgRows.map((wtg, rowIdx) => ({
+  //         wtgId: wtg.wtgId,
+  //         locationNo: wtg.locationNo,
+  //         maximoId: wtg.maximoId,
+  //         wtgType: wtg.wtgType,
+  //         towerType: wtg.towerType,
+  //         ...this.stepForms[stepIdx][rowIdx].value
+  //       }))
+  //     });
+  //   });
+  //   console.log('Installation Submit:', allData);
+  //   this.messageService.add({ severity: 'success', summary: 'Submitted', detail: 'Installation data submitted successfully!' });
+  // }
 
   getCompletedCount(): number {
     return this.stepCompleted.filter(Boolean).length;
@@ -624,10 +742,96 @@ export class Installation implements OnInit {
 
   trackByIndex(index: number): number { return index; }
 
+  patchInstallationActivities(){
+    try {
+      if(!this.installationActivityDetails?.length) return;
+
+      this.installationActivityDetails.forEach((item: any, rowIdx: number) => {
+        const form = this.stepForms[0]?.[rowIdx];
+
+        if(!form) return;
+
+        form.patchValue({
+          installationPlanStart: item.installationPlanStart ? new Date(item.installationPlanStart) : null,
+          installationPlanFinish: item.installationPlanFinish ? new Date(item.installationPlanFinish) : null,
+          installationActualStart: item.installationActualStart ? new Date(item.installationActualStart) : null,
+          installationActualFinish: item.installationActualFinish ? new Date(item.installationActualFinish) : null,
+          installationForecastStart: item.installationForeCastStart ? new Date(item.installationForeCastStart) : null,
+          installationForecastFinish: item.installationForeCastFinish ? new Date(item.installationForeCastFinish) : null,
+
+          installationStartDelayReason: item.installationStartDelayReason,
+          installationFinishDelayReason: item.installationFinishDelayReason,
+
+          mainCraneMob: item.craneMobilization ? new Date(item.craneMobilization) : null,
+          startOfMainCraneAssembly: item.craneAssemblyStart ? new Date(item.craneAssemblyStart) : null,
+          finishOfMainCraneAssembly: item.craneAssemblyFinish ? new Date(item.craneAssemblyFinish) : null,
+          mainCraneBoomUp: item.craneBoomUp ? new Date(item.craneBoomUp) : null,
+          mainCraneBoomDown: item.craneBoomDown ? new Date(item.craneBoomDown) : null,
+
+          nacelleInstallation: item.nacelleInstallation ? new Date(item.nacelleInstallation) : null,
+          rotorAssemblyDate: item.rotorAssemblyDate ? new Date(item.rotorAssemblyDate) : null,
+
+          assemblyMethod: item.assemblyMethod,
+          // mainCraneMob: item.projectCraneDetail?.supplier?.supplierId ?? null,
+          mainCraneModel: item.projectCraneDetail?.crane?.craneId ?? null,
+          bottomPlatformAssembly: item.bottomPlatformAssembly ? new Date(item.bottomPlatformAssembly) : null,
+          converterPanelInstallation: item.converterPanelInstallation ? new Date(item.converterPanelInstallation) : null,
+          generatorAlignmentDate: item.generatorAlignment ? new Date(item.generatorAlignment) : null,
+          cableLaying: item.cableLaying ? new Date(item.cableLaying) : null,
+          mechanicalCompletion: item.mechanicalCompletion ? new Date(item.mechanicalCompletion) : null,
+          electricalCompletion: item.electricalCompletion ? new Date(item.electricalCompletion) : null,
+          liftInstallation: item.liftInstallation ? new Date(item.liftInstallation) : null,
+          qaInspectionFinish: item.qaInspectionFinish ? new Date(item.qaInspectionFinish) : null,
+          mccPlan: item.mccPlan ? new Date(item.mccPlan) : null,
+          mccActual: item.mccActual ? new Date(item.mccActual) : null,
+          mccForecast: item.mccForecast ? new Date(item.mccForecast) : null,
+          mccDelayReason: item.mccDelayReason,
+          mccSignOffDate: item.mccSignOff ? new Date(item.mccSignOff) : null,
+          maxOfThreeBlade: item.maxOfThreeBlade ? new Date(item.maxOfThreeBlade) : null,
+          rotorInstallationDate: item.rotorInstallationDate ? new Date(item.rotorInstallationDate) : null,
+          anchorBolts10pct: item.anchorBolt10PercentTorqueCheck ? new Date(item.anchorBolt10PercentTorqueCheck) : null,
+          towerNacelleBolts10pct: item.towerNacelle10PercentTorqueCheck ? new Date(item.towerNacelle10PercentTorqueCheck) : null,
+          nacelleHubBolts10pct: item.nacelleHub10PercentTorqueCheck ? new Date(item.nacelleHub10PercentTorqueCheck) : null,
+          rotorBolts10pct: item.rotorBolt10PercentTorqueCheck ? new Date(item.rotorBolt10PercentTorqueCheck) : null,
+          finalTorquingCompleted: item.final10PercentTorqueCheck ? new Date(item.final10PercentTorqueCheck) : null,
+        })
+      })
+    } catch(error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchInstallationActivities(){
+    try {
+      const data = {
+        projectId: this.selectedProject.projectId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchInstallationActivities(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.installationActivityDetails = val.data;
+          this.patchInstallationActivities();
+        },
+        error: err => {
+          console.log(err);
+        }
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // ─── VIEW POPUP ───────────────────────────────────────────────────────────
   openViewPopup() { this.viewVisible = true; }
   closeViewPopup() { this.viewVisible = false; }
-  openViewAllDataFromWtg() { this.viewVisible = true; }
+  openViewAllDataFromWtg() { 
+    this.viewVisible = true;
+    this.fetchInstallationActivities();
+  }
 
   createForms(){
     this.stepForms = [];
@@ -638,7 +842,18 @@ export class Installation implements OnInit {
       const rowForms = this.prjWTGDetails.map(() => {
         const group: any = {};
 
-        cols.forEach(col => group[col.field] = [null]);
+        cols.forEach(col => {
+          switch(col.field){
+            case 'installationPlanStart':
+            case 'installationPlanFinish':
+            case 'assemblyMethod':
+            case 'mainCraneMob':
+              group[col.field] = [null, Validators.required];
+              break;
+            default:
+              group[col.field] = [null];
+          }
+        });
 
         return this.fb.group(group);
       });
@@ -648,6 +863,11 @@ export class Installation implements OnInit {
       this.stepForms.push(rowForms);
       console.log(this.stepForms);
     }
+  }
+
+  isFieldRequired(stepIdx: number, rowIdx: number, field: string): boolean {
+    const control = this.stepForms[stepIdx]?.[rowIdx]?.get(field);
+    return control?.hasValidator(Validators.required) ?? false;
   }
 
   fetchPrjWTGDetails(){
@@ -661,7 +881,10 @@ export class Installation implements OnInit {
       this.apiService.fetchPrjWTGDetails(data).subscribe({
         next: val => {
           console.log(val);
-          this.prjWTGDetails = val.data;
+          this.prjWTGDetails = val.data.filter(
+            (wtg: any) => wtg.location && wtg.location.locationId
+          );
+          console.log(this.prjWTGDetails);
 
           this.createForms();
         },
@@ -721,6 +944,7 @@ export class Installation implements OnInit {
 
     this.fetchPrjCraneDetails();
     this.fetchPrjWTGDetails();
+    this.fetchInstallationActivities();
   }
 
   closeWtgPopup() {
@@ -892,11 +1116,21 @@ export class Installation implements OnInit {
   }
 
   openImportDialog(){
-    this.chooseUploadTemplate = true;
+    try {
+      this.chooseUploadTemplate = true;      
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
   }
 
   exportInstallation(){
-    this.chooseDownloadTemplate = true;
+    try {
+      this.chooseDownloadTemplate = true;      
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
   }
 
   shouldShowTowerFields(): boolean {

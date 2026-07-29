@@ -14,6 +14,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { Shared } from '../shared/services/shared';
+import { Apiservice } from '../service/apiservice';
 
 export interface CommWtgRow {
   wtgId: string;
@@ -60,12 +61,21 @@ export class Commisioning1 {
 
   // Open WTG Popup
   wtgPopupVisible = false;
+  chooseDownloadTemplate = false;
+  chooseUploadTemplate = false;
+  displayImportDialog = false;
+
   selectedSummaryRow: SummaryRow | null = null;
 
   items: MenuItem[] = [];
 
+  projectList: any[] = [];
+
   // View All Data Popup
   viewVisible = false;
+
+  selectedProject: any;
+  selectedFile: any;
 
   steps = [
     { id: 1, label: 'PRE-COMMISSIONING', subLabel: 'Pre-Com, Bottom Comm, Nacelle, Hub & Sign Off' },
@@ -123,7 +133,8 @@ export class Commisioning1 {
   constructor(
     private fb: FormBuilder,
     private messageService: MessageService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private apiService: Apiservice
   ) {}
 
   ngOnInit() {
@@ -149,6 +160,48 @@ export class Commisioning1 {
     }
 
     this.items = this.getMenuItems();
+    this.getProjectList();
+  }
+
+  getProjectList(){
+    try {
+      let data = {
+        "search": null,
+        "customerId": null,
+        "clusterId": null,
+        "zoneId": null,
+        "projectManagerId": null,
+        "projectTerm": null,
+        "probability": null,
+        "page": 0,
+        "size": 10,
+        "sortBy": "createdOn",
+        "sortDirection": "asc"
+      }
+
+      console.log(data);
+
+      this.apiService.projectSearch(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.projectList = val.data.content;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error){
+      console.log(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please Try Again.'
+      });
+    }
   }
 
   // ── Step-level enable ──
@@ -321,16 +374,144 @@ export class Commisioning1 {
     }));
   }
 
+  onFileSelect(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  onUpload(event: any){
+    try {
+      this.selectedFile = event.files[0];
+  
+      if (!this.selectedFile) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Please select file'
+        });
+        return;
+      }
+  
+      const formData = new FormData();
+  
+      formData.append('file', this.selectedFile);
+  
+      formData.append('projectId', this.selectedProject.projectId);
+  
+      this.apiService.commissioningImport(formData).subscribe({
+        next: val => {
+          console.log(val);
+  
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'File uploaded successfully'
+          });
+  
+          this.displayImportDialog = false;
+          this.chooseUploadTemplate = false;
+  
+          this.selectedFile = null;
+        },
+        error: err => {
+          console.log(err);
+  
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error.detail
+          });
+        }
+      })
+    } catch(error){
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  uploadTemplate(){
+    try {
+      this.displayImportDialog = true;
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  downloadTemplate(){
+    try {
+      const data = {
+        projectId: this.selectedProject.projectId
+      }
+  
+      console.log(data);
+  
+      this.apiService.commissioningExport(data).subscribe({
+        next: (val: Blob) => {
+          console.log(val);
+          const url = window.URL.createObjectURL(val);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Commissioning.xlsx`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Commissioning excel template downloaded successfully.' });
+          this.chooseDownloadTemplate = false;
+        },
+        error: async(err) => {
+          console.log(err);
+          if (err.error instanceof Blob) {
+            const text = await err.error.text();
+            const json = JSON.parse(text);
+
+            this.messageService.add({severity: 'error', summary: 'Error', detail: json.detail || 'Something went wrong' });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail || 'Something went wrong' });
+          }
+        }
+      })
+    } catch(error){
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openImportDialog(){
+    try {
+      this.chooseUploadTemplate = true;      
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  exportCommissioning(){
+    try {
+      this.chooseDownloadTemplate = true;      
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   getMenuItems(){
     return [
       {
         label: 'Import',
-        icon: 'pi pi-upload'
+        icon: 'pi pi-upload',
+        command: () => this.openImportDialog()
       },
       {
         label: 'Export',
-        icon: 'pi pi-download'
+        icon: 'pi pi-download',
+        command: () => this.exportCommissioning()
       }
     ]
+  }
+
+  openMenu(menu: any, event: any, project: any){
+    this.selectedProject = project;
+    console.log(this.selectedProject);
+    this.items = this.getMenuItems();
+    menu.toggle(event);
   }
 }

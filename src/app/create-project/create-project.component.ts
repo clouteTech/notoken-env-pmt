@@ -701,7 +701,7 @@ buildOptsList(): void {
       cfg.wtgQty = null;
     } else if (cfg.wtgQty > 0) {
       this.resetMonthly(cfg);
-    }
+    } 
     this.recalcOverallCapacity();
   }
 
@@ -766,11 +766,13 @@ buildOptsList(): void {
     this.apiService.projectCreate(data)
     .subscribe({
       next:(res)=>{
+        console.log(res);
         this.addProjectDialog = false;
         this.getProjectList();
       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Project Created Successfully' });
 
       },error:(err)=>{
+        console.log(err);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
       }
     })

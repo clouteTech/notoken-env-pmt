@@ -71,7 +71,7 @@
 
         <!-- start uncomment this -->
 
-        <!-- <button class="sb-item" [class.active]="activeMenu === 'demand'" (click)="navigate('demand')">
+        <button class="sb-item" [class.active]="activeMenu === 'demand'" (click)="navigate('demand')">
           <i class="pi pi-chart-bar"></i>
           Yearly Demand Plan
         </button>
@@ -99,7 +99,7 @@
         <button class="sb-item" [class.active]="activeMenu === 'WTGReceiving'" (click)="navigate('WTGReceiving')">
           <i class="pi pi-arrow-circle-down"></i>
           <span>WTG Receiving</span>
-        </button> -->
+        </button>
 
         <!-- end -->
 
@@ -179,6 +179,8 @@
                 (click)="navigate('customers')">Customers</button>
               <button class="sb-sub-item" [class.active]="activeMenu === 'zone'" 
                 (click)="navigate('zone')">Zones</button>
+              <button class="sb-sub-item" [class.active]="activeMenu === 'cranes'" 
+                (click)="navigate('cranes')">Cranes</button>
               <button class="sb-sub-item" [class.active]="activeMenu === 'department'" 
                 (click)="navigate('department')">Departments</button>
               <button class="sb-sub-item" [class.active]="activeMenu === 'clusters'"

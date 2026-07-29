@@ -120,6 +120,7 @@ export class AppComponent implements OnInit, OnDestroy {
     else if(menu === 'plants') this.router.navigate(['/plants']);
     else if(menu === 'customers') this.router.navigate(['/customers']);
     else if(menu === 'zone') this.router.navigate(['/zones']);
+    else if(menu === 'cranes') this.router.navigate(['/cranes']);
     else if(menu === 'department') this.router.navigate(['/departments']);
     else if(menu === 'clusters') this.router.navigate(['/clusters']);
     else if(menu === 'installation') this.router.navigate(['/installation']);

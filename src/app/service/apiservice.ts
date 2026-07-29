@@ -15,6 +15,16 @@ export class Apiservice {
     return this.http.post(this.baseUrl + url, params, config);
   }
 
+  // Login API
+
+  sendOtp(params: any): Observable<any>{
+    return this.postMethod('auth/send-otp', params);
+  }
+
+  validateOtp(params: any){
+    return this.postMethod('auth/validate-otp', params);
+  }
+
   // Blade Type Master
 
   fetchAllBladeTypes(params: any): Observable<any>{
@@ -206,6 +216,23 @@ export class Apiservice {
     return this.postMethod('auth/user-group/info', params);
   }
 
+  // Plant Master
+  fetchAllPlants(params: any): Observable<any>{
+    return this.postMethod('master/plant/get-all', params);
+  }
+
+  createPlant(params: any): Observable<any>{
+    return this.postMethod('master/plant/create', params);
+  }
+
+  updatePlant(params: any): Observable<any>{
+    return this.postMethod('master/plant/update', params);
+  }
+
+  deletePlant(params: any): Observable<any>{
+    return this.postMethod('master/plant/delete', params);
+  }
+
   // Role Master
 
   fetchAllRoles(params: any): Observable<any>{
@@ -353,6 +380,20 @@ export class Apiservice {
     return this.postMethod('installation/create-with-details', params);
   }
 
+  fetchInstallationActivities(params: any): Observable<any>{
+    return this.postMethod('installation/activities', params);
+  }
+
+  // Commissioning
+
+  commissioningExport(params: any): Observable<any>{
+    return this.postMethod('commissioning/export', params, { responseType: 'blob' });
+  }
+
+  commissioningImport(params: any): Observable<any>{
+    return this.postMethod('commissioning/import', params);
+  }
+
   // project
 
   fetchProjectDetails(params: any): Observable<any>{
@@ -363,6 +404,18 @@ export class Apiservice {
 
   fetchPrjLocationInfo(params: any): Observable<any>{
     return this.postMethod('project/location/info', params);
+  }
+
+  createPrjWTGLocation(params: any): Observable<any>{
+    return this.postMethod('project/location/create', params);
+  }
+
+  updatePrjWTGLocation(params: any): Observable<any>{
+    return this.postMethod('project/location/update', params);
+  }
+
+  deletePrjWTGLocation(params: any): Observable<any>{
+    return this.postMethod('project/location/delete', params);
   }
 
   // Foundation
@@ -441,6 +494,24 @@ export class Apiservice {
 
   fetchPrjWTGDetails(params: any): Observable<any>{
     return this.postMethod('project/wtg/get-all', params);
+  }
+
+  // Crane Master
+
+  fetchAllCranes(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane/get-all', params);
+  }
+
+  createCrane(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane/create', params);
+  }
+
+  updateCrane(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane/update', params);
+  }
+
+  deleteCrane(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane/delete', params);
   }
 
   // auth/user-user-group/remove-group
