@@ -178,6 +178,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'cranes',
+    loadComponent: () => import('./masters/cranes/cranes').then(m => m.Cranes),
+    canActivate: [authGuard]
+  },
+  {
     path: 'departments',
     loadComponent: () => import('./masters/departments/departments').then(m => m.Departments),
     canActivate: [authGuard]
@@ -205,6 +210,11 @@ export const routes: Routes = [
   {
     path: 'installation',
     loadComponent: () => import('./installation/installation').then(m => m.Installation),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'project/:projectId/wtg-location',
+    loadComponent: () => import('./project-wtg-location-details/project-wtg-location-details').then(m => m.ProjectWtgLocationDetails),
     canActivate: [authGuard]
   },
   { path: '**', redirectTo: 'login' }

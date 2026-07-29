@@ -57,7 +57,7 @@
         <p>Sign in to your account to continue</p>
       </div>
 
-      <form class="login-form" *ngIf="showEmailScreen" (ngSubmit)="onSubmit()" novalidate>
+      <!-- <form class="login-form" *ngIf="showEmailScreen" (ngSubmit)="onSubmit()" novalidate>
 
         <div class="login-error" *ngIf="error">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -78,9 +78,34 @@
             <span class="spinner"></span> Signing in...
           </span>
         </button>
+      </form> -->
+
+      <form class="login-form" [formGroup]="sendOtpForm" *ngIf="showEmailScreen" (ngSubmit)="onSubmit()" novalidate>
+      
+        <div class="login-error" *ngIf="error">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          {{ error }}
+        </div>
+      
+        <div class="form-field">
+          <label for="username">Email</label>
+          <input type="email" pInputText placeholder="Enter your email" id="username" formControlName="email"
+            autocomplete="email" name="username" [class.has-error]="error" />
+        </div>
+      
+        <button type="submit" class="login-btn" [class.loading]="loading" [disabled]="loading">
+          <span *ngIf="!loading">Sign In</span>
+          <span *ngIf="loading" class="spinner-wrap">
+            <span class="spinner"></span> Signing in...
+          </span>
+        </button>
       </form>
 
-      <form class="login-form otp-form" *ngIf="showOtpScreen" (ngSubmit)="verifyOtp()">
+      <!-- <form class="login-form otp-form" *ngIf="showOtpScreen" (ngSubmit)="verifyOtp()">
       
         <div class="otp-icon-wrap">
           <div class="otp-icon">
@@ -134,6 +159,62 @@
       
         </div>
       
+      </form> -->
+
+      <form class="login-form otp-form" [formGroup]="validateOtpForm" *ngIf="showOtpScreen" (ngSubmit)="verifyOtp()">
+      
+        <div class="otp-icon-wrap">
+          <div class="otp-icon">
+            🔐
+          </div>
+        </div>
+      
+        <div class="otp-header">
+      
+          <h2>Verify your email</h2>
+      
+          <p>
+            We sent a verification code to
+          </p>
+      
+          <div class="email-chip">
+            {{ sendOtpResponse.email }}
+          </div>
+      
+        </div>
+      
+        <div class="login-error" *ngIf="error">
+          {{ error }}
+        </div>
+      
+        <div class="otp-field">
+      
+          <label>Enter OTP</label>
+      
+          <p-inputotp formControlName="otp" [length]="6" name="otp">
+          </p-inputotp>
+      
+        </div>
+      
+        <button class="login-btn" type="submit">
+          Verify OTP
+        </button>
+      
+        <div class="otp-help">
+      
+          <h6>Didn't get the code?</h6>
+      
+          <ul>
+            <li>Codes can take up to 5 minutes to arrive.</li>
+            <li>Check your spam folder.</li>
+          </ul>
+      
+          <button type="button" class="resend-btn">
+            Resend Code
+          </button>
+      
+        </div>
+      
       </form>
 
       <div class="login-footer-note">
@@ -146,3 +227,5 @@
   </div>
 
 </div>
+
+<p-toast />

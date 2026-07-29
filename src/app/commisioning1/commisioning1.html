@@ -74,7 +74,7 @@
         </svg>
         <span class="summary-table-title">Project Summary</span>
       </div>
-      <span class="summary-table-count">{{ summaryRows.length }} Records</span>
+      <span class="summary-table-count">{{ projectList.length }} Records</span>
     </div>
     <!-- <div class="summary-table-wrap">
       <table class="summary-table">
@@ -125,7 +125,7 @@
     </div> -->
     <div class="summary-table-wrap">
     
-      <p-table [value]="summaryRows" responsiveLayout="scroll" styleClass="summary-p-table">
+      <p-table [value]="projectList" responsiveLayout="scroll" styleClass="summary-p-table">
     
         <!-- Header -->
         <ng-template #header>
@@ -140,7 +140,7 @@
             </th>
             <th class="summary-th">
               <div class="summary-th-content">
-                <span>Project Name</span>
+                <span>Customer Name</span>
                 <p-columnFilter type="text" field="projectName" display="menu" [showAddButton]="false"
                   [showMatchModes]="false" [showOperator]="false" />
               </div>
@@ -185,7 +185,7 @@
     
             <!-- Project Name -->
             <td class="summary-td">
-              {{ row.projectName }}
+              {{ row?.customer?.customerName }}
             </td>
     
             <!-- Location -->
@@ -198,7 +198,7 @@
             <!-- WTG Count -->
             <td class="summary-td">
               <span class="summary-wtg-count">
-                {{ row.wtgCount }}
+                {{ row?.totalWtgs }}
               </span>
             </td>
     
@@ -208,7 +208,7 @@
               <p-menu #menu [model]="items" [popup]="true" appendTo="body">
               </p-menu>
     
-              <button pButton pRipple text rounded severity="secondary" type="button" (click)="menu.toggle($event)">
+              <button pButton pRipple text rounded severity="secondary" type="button" (click)="openMenu(menu, $event, row)">
     
                 <i pButtonIcon>
     
@@ -643,4 +643,64 @@
       </div>
     </div>
   </ng-template>
+</p-dialog>
+
+<p-dialog header="Download Excel" [(visible)]="chooseDownloadTemplate" [modal]="true" [style]="{ width: '40vw' }"
+  [breakpoints]="{
+      '960px': '60vw',
+      '640px': '90vw'
+  }">
+  <div class="flex justify-content-center gap-5 py-4">
+
+    <div class="dl-item" (click)="downloadTemplate()">
+      <div class="dl-icon" style="background: #dbeafe; color: #1d4ed8;">
+        <i class="pi pi-download"></i>
+      </div>
+      <span class="dl-label">Commissioning Template</span>
+    </div>
+
+  </div>
+</p-dialog>
+
+
+<p-dialog header="Upload Excel" [(visible)]="chooseUploadTemplate" [modal]="true" [style]="{ width: '40vw' }"
+  [breakpoints]="{
+      '960px': '60vw',
+      '640px': '90vw'
+    }">
+  <div class="flex justify-content-center gap-5 py-4">
+
+    <!-- Location -->
+    <div class="dl-item" (click)="uploadTemplate()">
+      <div class="dl-icon" style="background: #ede9fe; color: #6d28d9;">
+        <i class="pi pi-upload"></i>
+      </div>
+      <span class="dl-label">Commissioning Template</span>
+    </div>
+
+  </div>
+</p-dialog>
+
+
+<p-dialog header="Upload Document" [(visible)]="displayImportDialog" [modal]="true" [style]="{ width: '40rem' }">
+
+  <p-fileUpload name="file" mode="advanced" [multiple]="false" accept=".xlsx,.xls,.pdf,.doc,.docx"
+    chooseLabel="Choose File" uploadLabel="Upload" cancelLabel="Cancel" [customUpload]="true"
+    (uploadHandler)="onUpload($event)" [auto]="false">
+
+    <!-- Empty State -->
+    <ng-template pTemplate="empty">
+
+      <div class="flex flex-column align-items-center justify-content-center p-5">
+        <i class="pi pi-cloud-upload text-5xl text-primary mb-3"></i>
+
+        <span class="text-lg">
+          Drag and drop file here
+        </span>
+      </div>
+
+    </ng-template>
+
+  </p-fileUpload>
+
 </p-dialog>

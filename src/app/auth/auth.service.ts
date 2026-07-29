@@ -50,4 +50,15 @@ export class AuthService {
       try { this._user.set(JSON.parse(stored)); } catch {}
     }
   }
+
+  setUser(email: string): void {
+    const user: User = {
+      username: email,
+      displayName: 'Super Admin',
+      role: 'User'
+    };
+
+    this._user.set(user);
+    sessionStorage.setItem('auth_user', JSON.stringify(user));
+  }
 }

@@ -17,6 +17,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { Shared } from '../shared/services/shared';
 import { Apiservice } from '../service/apiservice';
+import { Router } from '@angular/router';
 
 
 export interface WtgRow {
@@ -83,7 +84,9 @@ export class Foundation1 {
 
   selectedProject: any;
 
-  prjLocationDetails: any[] = [];
+  prjWTGDetails: any[] = [];
+  foundationActivitiesDetails: any[] = [];
+  projectList: any[] = [];
 
   // Summary Table rows
   summaryRows: SummaryRow[] = [
@@ -317,7 +320,8 @@ export class Foundation1 {
     }
   };
 
-  constructor(private fb: FormBuilder, private messageService: MessageService,private apiService:Apiservice) {}
+  constructor(private fb: FormBuilder, private messageService: MessageService,
+    private apiService:Apiservice, private router: Router) {}
 
   ngOnInit() {
     // Build enough WTG rows to cover the maximum totalWtgs across all summary rows
@@ -391,7 +395,8 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
       .subscribe({
         next:(res)=>{
           console.log(res);
-          this.summaryRows = res.data.content
+          // this.summaryRows = res.data.content
+          this.projectList = res.data.content;
         },error:(err)=>{
 
         }
@@ -442,13 +447,23 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
   }
 
   isAnyRowFilledInStep(stepIdx: number): boolean {
+
     const cols = this.stepColumnDefs[stepIdx];
-    return this.stepForms[stepIdx]?.some(rowForm =>
-      cols.some(col => {
+
+    return this.stepForms[stepIdx]?.some((rowForm, rowIndex) => {
+
+      console.log('Row', rowIndex, rowForm.value);
+
+      return cols.some(col => {
+
         const val = rowForm.get(col.field)?.value;
-        return val !== null && val !== undefined && val !== '';
-      })
-    ) ?? false;
+
+        console.log(col.field, val);
+
+        return val != null && val !== '';
+      });
+
+    }) ?? false;
   }
 
   getStepFormValue(stepIdx: number, rowIdx: number, field: string): any {
@@ -456,18 +471,37 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
   }
 
   setStepFormValue(stepIdx: number, rowIdx: number, field: string, value: any) {
-    this.stepForms[stepIdx]?.[rowIdx]?.get(field)?.setValue(value);
+
+    console.log('stepIdx:', stepIdx);
+    console.log('rowIdx:', rowIdx);
+    console.log('stepForms:', this.stepForms);
+    console.log('stepForms[stepIdx]:', this.stepForms[stepIdx]);
+
+    this.stepForms?.[stepIdx]?.[rowIdx]?.get(field)?.setValue(value);
   }
 
   isStepRowsFilled(stepIdx: number): boolean {
     return this.isAnyRowFilledInStep(stepIdx);
   }
 
+  formatDate(date: any): string | null {
+    if(!date) return null;
+
+    const d = new Date(date);
+    console.log(d);
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
   getStepPayload(stepIdx: number){
     const key = this.stepConfig[stepIdx].key;
 
     return this.stepForms[stepIdx].map((form, index) => ({
-      locationId: this.prjLocationDetails[index].locationId,
+      locationId: this.prjWTGDetails[index]?.location?.locationId,
       [key]: {
         ...form.value
       }
@@ -475,66 +509,73 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
   }
 
   markStepComplete(stepIdx: number) {
-    if (this.isStepRowsFilled(stepIdx)) {
-      const payload = this.getStepPayload(stepIdx);
-      console.log(payload);
-
-      this.stepConfig[stepIdx].api(payload).subscribe({
-        next: (val: any) => {
-          console.log(val);
-
-          console.log('API Success');
-          console.log('Current Step:', stepIdx);
-
-          this.stepCompleted[stepIdx] = true;
-
-          if (stepIdx + 1 < this.steps.length) {
-            this.wtgPopupActiveStep = stepIdx + 1;
+    try {
+      if (this.isStepRowsFilled(stepIdx)) {
+        const payload = this.getStepPayload(stepIdx);
+        console.log(payload);
+  
+        this.stepConfig[stepIdx].api(payload).subscribe({
+          next: (val: any) => {
+            console.log(val);
+  
+            console.log('API Success');
+            console.log('Current Step:', stepIdx);
+  
+            this.stepCompleted[stepIdx] = true;
+  
+            if (stepIdx + 1 < this.steps.length) {
+              this.wtgPopupActiveStep = stepIdx + 1;
+            }
+  
+            console.log('New Active Step:', this.activeStep);
+  
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Step Saved',
+              detail: `${this.steps[stepIdx].label} data saved successfully.`
+            });
+          },
+          error: (err: any) => {
+            console.log(err);
+  
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Save Failed',
+              detail: err?.error?.detail || 'Unable to save data.'
+            });
           }
+        })
+      } else {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'No Data',
+          detail: 'Please fill at least one field before saving this step.'
+        });
+      }
+      
+    } catch (error) {
+      console.log(error);
 
-          console.log('New Active Step:', this.activeStep);
-
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Step Saved',
-            detail: `${this.steps[stepIdx].label} data saved successfully.`
-          });
-        },
-        error: (err: any) => {
-          console.log(err);
-
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Save Failed',
-            detail: err?.error?.detail || 'Unable to save data.'
-          });
-        }
-      })
-    } else {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'No Data',
-        detail: 'Please fill at least one field before saving this step.'
-      });
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
-  onSubmit() {
-    const allData: any = { pCode: this.pCode, wtgQty: this.wtgQty, steps: [] };
-    this.steps.forEach((step, stepIdx) => {
-      allData.steps.push({
-        stepLabel: step.label,
-        rows: this.wtgRows.map((wtg, rowIdx) => ({
-          wtgId: wtg.wtgId,
-          locationNo: wtg.locationNo,
-          maximoId: wtg.maximoId,
-          ...this.stepForms[stepIdx][rowIdx].value
-        }))
-      });
-    });
-    console.log('Foundation Submit:', allData);
-    this.messageService.add({ severity: 'success', summary: 'Submitted', detail: 'Foundation data submitted successfully!' });
-  }
+  // onSubmit() {
+  //   const allData: any = { pCode: this.pCode, wtgQty: this.wtgQty, steps: [] };
+  //   this.steps.forEach((step, stepIdx) => {
+  //     allData.steps.push({
+  //       stepLabel: step.label,
+  //       rows: this.wtgRows.map((wtg, rowIdx) => ({
+  //         wtgId: wtg.wtgId,
+  //         locationNo: wtg.locationNo,
+  //         maximoId: wtg.maximoId,
+  //         ...this.stepForms[stepIdx][rowIdx].value
+  //       }))
+  //     });
+  //   });
+  //   console.log('Foundation Submit:', allData);
+  //   this.messageService.add({ severity: 'success', summary: 'Submitted', detail: 'Foundation data submitted successfully!' });
+  // }
 
   getCompletedCount(): number {
     return this.stepCompleted.filter(Boolean).length;
@@ -564,12 +605,13 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
   openViewAllDataFromWtg() {
     this.viewVisible = true;
     console.log(this.summaryRows);
+    this.viewAllData();
   }
 
-  viewAllData(val:any){
+  viewAllData(){
     try{
       let data = {
-        "projectId": val.projectId
+        projectId: this.selectedProject.projectId
       }
       this.apiService.foundationActivities(data)
       .subscribe({
@@ -578,11 +620,13 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
           // If res.data is empty or null, skip binding
           if (!res.data || res.data.length === 0) return;
 
-          this.rebuildWtgRowsAndForms(res.data.length);
+          this.foundationActivitiesDetails = res.data;
 
-          this.bindApiDataToStepForms(res.data);
+          // this.rebuildWtgRowsAndForms(res.data.length);
+
+          // this.bindApiDataToStepForms(res.data);
         },error:(err)=>{
-
+          console.log(err);
         }
       })
     }catch(e){
@@ -592,6 +636,11 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
           detail: 'Please Try Again'
         });
     }
+  }
+
+  getTotalViewColumns(): number {
+    return this.getViewStepGroups()
+      .reduce((sum, grp) => sum + grp.colCount, 0);
   }
 
 bindApiDataToStepForms(data: any[]) {
@@ -677,7 +726,32 @@ bindApiDataToStepForms(data: any[]) {
   });
 } 
 
-  fetchPrjLocationInfo(){
+  createForms(){
+    try {
+      this.stepForms = [];
+
+      for(let stepIdx = 0; stepIdx < this.steps.length; stepIdx++){
+        const cols = this.stepColumnDefs[stepIdx];
+
+        const rowForms = this.prjWTGDetails.map(() => {
+          const group: any = {};
+
+          cols.forEach(col => {
+            group[col.field] = [null];
+          });
+
+          return this.fb.group(group);
+        });
+        this.stepForms.push(rowForms);
+      }
+    } catch (error) {
+      console.log(error);
+
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchPrjWTGDetails(){
     try {
       const data = {
         projectId: this.selectedProject.projectId
@@ -685,27 +759,34 @@ bindApiDataToStepForms(data: any[]) {
 
       console.log(data);
 
-      this.apiService.fetchPrjLocationInfo(data).subscribe({
+      this.apiService.fetchPrjWTGDetails(data).subscribe({
         next: val => {
           console.log(val);
-          this.prjLocationDetails = val.data;
+          this.prjWTGDetails = val.data.filter(
+            (wtg: any) => wtg.location && wtg.location.locationId
+          );
+
+          this.createForms();
         },
         error: err => {
           console.log(err);
         }
       })
-    } catch (error) {
+    } catch (error){
       console.log(error);
+
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
+
 
   openWtgPopup(row: any) {
     this.selectedProject = row;
     this.selectedSummaryRow = row;
     this.wtgPopupActiveStep = 0;
     this.wtgPopupVisible = true;
-    this.viewAllData(this.selectedSummaryRow);
-    this.fetchPrjLocationInfo();
+    // this.viewAllData(this.selectedSummaryRow);
+    this.fetchPrjWTGDetails();
   }
 
   closeWtgPopup() {
@@ -787,6 +868,19 @@ bindApiDataToStepForms(data: any[]) {
 
   getMenuItems(row:any){
     return [
+      {
+        label: 'View Project WTG Details',
+        icon: 'pi pi-eye',
+        command: () => this.router.navigate(['/project',
+          row.projectId,
+          'wtg-location'],
+          {
+            state: {
+              project: row
+            }
+          }
+        )
+      },
       {
         label: 'Import',
         icon: 'pi pi-upload',
