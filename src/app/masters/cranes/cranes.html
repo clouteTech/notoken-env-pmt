@@ -114,5 +114,37 @@
     </form>
 </p-dialog>
 
+
+<p-dialog header="Assign/Remove Supplier" [(visible)]="showSupplierModal" [modal]="true" [draggable]="false"
+    (onHide)="onDialogClose()" [style]="{ width: '50rem' }">
+
+    <p-table [value]="supplierList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <ng-template #header>
+            <tr>
+                <th>SL No</th>
+                <th>Supplier Name</th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-supplier let-i="rowIndex">
+            <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ supplier.supplierName }}</td>
+                <td>
+                    <p-button label="Assign" />
+                    <!-- <p-button [label]="isUserGroupAssigned(usergroup.userGroupId) ? 'Remove' : 'Assign'"
+                        [severity]="isUserGroupAssigned(usergroup.userGroupId) ? 'danger' : 'primary'"
+                        (click)="toggleUserGroup(usergroup)" /> -->
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
+
 <p-toast />
 <p-confirmdialog />

@@ -14,12 +14,14 @@ export class Cranes implements OnInit {
   items: MenuItem[] = [];
 
   craneList: any[] = [];
+  supplierList: any[] = [];
 
   actionName = 'Create';
 
   selectedCrane: any;
 
   showCraneModal = false;
+  showSupplierModal = false;
 
   private fb = inject(FormBuilder);
   
@@ -152,6 +154,27 @@ export class Cranes implements OnInit {
     });
   }
 
+  fetchSupplierInfo(){
+    try {
+      this.apiService.fetchSupplierInfo('').subscribe({
+        next: val => {
+          console.log(val);
+          this.supplierList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   openCraneModal(){
     try {
       this.showCraneModal = true;
@@ -172,8 +195,23 @@ export class Cranes implements OnInit {
     }
   }
 
+  openSupplierModal(){
+    try {
+      this.showSupplierModal = true;
+      this.fetchSupplierInfo();
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   getMenuItems(){
     return [
+      {
+        label: 'Assign/Remove Suppliers',
+        icon: 'pi pi-user-plus',
+        command: () => this.openSupplierModal()
+      },
       {
         label: 'Edit',
         icon: 'pi pi-pencil',

@@ -19,6 +19,7 @@ export class Plants implements OnInit {
   actionName = 'Create';
 
   plantList: any[] = [];
+  userList: any[] = [];
 
   items: MenuItem[] = [];
 
@@ -44,10 +45,18 @@ export class Plants implements OnInit {
 
   fetchPlantList(){
     try {
-      this.apiService.fetchAllPlants('').subscribe({
+      const data = {
+        page: 0,
+        size: 10,
+        search: null
+      }
+
+      console.log(data);
+
+      this.apiService.fetchAllPlants(data).subscribe({
         next: val => {
           console.log(val);
-          this.plantList = val.data;
+          this.plantList = val.data.content;
         },
         error: err => {
           console.log(err);
@@ -132,26 +141,40 @@ export class Plants implements OnInit {
     }
   }
 
-  plantManagerList = [
-    {
-      label: 'Sanjay',
-      value: 'Sanjay'
-    },
-    {
-      label: 'Anand',
-      value: 'Anand'
-    },
-    {
-      label: 'Kayal',
-      value: 'Kayal'
+  fetchUsersByUsergroup(){
+    try {
+      const data = {
+        userGroupId: 5
+      }
+
+      console.log(data);
+
+      this.apiService.fetchUsersByUserGroup(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.userList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
-  ]
+  }
 
   openPlantModal(){
     try {
       this.showPlantModal = true;
+      this.fetchUsersByUsergroup();
     } catch (error) {
       console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -163,6 +186,7 @@ export class Plants implements OnInit {
         ...this.selectedPlant,
         plantId: this.selectedPlant?.id
       });
+      this.fetchUsersByUsergroup();
       // console.log(this.plantForm.value);
     } catch (error) {
       console.log(error);

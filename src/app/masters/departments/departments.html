@@ -10,6 +10,7 @@
                     <th>SL No</th>
                     <th>Department</th>
                     <th>Department Head</th>
+                    <th>Assigned Clusters</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -19,8 +20,10 @@
                     <td>{{ i + 1 }}</td>
                     <td>{{ department.departmentName }}</td>
                     <td>{{ department.departmentHead.userName }}</td>
+                    <td>{{ department?.clusters?.length || '-' }}</td>
                     <td>
-                        <p-tag [value]="department.status ? 'Active' : 'Inactive'" [severity]="department.status ? 'success' : 'danger'">
+                        <p-tag [value]="department.status ? 'Active' : 'Inactive'" 
+                            [severity]="department.status ? 'success' : 'danger'">
                         </p-tag>
                     </td>
                     <td>
@@ -57,14 +60,8 @@
                 <input type="text" pInputText formControlName="departmentName" id="department" />
             </div>
             <div class="form-field">
-                <label for="department-head">User Group</label>
-                <p-select [options]="userGroupInfoList" formControlName="userGroupId" optionLabel="groupName" optionValue="userGroupId"
-                    [filter]="true" filterBy="groupName" [showClear]="true"
-                    placeholder="Select User Group" (onChange)="selectedUserGroup($event.value)" appendTo="body" />
-            </div>
-            <div class="form-field">
                 <label for="department-head">Department Head</label>
-                <p-select [options]="departmentHeadList" formControlName="departmentHeadId" optionLabel="user.userName" 
+                <p-select [options]="userList" formControlName="departmentHeadId" optionLabel="user.userName" 
                     optionValue="user.userId" [filter]="true" filterBy="user.userName" [showClear]="true"
                     placeholder="Select Department Head" appendTo="body" />
             </div>
@@ -81,7 +78,7 @@
             
                     <div class="status-subtitle">
             
-                        Keep this blade type active if it is still in use.
+                        Keep this Department active if it is still in use.
             
                         Turn it off if it is no longer required.
             
@@ -113,6 +110,46 @@
             <button pButton pRipple type="submit">Submit</button>
         </div>
     </form>
+</p-dialog>
+
+<p-dialog header="Assign/Remove Cluster" [(visible)]="showClusterModal" [modal]="true" [draggable]="false"
+    (onHide)="onDialogClose()" [style]="{ width: '50rem' }">
+    <p-table [value]="clusterInfoList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <ng-template #header>
+            <tr>
+                <th>SL No</th>
+                <th>Cluster Code</th>
+                <th>Cluster Name</th>
+                <th>Cluster Head</th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-cluster let-i="rowIndex">
+            <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ cluster.clusterCode }}</td>
+                <td>{{ cluster.clusterName }}</td>
+                <td>
+                    <p-select [options]="userList" optionLabel="user.userName" optionValue="user.userId" 
+                        [(ngModel)]="selectedClusterHeadId[cluster.clusterId]"
+                        [filter]="true" filterBy="user.userName" [showClear]="true"
+                        placeholder="Select Cluster Head" appendTo="body" 
+                        (onChange)="selectedClusterHead(cluster.clusterId, $event.value)"></p-select>
+                </td>
+                <td>
+                    <p-button [label]="isClusterAssigned(cluster.clusterId) ? 'Remove' : 'Assign'"
+                        [severity]="isClusterAssigned(cluster.clusterId) ? 'danger' : 'primary'" 
+                        (click)="toggleCluster(cluster)"
+                        [disabled]="!selectedClusterHeadId[cluster.clusterId]" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+            </tr>
+        </ng-template>
+    </p-table>
 </p-dialog>
 
 <p-toast />

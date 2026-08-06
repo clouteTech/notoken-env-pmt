@@ -176,6 +176,20 @@ export class Apiservice {
     return this.postMethod('master/organization/department/delete', params);
   }
 
+  fetchDepartmentById(params: any): Observable<any>{
+    return this.postMethod('master/organization/department/get', params);
+  }
+
+  // Department - Cluster Mapping
+
+  assignClustersToDepartment(params: any): Observable<any>{
+    return this.postMethod('master/organization/department-cluster/assign-cluster', params);
+  }
+
+  removeClustersFromDepartment(params: any): Observable<any>{
+    return this.postMethod('master/organization/department-cluster/remove-cluster', params);
+  }
+
   // Company User Master
 
   fetchAllCompanyUsers(params: any): Observable<any>{
@@ -212,6 +226,10 @@ export class Apiservice {
     return this.postMethod('auth/user-group/delete', params);
   }
 
+  fetchUserGroup(params: any): Observable<any>{
+    return this.postMethod('auth/user-group/get', params);
+  }
+
   fetchUserGroupInfo(params: any): Observable<any>{
     return this.postMethod('auth/user-group/info', params);
   }
@@ -233,10 +251,26 @@ export class Apiservice {
     return this.postMethod('master/plant/delete', params);
   }
 
+  fetchPlantInfo(params: any): Observable<any>{
+    return this.postMethod('master/plant/info', params);
+  }
+
   // Role Master
 
   fetchAllRoles(params: any): Observable<any>{
     return this.postMethod('auth/role/search', params);
+  }
+
+  fetchRoleInfo(params: any): Observable<any>{
+    return this.postMethod('auth/role/info', params);
+  }
+
+  assignRolesToUsergroup(params: any): Observable<any>{
+    return this.postMethod('auth/user-group-role/assign-role', params);
+  }
+
+  removeRolesToUsergroup(params: any): Observable<any>{
+    return this.postMethod('auth/user-group-role/remove-role', params);
   }
 
   // Cluster Master
@@ -255,6 +289,10 @@ export class Apiservice {
 
   deleteCluster(params: any): Observable<any>{
     return this.postMethod('master/organization/cluster/delete', params);
+  }
+
+  fetchClusterInfo(params: any): Observable<any>{
+    return this.postMethod('master/organization/cluster/info', params);
   }
 
   // User - User Group Mapping
@@ -308,6 +346,10 @@ export class Apiservice {
     return this.postMethod('auth/user-user-group/assign-group', params);
   }
 
+  removeUserGroup(params: any): Observable<any>{
+    return this.postMethod('auth/user-user-group/remove-group', params);
+  }
+
   projectSearch(params: any): Observable<any>{
     return this.postMethod('project/search', params);
   }
@@ -347,6 +389,11 @@ export class Apiservice {
   companyUserInfo(params: any): Observable<any>{
     return this.postMethod('auth/company-user/info', params);
   }
+
+  fetchCompanyUser(params: any): Observable<any>{
+    return this.postMethod('auth/company-user/get', params);
+  }
+
   customerSpvInfo(params: any): Observable<any>{
     return this.postMethod('master/customer/spv/info', params);
   }
@@ -512,6 +559,70 @@ export class Apiservice {
 
   deleteCrane(params: any): Observable<any>{
     return this.postMethod('master/equipment/crane/delete', params);
+  }
+
+  // Crane Supplier Master
+
+  fetchAllCraneSuppliers(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane-supplier/get-all', params);
+  }
+
+  createCraneSupplier(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane-supplier/create', params);
+  }
+
+  updateCraneSupplier(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane-supplier/update', params);
+  }
+
+  deleteCraneSupplier(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane-supplier/delete', params);
+  }
+
+  fetchSupplierInfo(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane-supplier/info', params);
+  }
+
+  // Yearly Demand Plan
+
+  fetchAllYearlyDemandPlan(params: any): Observable<any>{
+    return this.postMethod('yearly-demand-plan/search', params);
+  }
+
+  fetchProjectsByCustomer(params: any): Observable<any>{
+    return this.postMethod('yearly-demand-plan/projects-by-customer', params);
+  }
+
+  fetchSPVsByProject(params: any): Observable<any>{
+    return this.postMethod('yearly-demand-plan/spvs', params);
+  }
+
+  fetchWtgDetailsByProjectSPV(params: any): Observable<any>{
+    return this.postMethod('yearly-demand-plan/wtg-details', params);
+  }
+
+  // Monthly Demand Plan
+  
+  fetchAllMonthlyDemandPlan(params: any): Observable<any>{
+    return this.postMethod('monthly-demand-plan/search', params);
+  }
+
+  fetchAllComponentSerialList(params: any): Observable<any>{
+    return this.postMethod('component-productions/get-serial-list', params);
+  }
+
+  // User - Plant Mapping
+
+  assignPlantToUser(params: any): Observable<any>{
+    return this.postMethod('auth/user-plant-assign', params);
+  }
+
+  removePlantFromUser(params: any): Observable<any>{
+    return this.postMethod('auth/user-plant/remove', params);
+  }
+
+  fetchPlantsByUser(params: any): Observable<any>{
+    return this.postMethod('auth/user-plant/get-user-plants', params);
   }
 
   // auth/user-user-group/remove-group

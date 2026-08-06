@@ -12,12 +12,17 @@ import { Shared } from 'src/app/shared/services/shared';
 })
 export class Departments implements OnInit {
   showDepartmentModal = false;
+  showClusterModal = false;
+
+  selectedClusterHeadId: { [clusterId: number]: number } = {};
 
   selectedDepartment: any;
 
   departmentList: any[] = [];
-  userGroupInfoList: any[] = [];
-  departmentHeadList: any[] = [];
+  userList: any[] = [];
+  clusterInfoList: any[] = [];
+
+  assignedClusters: any[] = [];
 
   items: MenuItem[] = [];
 
@@ -30,7 +35,6 @@ export class Departments implements OnInit {
     departmentId: [0],
     departmentName: [''],
     departmentHeadId: [0],
-    userGroupId: [0],
     status: [false]
   })
 
@@ -55,13 +59,12 @@ export class Departments implements OnInit {
     }
   }
 
-  fetchUserGroupInfo(){
+  fetchUsersByUserGroup(data: any){
     try {
-      this.apiService.fetchUserGroupInfo('').subscribe({
+      this.apiService.fetchUsersByUserGroup(data).subscribe({
         next: val => {
-          console.log("user group info:", val);
-          this.userGroupInfoList = val.data;
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully fetched User Group' });
+          console.log(val);
+          this.userList = val.data;
         },
         error: err => {
           console.log(err);
@@ -73,32 +76,37 @@ export class Departments implements OnInit {
       })
     } catch (error) {
       console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
-  selectedUserGroup(userGroupId: number){
+
+  fetchDepartmentHead(){
     try {
       const data = {
-        userGroupId: userGroupId
+        userGroupId: 4
       }
 
       console.log(data);
 
-      this.apiService.fetchUsersByUserGroup(data).subscribe({
-        next: val => {
-          console.log(val);
-          this.departmentHeadList = val.data;
-        },
-        error: err => {
-          console.log(err);
-
-          if (err.status === 400) {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-          }
-        }
-      })
+      this.fetchUsersByUserGroup(data);
     } catch (error) {
       console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchClusterHead(){
+    try {
+      const data = {
+        userGroupId: 6
+      }
+      console.log(data);
+
+      this.fetchUsersByUserGroup(data);
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -152,21 +160,168 @@ export class Departments implements OnInit {
     try {
       this.showDepartmentModal = true;
 
-      this.fetchUserGroupInfo();
-
       this.departmentForm.patchValue({
         departmentId: this.selectedDepartment.departmentId,
         departmentName: this.selectedDepartment.departmentName,
         departmentHeadId: this.selectedDepartment.departmentHead.userId,
-        userGroupId: this.selectedDepartment.userGroupId,
         status: this.selectedDepartment.status
       });
 
       console.log("department form:", this.departmentForm.value);
 
-      this.selectedUserGroup(this.selectedDepartment.userGroupId);
+      this.fetchDepartmentHead();
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  isClusterAssigned(clusterId: number): boolean{
+    return this.assignedClusters.some(
+      cluster => cluster.clusterId === clusterId
+    )
+  }
+
+  toggleCluster(cluster: any){
+    if (this.isClusterAssigned(cluster.clusterId)) {
+      this.removeClustersFromDepartment(cluster);
+    }else{
+      this.assignClustersToDepartment(cluster);
+    }
+  }
+
+  fetchClusterInfo(){
+    try {
+      this.apiService.fetchClusterInfo('').subscribe({
+        next: val => {
+          console.log(val);
+          this.clusterInfoList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchDepartmentById(){
+    try {
+      const data = {
+        departmentId: this.selectedDepartment.departmentId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchDepartmentById(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.assignedClusters = val.data.clusters;
+
+          this.assignedClusters.forEach((cluster: any) => {
+            this.selectedClusterHeadId[cluster.clusterId] = cluster.clusterHeadId;
+          });
+
+          console.log('Selected Cluster Heads:', this.selectedClusterHeadId);
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  assignClustersToDepartment(cluster: any){
+    try {
+      const data = {
+        departmentId: this.selectedDepartment.departmentId,
+        clusterId: cluster.clusterId,
+        clusterHeadId: this.selectedClusterHeadId[cluster.clusterId]
+      }
+
+      console.log(data);
+
+      this.apiService.assignClustersToDepartment(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Cluster Assigned Successfully' });
+          this.fetchDepartmentById();
+          this.fetchAllDepartments();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  removeClustersFromDepartment(cluster: any){
+    try {
+      const data = {
+        departmentId: this.selectedDepartment.departmentId,
+        clusterId: cluster.clusterId
+      }
+
+      console.log(data);
+
+      this.apiService.removeClustersFromDepartment(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Cluster Removed Successfully' });
+          this.fetchDepartmentById();
+          this.fetchAllDepartments();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  selectedClusterHead(clusterId: number, userId: number){
+    try {
+      this.selectedClusterHeadId[clusterId] = userId;
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openClusterModal(){
+    try {
+      this.showClusterModal = true;
+      this.fetchClusterInfo();
+      this.fetchClusterHead();
+      this.fetchDepartmentById();
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -213,7 +368,7 @@ export class Departments implements OnInit {
   openDepartmentModal(){
     try {
       this.showDepartmentModal = true;
-      this.fetchUserGroupInfo();
+      this.fetchDepartmentHead();
     } catch (error) {
       console.log(error);
     }
@@ -221,6 +376,11 @@ export class Departments implements OnInit {
 
   getMenuItems(){
     return [
+      {
+        label: 'Assign/Remove Cluster',
+        icon: 'pi pi-user-plus',
+        command: () => this.openClusterModal()
+      },
       {
         label: 'Edit',
         icon: 'pi pi-pencil',
@@ -242,5 +402,6 @@ export class Departments implements OnInit {
   onDialogClose() {
     this.selectedDepartment = null;
     this.departmentForm.reset();
+    this.selectedClusterHeadId = {};
   }
 }
