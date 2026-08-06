@@ -62,8 +62,8 @@
             </div>
             <div class="form-field">
                 <label for="plant-manager">Plant Manager</label>
-                <p-select [options]="plantManagerList" optionLabel="label" optionValue="value" inputId="near-shore" placeholder="Select Plant Manager" 
-                    appendTo="body" [filter]="true" formControlName="plantManager" filterBy="label" />
+                <p-select [options]="userList" optionLabel="user.userName" optionValue="user.userName" inputId="near-shore" 
+                    placeholder="Select Plant Manager" appendTo="body" [filter]="true" formControlName="plantManager" filterBy="label" />
             </div>
         </div>
         @if(selectedPlant){

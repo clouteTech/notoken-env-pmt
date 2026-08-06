@@ -22,6 +22,8 @@ export class CompanyUsers implements OnInit {
   companyUserList: any[] = [];
   userGroupList:any[] = [];
   assignedUserGroups: any[] = [];
+  plantInfoList: any[] = [];
+  assignedPlants: any[] = [];
 
   private fb = inject(FormBuilder);
 
@@ -131,6 +133,26 @@ export class CompanyUsers implements OnInit {
     }
   }
 
+  isPlantAssigned(plantId: number): boolean{
+    return this.assignedPlants.some(
+      plant => plant.id === plantId
+    )
+  }
+
+  togglePlant(plant: any){
+    try {
+      if (this.isPlantAssigned(plant.plantId)) {
+        this.removePlantFromUser(plant);
+      } else {
+        this.assignPlantToUser(plant);
+      }
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+
   fetchUserGroupInfo(){
     try {
       this.apiService.userGroupInfo('')
@@ -178,6 +200,108 @@ export class CompanyUsers implements OnInit {
     }
   }
 
+  fetchPlantInfo(){
+    try {
+      this.apiService.fetchPlantInfo('').subscribe({
+        next: val => {
+          console.log(val);
+          this.plantInfoList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  assignPlantToUser(plant: any){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        plantId: plant.id
+      }
+
+      console.log(data);
+
+      this.apiService.assignPlantToUser(data).subscribe({
+        next: val => {
+          console.log(val);   
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  removePlantFromUser(plant: any){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        plantId: plant.id
+      }
+
+      console.log(data);
+
+      this.apiService.removePlantFromUser(data).subscribe({
+        next: val => {
+          console.log(val);
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchPlantsByUser(){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchPlantsByUser(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.assignedPlants = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   openAssignUserGroupsModal(){
     try {
       this.assignUserGroupModal = true;
@@ -193,6 +317,9 @@ export class CompanyUsers implements OnInit {
   openPlantMappingModal(){
     try {
       this.showPlantMappingModal = true;
+      this.fetchPlantInfo();
+      this.fetchCompanyUser();
+      this.fetchPlantsByUser();
     } catch (error) {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
