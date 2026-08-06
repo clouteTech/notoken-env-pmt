@@ -71,7 +71,7 @@
 
         <!-- start uncomment this -->
 
-        <button class="sb-item" [class.active]="activeMenu === 'demand'" (click)="navigate('demand')">
+        <button class="sb-item" [class.active]="activeMenu === 'yearlyDemandPlans'" (click)="navigate('yearlyDemandPlans')">
           <i class="pi pi-chart-bar"></i>
           Yearly Demand Plan
         </button>
@@ -181,6 +181,8 @@
                 (click)="navigate('zone')">Zones</button>
               <button class="sb-sub-item" [class.active]="activeMenu === 'cranes'" 
                 (click)="navigate('cranes')">Cranes</button>
+              <button class="sb-sub-item" [class.active]="activeMenu === 'crane-suppliers'" 
+                (click)="navigate('crane-suppliers')">Crane Suppliers</button>
               <button class="sb-sub-item" [class.active]="activeMenu === 'department'" 
                 (click)="navigate('department')">Departments</button>
               <button class="sb-sub-item" [class.active]="activeMenu === 'clusters'"
