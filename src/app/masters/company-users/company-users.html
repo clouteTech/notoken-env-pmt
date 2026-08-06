@@ -10,7 +10,7 @@
                     <th>SL No</th>
                     <th>Company User</th>
                     <th>Email</th>
-                    <th>User Group</th>
+                    <th>Assigned User Groups</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -108,25 +108,25 @@
     </form>
 </p-dialog>
 
-<p-dialog header="Assign User Group" [(visible)]="assignUserGroupModal" [modal]="true" [draggable]="false" (onHide)="onDialogClose()"
+<p-dialog header="Assign/Remove User Group" [(visible)]="assignUserGroupModal" [modal]="true" [draggable]="false" (onHide)="onDialogClose()"
     [style]="{ width: '50rem' }">
 
-    <!--  -->
-    <p-table [value]="assignList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+    <p-table [value]="userGroupList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
             <ng-template #header>
                 <tr>
                     <th>SL No</th>
                     <th>User Group</th>
-                    
                     <th>Action</th>
                 </tr>
             </ng-template>
-            <ng-template #body let-user let-i="rowIndex">
+            <ng-template #body let-usergroup let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
-                    <td>{{user.groupName}}</td>
+                    <td>{{ usergroup.groupName }}</td>
                     <td>
-                        <p-button label="Assign" (click)="assignUsers()" [disabled]="assignList"/>
+                        <p-button [label]="isUserGroupAssigned(usergroup.userGroupId) ? 'Remove' : 'Assign'" 
+                            [severity]="isUserGroupAssigned(usergroup.userGroupId) ? 'danger' : 'primary'"
+                            (click)="toggleUserGroup(usergroup)" />
                     </td>
                 </tr>
             </ng-template>
@@ -137,6 +137,11 @@
             </ng-template>
         </p-table>
     <!--  -->
+    
+</p-dialog>
+
+<p-dialog header="Assign/Remove Plant" [(visible)]="showPlantMappingModal" [modal]="true" [draggable]="false"
+    (onHide)="onDialogClose()" [style]="{ width: '40rem' }">
     
 </p-dialog>
 

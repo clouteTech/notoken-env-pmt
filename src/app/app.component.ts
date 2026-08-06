@@ -96,6 +96,7 @@ export class AppComponent implements OnInit, OnDestroy {
   navigate(menu: string) {
     this.activeMenu = menu;
     if (menu === 'demand') this.router.navigate(['/dashboard']);
+    if (menu === 'yearlyDemandPlans') this.router.navigate(['/yearly-demand-plans']);
     else if (menu === 'saleDemand') this.router.navigate(['/saleDemand']);
     else if (menu === 'create') this.router.navigate(['/create-project']);
     else if (menu === 'monthlyDemandPlan') this.router.navigate(['/monthlyDemandPlan']);
@@ -121,6 +122,7 @@ export class AppComponent implements OnInit, OnDestroy {
     else if(menu === 'customers') this.router.navigate(['/customers']);
     else if(menu === 'zone') this.router.navigate(['/zones']);
     else if(menu === 'cranes') this.router.navigate(['/cranes']);
+    else if(menu === 'crane-suppliers') this.router.navigate(['/crane-suppliers']);
     else if(menu === 'department') this.router.navigate(['/departments']);
     else if(menu === 'clusters') this.router.navigate(['/clusters']);
     else if(menu === 'installation') this.router.navigate(['/installation']);

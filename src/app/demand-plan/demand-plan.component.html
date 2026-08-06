@@ -28,12 +28,12 @@
     <div class="flex flex-column gap-2">
       <label class="filter-label">Customer</label>
       <p-select appendTo="body"
-        [options]="customerOptions"
+        [options]="customerInfoList"
         [(ngModel)]="customer"
-        optionLabel="label"
-        optionValue="value"
+        optionLabel="customerName"
+        optionValue="customerId"
         placeholder="Select Customer"
-        (onChange)="onCustomerChange()"
+        (onChange)="onCustomerChange($event.value)"
         [style]="{'min-width':'180px'}"
       />
     </div>
@@ -87,11 +87,11 @@
         <div class="sel-grp">
           <label>Project Code</label>
           <p-select appendTo="body"
-            [options]="getProjectOptions()"
+            [options]="customerProjectList"
             [ngModel]="proj.projectCode"
             (ngModelChange)="onProjectChange(proj.uid, $event)"
-            optionLabel="label"
-            optionValue="value"
+            optionLabel="projectCode"
+            optionValue="projectId"
             placeholder="-- Select --"
             [style]="{'min-width':'148px','font-size':'12px'}"
           />
@@ -101,11 +101,11 @@
         <div class="sel-grp" *ngIf="proj.projectCode">
           <label>SPV</label>
           <p-select appendTo="body"
-            [options]="getSpvOptions(proj.projectCode, proj.uid)"
+            [options]="projectSpvList"
             [ngModel]="proj.spv"
             (ngModelChange)="onSPVChange(proj.uid, $event)"
-            optionLabel="label"
-            optionValue="value"
+            optionLabel="spvName"
+            optionValue="customerSpvId"
             placeholder="-- Select --"
             [style]="{'min-width':'148px','font-size':'12px'}"
           />
@@ -132,7 +132,7 @@
     <!-- Demand Table using p-table -->
     <div *ngIf="proj.spv && proj.rows.length > 0" class="table-wrap">
       <p-table
-        [value]="proj.rows"
+        [value]="projectSpvWtgDetailList"
         [tableStyle]="{'min-width':'900px'}"
         styleClass="p-datatable-sm p-datatable-gridlines demand-table"
         [rowHover]="true"
@@ -149,33 +149,33 @@
           </tr>
         </ng-template>
 
-        <ng-template #body let-row let-ri="rowIndex">
+        <ng-template #body let-wtg let-ri="rowIndex">
           <tr>
             <td>
-              <input pInputText [value]="row.wtg" class="n-inp" style="width:78px;text-align:left"
+              <input pInputText [value]="wtg.wtgType" class="n-inp" style="width:78px;text-align:left"
                 (change)="updField(proj.uid, ri, 'wtg', $any($event.target).value)" />
             </td>
             <td style="text-align:center">
-              <input pInputText type="number" [value]="row.cap" class="n-inp" style="width:54px"
+              <input pInputText type="number" [value]="wtg.capMw" class="n-inp" style="width:54px"
                 (change)="updField(proj.uid, ri, 'cap', +$any($event.target).value)" />
             </td>
             <td>
-              <input pInputText [value]="row.tower" class="n-inp" style="width:100px;text-align:left"
+              <input pInputText [value]="wtg.towerType" class="n-inp" style="width:100px;text-align:left"
                 (change)="updField(proj.uid, ri, 'tower', $any($event.target).value)" />
             </td>
             <td>
-              <input pInputText [value]="row.blade" class="n-inp" style="width:54px;text-align:left"
+              <input pInputText [value]="wtg.bladeType" class="n-inp" style="width:54px;text-align:left"
                 (change)="updField(proj.uid, ri, 'blade', $any($event.target).value)" />
             </td>
             <td style="text-align:center">
-              <input pInputText type="number" [value]="row.qty" min="0" class="n-inp" style="width:54px"
+              <input pInputText type="number" [value]="wtg.totalQty" min="0" class="n-inp" style="width:54px"
                 (change)="updField(proj.uid, ri, 'qty', +$any($event.target).value)" />
             </td>
-            <td *ngFor="let v of row.mon; let mi = index; trackBy: trackByIdx" style="text-align:center;padding:4px 3px">
+            <td *ngFor="let v of wtg.mon; let mi = index; trackBy: trackByIdx" style="text-align:center;padding:4px 3px">
               <input pInputText type="number" [value]="v || 0" min="0" class="n-inp" style="width:54px"
                 (input)="updMon(proj.uid, ri, mi, +$any($event.target).value)" />
             </td>
-            <td class="rt-cell">{{ rowTotal(row) }}</td>
+            <td class="rt-cell">{{ rowTotal(wtg) }}</td>
             
           </tr>
         </ng-template>

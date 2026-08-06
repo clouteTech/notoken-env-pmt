@@ -88,6 +88,8 @@ export class Foundation1 {
   foundationActivitiesDetails: any[] = [];
   projectList: any[] = [];
 
+  maxDate: Date | undefined;
+
   // Summary Table rows
   summaryRows: SummaryRow[] = [
     /* { projectCode: 'P-8001', projectName: 'India_TataPower_Chennai_TamilNadu_Phase1_250MW', totalWtgs: 2 },
@@ -127,7 +129,7 @@ export class Foundation1 {
       // { field: 'soilTestForecastFinish', header: 'Soil Test Forecast Finish', type: 'date' },
       // { field: 'soilTestFinishDelayReason', header: 'Soil Test Finish Delay Reason', type: 'text' },
       // { field: 'designSBC', header: 'Design SBC', type: 'number' },
-      { field: 'actualSBC', header: 'Actual SBC (t/m²)', type: 'number' }
+      { field: 'actualSbc', header: 'Actual SBC (t/m²)', type: 'number' }
     ],
     // 1: [
     //   { field: 'designSBC', header: 'Design SBC', type: 'number' },
@@ -350,6 +352,9 @@ export class Foundation1 {
     // Don't build wtgRows/stepForms here anymore — wait for API
   this.items = this.getMenuItems("");
   this.getProjectList();
+
+  const today = new Date();
+  this.maxDate = new Date(today);
 }
 
 // Call this after you know the WTG count from the selected row
@@ -500,12 +505,21 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
   getStepPayload(stepIdx: number){
     const key = this.stepConfig[stepIdx].key;
 
-    return this.stepForms[stepIdx].map((form, index) => ({
-      locationId: this.prjWTGDetails[index]?.location?.locationId,
-      [key]: {
-        ...form.value
+    return this.stepForms[stepIdx].map((form, index) => {
+
+      const formValue = { ...form.value };
+
+      Object.keys(formValue).forEach(field => {
+        if(formValue[field] instanceof Date){
+          formValue[field] = this.formatDate(formValue[field]);
+        }
+      })
+
+      return {
+        locationId: this.prjWTGDetails[index]?.location?.locationId,
+        [key]: formValue
       }
-    }));
+    });
   }
 
   markStepComplete(stepIdx: number) {

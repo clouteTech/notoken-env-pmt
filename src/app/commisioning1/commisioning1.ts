@@ -65,6 +65,8 @@ export class Commisioning1 {
   chooseUploadTemplate = false;
   displayImportDialog = false;
 
+  maxDate: Date | undefined;
+
   selectedSummaryRow: SummaryRow | null = null;
 
   items: MenuItem[] = [];
@@ -161,6 +163,9 @@ export class Commisioning1 {
 
     this.items = this.getMenuItems();
     this.getProjectList();
+
+    const today = new Date();
+    this.maxDate = new Date(today);
   }
 
   getProjectList(){

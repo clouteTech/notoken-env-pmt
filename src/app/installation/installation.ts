@@ -94,6 +94,8 @@ export class Installation implements OnInit {
   // Summary Table rows
   summaryRows: SummaryRow[] = [];
 
+  maxDate: Date | undefined;
+
   assemblyMethodOptions = [
     { label: 'ROTOR', value: 'ROTOR' },
     { label: 'HUB', value: 'HUB' },
@@ -338,6 +340,9 @@ export class Installation implements OnInit {
     this.fetchProjectList();
 
     this.items = this.getMenuItems();
+
+    const today = new Date();
+    this.maxDate = new Date(today);
   }
 
   fetchProjectList(){

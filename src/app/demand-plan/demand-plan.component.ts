@@ -17,6 +17,7 @@ import { MessageService }    from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { DividerModule }     from 'primeng/divider';
+import { Apiservice } from '../service/apiservice';
 
 @Component({
   selector: 'app-demand-plan',
@@ -39,16 +40,126 @@ export class DemandPlanComponent implements OnInit {
   projects: ProjectEntry[] = [];
   private uidSeed = 0;
 
+  selectedCustomerId = 0;
+  selectedProjectId = 0;
+
+  customerInfoList: any[] = [];
+  customerProjectList: any[] = [];
+  projectSpvList: any[] = [];
+  projectSpvWtgDetailList: any[] = [];
+
   // p-select options
   yearOptions     = YEARS.map(y => ({ label: y, value: y }));
-  customerOptions = CUSTOMERS.map(c => ({ label: c, value: c }));
+  // customerOptions = CUSTOMERS.map(c => ({ label: c, value: c }));
 
   // Summary dialog
   summaryVisible = false;
 
-  constructor(private ds: DataService, private msgSvc: MessageService) {}
+  constructor(private ds: DataService, private msgSvc: MessageService, private apiService: Apiservice) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.fetchAllCustomer();
+  }
+
+  fetchAllCustomer(){
+    try {
+      this.apiService.customerInfo('').subscribe({
+        next: val => {
+          console.log(val);
+          this.customerInfoList = val.data;
+        },
+        error: err => {
+          if (err.status === 400) {
+            this.msgSvc.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.msgSvc.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchProjectsByCustomer(){
+    try {
+      const data = {
+        customerId: this.selectedCustomerId
+      }
+      this.apiService.fetchProjectsByCustomer(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.customerProjectList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.msgSvc.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+
+      this.msgSvc.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchSPVsByProject(){
+    try {
+      const data = {
+        projectId: this.selectedProjectId
+      }
+      console.log(data);
+
+      this.apiService.fetchSPVsByProject(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.projectSpvList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.msgSvc.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+
+      this.msgSvc.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchWtgDetailsByProjectSPV(spvId: any){
+    try {
+      const data = {
+        projectId: this.selectedProjectId,
+        spvId: spvId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchWtgDetailsByProjectSPV(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.projectSpvWtgDetailList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.msgSvc.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+
+      this.msgSvc.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
 
   get filtersReady(): boolean { return !!this.year && !!this.customer; }
   get hasData(): boolean { return this.projects.some(p => p.spv && p.rows.length > 0); }
@@ -91,9 +202,12 @@ export class DemandPlanComponent implements OnInit {
   }
 
   onYearChange()    { /* month labels refresh automatically */ }
-  onCustomerChange() {
-    this.projects = [];
-    this.uidSeed  = 0;
+  onCustomerChange(customerId: number) {
+    console.log(customerId);
+    this.selectedCustomerId = customerId;
+    this.fetchProjectsByCustomer();
+    // this.projects = [];
+    // this.uidSeed  = 0;
     if (this.filtersReady) { this.addProject(); }
   }
 
@@ -107,16 +221,24 @@ export class DemandPlanComponent implements OnInit {
   }
 
   onProjectChange(uid: number, code: string) {
+    console.log(code);
+    this.selectedProjectId = Number(code);
+    
     const p = this.projects.find(p => p.uid === uid);
     if (!p) return;
     p.projectCode = code; p.spv = ''; p.rows = [];
+
+    this.fetchSPVsByProject();
   }
 
   onSPVChange(uid: number, spv: string) {
+    console.log(spv);
     const p = this.projects.find(p => p.uid === uid);
     if (!p) return;
     p.spv = spv;
     p.rows = this.ds.getDefaultRows(spv);
+
+    this.fetchWtgDetailsByProjectSPV(spv);
   }
 
   addRow(uid: number) {
@@ -140,7 +262,7 @@ export class DemandPlanComponent implements OnInit {
     if (p && p.rows[ri]) p.rows[ri].mon[mi] = isNaN(val) ? 0 : val;
   }
 
-  rowTotal(row: WtgRow): number   { return row.mon.reduce((a, b) => a + b, 0); }
+  rowTotal(row: WtgRow): number   { return (row.mon ?? []).reduce((a, b) => a + b, 0); }
   colTotal(rows: WtgRow[], mi: number): number { return rows.reduce((s, r) => s + (r.mon[mi] ?? 0), 0); }
   qtyTotal(rows: WtgRow[]): number  { return rows.reduce((s, r) => s + (r.qty ?? 0), 0); }
   grandTotal(rows: WtgRow[]): number { return rows.reduce((s, r) => s + this.rowTotal(r), 0); }

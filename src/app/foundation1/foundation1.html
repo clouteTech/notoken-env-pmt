@@ -39,7 +39,7 @@
         </div>
       </div>
     
-      <div class="summary-card completed">
+      <!-- <div class="summary-card completed">
         <div class="card-icon">
           <i class="pi pi-check-circle"></i>
         </div>
@@ -59,7 +59,7 @@
           <span class="card-label">Foundation Pending</span>
           <h3 class="card-value">4</h3>
         </div>
-      </div>
+      </div> -->
     
     </div>
   </div>
@@ -507,7 +507,12 @@
                       <td class="col-frozen col-location" pFrozenColumn>{{ wtg?.location?.locationCode || '-' }}</td>
                       <td class="col-frozen col-maximo" pFrozenColumn alignFrozen="left">{{ wtg?.location?.maximoId || '-' }}</td>
                       <td *ngFor="let col of stepColumnDefs[stepIdx]" class="col-field-cell" [class.cell-disabled]="!isRowEnabled(stepIdx, rowIdx)">
-                        <p-datepicker *ngIf="col.type === 'date'" [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" dateFormat="dd-mm-yy" placeholder="DD-MM-YYYY" styleClass="table-datepicker" appendTo="body" [disabled]="!isRowEnabled(stepIdx, rowIdx)" />
+                        <p-datepicker *ngIf="col.type === 'date'" 
+                          [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" 
+                          (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" 
+                          dateFormat="dd-mm-yy" placeholder="DD-MM-YYYY" styleClass="table-datepicker" 
+                          appendTo="body" [disabled]="!isRowEnabled(stepIdx, rowIdx)"
+                          [maxDate]="maxDate" />
                         <p-inputNumber *ngIf="col.type === 'number'" [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" placeholder="0.00" [minFractionDigits]="0" [maxFractionDigits]="2" styleClass="table-inputnumber" [disabled]="!isRowEnabled(stepIdx, rowIdx)" />
                         <input *ngIf="col.type === 'text'" type="text" pInputText [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" placeholder="Enter reason..." class="table-input table-input-text" [disabled]="!isRowEnabled(stepIdx, rowIdx)" />
                       </td>

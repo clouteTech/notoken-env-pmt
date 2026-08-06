@@ -40,7 +40,7 @@
         </div>
       </div>
     
-      <div class="summary-card completed">
+      <!-- <div class="summary-card completed">
         <div class="card-icon">
           <i class="pi pi-check-circle"></i>
         </div>
@@ -60,7 +60,7 @@
           <span class="card-label">Commissioning Pending</span>
           <h3 class="card-value">4</h3>
         </div>
-      </div>
+      </div> -->
     
     </div>
   </div>
@@ -574,7 +574,7 @@
                           <p-datepicker *ngIf="col.type === 'date'" [ngModel]="getStepFormValue(stepIdx, rowIndex, col.field)"
                             (ngModelChange)="setStepFormValue(stepIdx, rowIndex, col.field, $event)" dateFormat="dd-mm-yy"
                             appendTo="body" [disabled]="!isRowEnabledForStep(stepIdx, rowIndex)" placeholder="DD-MM-YYYY"
-                            styleClass="table-datepicker">
+                            styleClass="table-datepicker" [maxDate]="maxDate">
                           </p-datepicker>
                 
                           <!-- TEXT -->

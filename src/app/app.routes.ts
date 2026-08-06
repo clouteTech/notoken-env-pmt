@@ -38,12 +38,17 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'yearly-demand-plans',
+    loadComponent: () => import('./yearly-demand-plans/yearly-demand-plans').then(m => m.YearlyDemandPlans),
+    canActivate: [authGuard]
+  },
+  {
     path: 'monthlyDemandPlan',
     loadComponent: () => import('./monthly-plan/monthly-plan').then(m => m.MonthlyPlan),
     canActivate: [authGuard]
   },
   {
-    path: 'component-serial',
+    path: 'plan/:id/component-serial',
     loadComponent: () => import('./component-serial/component-serial').then(m => m.ComponentSerial),
     canActivate: [authGuard]
   },
@@ -180,6 +185,11 @@ export const routes: Routes = [
   {
     path: 'cranes',
     loadComponent: () => import('./masters/cranes/cranes').then(m => m.Cranes),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'crane-suppliers',
+    loadComponent: () => import('./masters/crane-suppliers/crane-suppliers').then(m => m.CraneSuppliers),
     canActivate: [authGuard]
   },
   {

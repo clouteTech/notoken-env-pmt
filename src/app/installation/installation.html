@@ -33,7 +33,7 @@
         </div>
       </div>
     
-      <div class="summary-card completed">
+      <!-- <div class="summary-card completed">
         <div class="card-icon">
           <i class="pi pi-check-circle"></i>
         </div>
@@ -53,7 +53,7 @@
           <span class="card-label">Installation Pending</span>
           <h3 class="card-value">4</h3>
         </div>
-      </div>
+      </div> -->
     
     </div>
   </div>
@@ -611,7 +611,7 @@
                             [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
                             (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)"
                             (onBlur)="stepForms[stepIdx][rowIdx].get(col.field)?.markAsTouched()"
-                            dateFormat="dd-mm-yy" placeholder="DD-MM-YYYY"
+                            dateFormat="dd-mm-yy" placeholder="DD-MM-YYYY" [maxDate]="maxDate" 
                             [styleClass]="
                               stepForms[stepIdx][rowIdx].get(col.field)?.invalid &&
                               stepForms[stepIdx][rowIdx].get(col.field)?.touched

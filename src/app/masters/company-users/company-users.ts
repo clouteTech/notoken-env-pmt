@@ -13,13 +13,15 @@ import { Shared } from 'src/app/shared/services/shared';
 export class CompanyUsers implements OnInit {
   showCompanyUserModal = false;
   assignUserGroupModal = false;
+  showPlantMappingModal = false;
 
   items: MenuItem[] = [];
 
   selectedCompanyUser: any;
 
   companyUserList: any[] = [];
-  assignList:any[] = [];
+  userGroupList:any[] = [];
+  assignedUserGroups: any[] = [];
 
   private fb = inject(FormBuilder);
 
@@ -115,21 +117,85 @@ export class CompanyUsers implements OnInit {
     }
   }
 
-  assignUserGroups(){
+  isUserGroupAssigned(userGroupId: number): boolean{
+    return this.assignedUserGroups.some(
+      group => group.userGroupId === userGroupId
+    )
+  }
+
+  toggleUserGroup(usergroup: any){
+    if (this.isUserGroupAssigned(usergroup.userGroupId)) {
+      this.removeUserGroups(usergroup);
+    } else {
+      this.assignUserGroups(usergroup);
+    }
+  }
+
+  fetchUserGroupInfo(){
     try {
-      this.assignUserGroupModal = true;
-      let data = {};
-      this.apiService.userGroupInfo(data)
+      this.apiService.userGroupInfo('')
       .subscribe({
         next:val=>{
-          this.assignList = val.data;
+          console.log(val);
+          this.userGroupList = val.data;
         },error:(err)=>{
+          console.log(err);
 
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
         }
       })
     } catch (error) {
-       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
 
+  fetchCompanyUser(){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId
+      }
+      console.log(data);
+
+      this.apiService.fetchCompanyUser(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.assignedUserGroups = val.data?.userGroups ?? [];
+
+          console.log('Assigned Groups:', this.assignedUserGroups);
+        },
+        error: err => {
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openAssignUserGroupsModal(){
+    try {
+      this.assignUserGroupModal = true;
+
+      this.fetchUserGroupInfo();
+      this.fetchCompanyUser();
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openPlantMappingModal(){
+    try {
+      this.showPlantMappingModal = true;
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -139,6 +205,68 @@ export class CompanyUsers implements OnInit {
       this.companyUserForm.patchValue(this.selectedCompanyUser);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  assignUserGroups(usergroup: any){
+    try{
+      console.log(usergroup);
+
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        userGroupId: usergroup?.userGroupId
+      }
+
+      console.log(data);
+
+      this.apiService.assignGroup(data)
+      .subscribe({
+        next:(val)=>{
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'User Group Assigned Successfully' });
+          this.fetchCompanyUser();
+          this.fetchAllCompanyUser();
+        },error:(err)=>{
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    }catch(e){
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+
+    }
+  }
+
+  removeUserGroups(usergroup: any){
+    try {
+      console.log(usergroup);
+
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        userGroupId: usergroup?.userGroupId
+      }
+
+      console.log(data);
+      
+      this.apiService.removeUserGroup(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'User Group Removed Successfully' });
+          this.fetchCompanyUser();
+          this.fetchAllCompanyUser();
+        },
+        error: err => {
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -193,9 +321,14 @@ export class CompanyUsers implements OnInit {
   getMenuItems(){
     return [
       {
-        label: 'Assign',
+        label: 'Assign/Remove Plant',
         icon: 'pi pi-user-plus',
-        command: () => this.assignUserGroups(),
+        command: () => this.openPlantMappingModal(),
+      },
+      {
+        label: 'Assign/Remove User Group',
+        icon: 'pi pi-user-plus',
+        command: () => this.openAssignUserGroupsModal(),
       },
       {
         label: 'Edit',
@@ -212,34 +345,12 @@ export class CompanyUsers implements OnInit {
 
   companyUserMenu(event: Event, menu: any, companyUser: any){
     this.selectedCompanyUser = companyUser;
+    console.log(this.selectedCompanyUser);
     menu.toggle(event);
   }
 
   onDialogClose() {
     this.selectedCompanyUser = null;
     this.companyUserForm.reset();
-  }
-
-  assignUsers(){
-    try{
-      var uID = this.selectedCompanyUser.userId;
-      var gID = this.selectedCompanyUser.userGroups[0].userGroupId
-      let data = {
-        "userId": uID,
-        "userGroupId": gID
-      }
-      this.apiService.assignGroup(data)
-      .subscribe({
-        next:(val)=>{
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Assigned Successfully' });
-
-        },error:(err)=>{
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-        }
-      })
-    }catch(e){
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
-
-    }
   }
 }
