@@ -10,6 +10,8 @@
                     <th>SL No</th>
                     <th>Group Name</th>
                     <th>Description</th>
+                    <th>Assigned Roles</th>
+                    <th>Total Users</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -17,8 +19,10 @@
             <ng-template #body let-usergroup let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
-                    <td>{{ usergroup.groupName }}</td>
-                    <td>{{ usergroup.description }}</td>
+                    <td>{{ usergroup.groupName || '-' }}</td>
+                    <td>{{ usergroup.description || '-' }}</td>
+                    <td>{{ usergroup.totalRoles || '-' }}</td>
+                    <td>{{ usergroup.totalUsers || '-' }}</td>
                     <td>
                         <p-tag [value]="usergroup.status ? 'Active' : 'Inactive'" [severity]="usergroup.status ? 'success' : 'danger'">
                         </p-tag>
@@ -104,6 +108,39 @@
             <button pButton pRipple type="submit">Submit</button>
         </div>
     </form>
+</p-dialog>
+
+<p-dialog header="Assign/Remove Role" [(visible)]="showRoleModal" [modal]="true" [draggable]="false"
+    (onHide)="onDialogClose()" [style]="{ width: '50rem' }">
+
+    <p-table [value]="roleInfoList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <ng-template #header>
+            <tr>
+                <th>SL No</th>
+                <th>Role</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-role let-i="rowIndex">
+            <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ role.roleKey }}</td>
+                <td>{{ role.description }}</td>
+                <td>
+                    <p-button [label]="isRoleAssigned(role.roleId) ? 'Remove' : 'Assign'" 
+                        [severity]="isRoleAssigned(role.roleId) ? 'danger' : 'primary'"
+                        (click)="toggleRole(role)" [disabled]="role.roleId === 1"
+                        pTooltip="SUPER_ADMIN role can only be assigned to Super Admin group" [disabled]="role.roleId === 1" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+            </tr>
+        </ng-template>
+    </p-table>
 </p-dialog>
 
 <p-toast />

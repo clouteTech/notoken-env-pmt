@@ -12,10 +12,13 @@ import { Shared } from 'src/app/shared/services/shared';
 })
 export class UserGroups implements OnInit {
   showUserGroupModal = false;
+  showRoleModal = false;
 
   items: MenuItem[] = [];
 
   userGroupList: any[] = [];
+  roleInfoList: any[] = [];
+  assignedRoles: any[] = [];
 
   selectedUsergroup: any;
 
@@ -163,6 +166,137 @@ export class UserGroups implements OnInit {
     });
   }
 
+  isRoleAssigned(roleId: number): boolean{
+    return this.assignedRoles.some(
+      role => role.roleId === roleId
+    );
+  }
+
+  toggleRole(role: any){
+    if (this.isRoleAssigned(role.roleId)) {
+      this.removeRole(role);
+    } else {
+      this.assignRole(role);
+    }
+  }
+
+  assignRole(role: any){
+    try {
+      const data = {
+        userGroupId: this.selectedUsergroup.userGroupId,
+        roleId: role.roleId
+      }
+
+      console.log(data);
+
+      this.apiService.assignRolesToUsergroup(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Role Assigned Successfully' });
+          this.fetchUsergroup();
+          this.fetchAllUserGroups();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  removeRole(role: any){
+    try {
+      const data = {
+        userGroupId: this.selectedUsergroup.userGroupId,
+        roleId: role.roleId
+      }
+
+      console.log(data);
+
+      this.apiService.removeRolesToUsergroup(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Role Removed Successfully' });
+          this.fetchUsergroup();
+          this.fetchAllUserGroups();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchRoleInfo(){
+    try {
+      this.apiService.fetchRoleInfo('').subscribe({
+        next: val => {
+          console.log(val);
+          this.roleInfoList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchUsergroup(){
+    try {
+      const data = {
+        userGroupId: this.selectedUsergroup.userGroupId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchUserGroup(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.assignedRoles = val.data.roles ?? [];
+        },
+        error: err => {
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openRoleModal(){
+    try {
+      this.showRoleModal = true;
+      this.fetchRoleInfo();
+      this.fetchUsergroup();
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   openUserGroupModal(){
     try {
       this.showUserGroupModal = true;
@@ -173,6 +307,11 @@ export class UserGroups implements OnInit {
 
   getMenuItems(){
     return [
+      {
+        label: 'Assign/Remove Role',
+        icon: 'pi pi-user-plus',
+        command: () => this.openRoleModal(),
+      },
       {
         label: 'Edit',
         icon: 'pi pi-pencil',

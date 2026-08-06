@@ -3,7 +3,7 @@ import { Shared } from '../shared/services/shared';
 import { Apiservice } from '../service/apiservice';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-project-wtg-location-details',
@@ -35,13 +35,25 @@ export class ProjectWtgLocationDetails implements OnInit {
     projectId: [0],
     projectWtgId: [0],
     locationId: [0],
-    maximoId: [''],
-    locationCode: [''],
-    village: [''],
+    maximoId: ['', Validators.maxLength(100)],
+    locationCode: ['', [Validators.required, Validators.maxLength(100)]],
+    village: ['', Validators.maxLength(100)],
     latitude: [null],
     longitude: [null],
     status: [false]
   })
+
+  get locationCode(){
+    return this.locationForm.get('locationCode');
+  }
+
+  get maximoId(){
+    return this.locationForm.get('maximoId');
+  }
+
+  get village(){
+    return this.locationForm.get('village');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -89,50 +101,54 @@ export class ProjectWtgLocationDetails implements OnInit {
 
   submitLocationForm(){
     try {
-      if (this.selectPrjWTG?.location?.locationId) {
-        const data = this.locationForm.value;
-        console.log(data);
-
-        this.apiService.updatePrjWTGLocation(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', 
-              detail: 'Successfully Updated Project WTG Location' });
-            this.showLocationModal = false;
-            this.fetchPrjWTGDetails();
-          },
-          error: err => {
-            console.log(err);
+      if (this.locationForm.valid) {   
+        if (this.selectPrjWTG?.location?.locationId) {
+          const data = this.locationForm.value;
+          console.log(data);
   
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          this.apiService.updatePrjWTGLocation(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', 
+                detail: 'Successfully Updated Project WTG Location' });
+              this.showLocationModal = false;
+              this.fetchPrjWTGDetails();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
-      } else {       
-        const data = {
-          ...this.locationForm.value,
-          projectId: this.projectId,
-          projectWtgId: this.selectPrjWTG?.projectWtg?.projectWtgId
-        };
-        console.log(data);
-  
-        this.apiService.createPrjWTGLocation(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', 
-              detail: `Successfully Location Assigned to ${this.selectPrjWTG?.projectWtg?.wtgCode} Project WTG` });
-            this.showLocationModal = false;
-            this.fetchPrjWTGDetails();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          })
+        } else {       
+          const data = {
+            ...this.locationForm.value,
+            projectId: this.projectId,
+            projectWtgId: this.selectPrjWTG?.projectWtg?.projectWtgId
+          };
+          console.log(data);
+    
+          this.apiService.createPrjWTGLocation(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', 
+                detail: `Successfully Location Assigned to ${this.selectPrjWTG?.projectWtg?.wtgCode} Project WTG` });
+              this.showLocationModal = false;
+              this.fetchPrjWTGDetails();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        }
+      } else {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);
