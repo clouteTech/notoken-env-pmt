@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -26,10 +26,18 @@ export class TowerTypes implements OnInit {
 
   towerTypeForm = this.fb.group({
     towerTypeId: [0],
-    towerType: [''],
-    sectionCount: [0],
+    towerType: ['', [Validators.required, Validators.maxLength(50)]],
+    sectionCount: [null, [Validators.required, Validators.min(1)]],
     status: [false]
   })
+
+  get towerType(){
+    return this.towerTypeForm.get('towerType');
+  }
+
+  get sectionCount(){
+    return this.towerTypeForm.get('sectionCount');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -58,45 +66,49 @@ export class TowerTypes implements OnInit {
 
   submitTowerTypeForm(){
     try {
-      if (!this.selectedTowerType) {     
-        const data = this.towerTypeForm.value;
-        console.log(data);
-  
-        this.apiService.createTowerType(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Tower Type' });
-            this.showTowerTypeModal = false;
-            this.fetchAllTowerType();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.towerTypeForm.valid) {   
+        if (!this.selectedTowerType) {     
+          const data = this.towerTypeForm.value;
+          console.log(data);
+    
+          this.apiService.createTowerType(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Tower Type' });
+              this.showTowerTypeModal = false;
+              this.fetchAllTowerType();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.towerTypeForm.value;
+          console.log(data);
+  
+          this.apiService.updateTowerType(data).subscribe({
+            next: val => {
+              console.log(val);
+  
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Tower Type' });
+              this.showTowerTypeModal = false;
+              this.fetchAllTowerType();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }
       } else {
-        const data = this.towerTypeForm.value;
-        console.log(data);
-
-        this.apiService.updateTowerType(data).subscribe({
-          next: val => {
-            console.log(val);
-
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Tower Type' });
-            this.showTowerTypeModal = false;
-            this.fetchAllTowerType();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

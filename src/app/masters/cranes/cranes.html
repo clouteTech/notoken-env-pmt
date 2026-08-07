@@ -115,8 +115,17 @@
 </p-dialog>
 
 
-<p-dialog header="Assign/Remove Supplier" [(visible)]="showSupplierModal" [modal]="true" [draggable]="false"
+<p-dialog [(visible)]="showSupplierModal" [modal]="true" [draggable]="false"
     (onHide)="onDialogClose()" [style]="{ width: '50rem' }">
+
+    <ng-template #header>
+        <div class="dialog-header">
+            <span class="dialog-title">Assign/Remove Supplier</span>
+            <p-tag [value]="selectedCrane?.craneType" severity="info"></p-tag>
+            <p-tag [value]="selectedCrane?.craneModel" severity="warn"></p-tag>
+            <p-tag [value]="selectedCrane?.craneMake" severity="success"></p-tag>
+        </div>
+    </ng-template>
 
     <p-table [value]="supplierList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
         <ng-template #header>
@@ -131,10 +140,9 @@
                 <td>{{ i + 1 }}</td>
                 <td>{{ supplier.supplierName }}</td>
                 <td>
-                    <p-button label="Assign" />
-                    <!-- <p-button [label]="isUserGroupAssigned(usergroup.userGroupId) ? 'Remove' : 'Assign'"
-                        [severity]="isUserGroupAssigned(usergroup.userGroupId) ? 'danger' : 'primary'"
-                        (click)="toggleUserGroup(usergroup)" /> -->
+                    <p-button [label]="isSupplierAssigned(supplier.supplierId) ? 'Remove' : 'Assign'"
+                        [severity]="isSupplierAssigned(supplier.supplierId) ? 'danger' : 'primary'"
+                        (click)="toggleSupplier(supplier)" />
                 </td>
             </tr>
         </ng-template>

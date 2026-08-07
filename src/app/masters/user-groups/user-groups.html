@@ -113,6 +113,13 @@
 <p-dialog header="Assign/Remove Role" [(visible)]="showRoleModal" [modal]="true" [draggable]="false"
     (onHide)="onDialogClose()" [style]="{ width: '50rem' }">
 
+    <ng-template #header>
+        <div class="dialog-header">
+            <span class="dialog-title">Assign/Remove Role</span>
+            <p-tag [value]="selectedUsergroup?.groupName" severity="warn"></p-tag>
+        </div>
+    </ng-template>
+
     <p-table [value]="roleInfoList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
         <ng-template #header>
             <tr>

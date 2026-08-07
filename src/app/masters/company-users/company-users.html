@@ -108,8 +108,16 @@
     </form>
 </p-dialog>
 
-<p-dialog header="Assign/Remove User Group" [(visible)]="assignUserGroupModal" [modal]="true" [draggable]="false" (onHide)="onDialogClose()"
+<p-dialog [(visible)]="assignUserGroupModal" [modal]="true" [draggable]="false" (onHide)="onDialogClose()"
     [style]="{ width: '50rem' }">
+
+    <ng-template #header>
+        <div class="dialog-header">
+            <span class="dialog-title">Assign/Remove User Group</span>
+            <p-tag [value]="selectedCompanyUser?.userName" severity="info"></p-tag>
+            <p-tag [value]="selectedCompanyUser?.email" severity="warn"></p-tag>
+        </div>
+    </ng-template>
 
     <p-table [value]="userGroupList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
         <ng-template #header>
@@ -136,12 +144,19 @@
             </tr>
         </ng-template>
     </p-table>
-    <!--  -->
-    
 </p-dialog>
 
-<p-dialog header="Assign/Remove Plant" [(visible)]="showPlantMappingModal" [modal]="true" [draggable]="false"
+<p-dialog [(visible)]="showPlantMappingModal" [modal]="true" [draggable]="false"
     (onHide)="onDialogClose()" [style]="{ width: '50rem' }">
+
+    <ng-template #header>
+        <div class="dialog-header">
+            <span class="dialog-title">Assign/Remove Plant</span>
+            <p-tag [value]="selectedCompanyUser?.userName" severity="info"></p-tag>
+            <p-tag [value]="selectedCompanyUser?.email" severity="warn"></p-tag>
+        </div>
+    </ng-template>
+
     <p-table [value]="plantInfoList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
         <ng-template #header>
             <tr>
@@ -162,6 +177,122 @@
                     <p-button [label]="isPlantAssigned(plant.id) ? 'Remove' : 'Assign'"
                         [severity]="isPlantAssigned(plant.id) ? 'danger' : 'primary'"
                         (click)="togglePlant(plant)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
+
+<p-dialog [(visible)]="showDepartmentModal" [modal]="true" [draggable]="false"
+    (onHide)="onDialogClose()" [style]="{ width: '50rem' }">
+
+    <ng-template #header>
+        <div class="dialog-header">
+            <span class="dialog-title">Assign/Remove Department</span>
+            <p-tag [value]="selectedCompanyUser?.userName" severity="info"></p-tag>
+            <p-tag [value]="selectedCompanyUser?.email" severity="warn"></p-tag>
+        </div>
+    </ng-template>
+
+    <p-table [value]="departmentInfoList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <ng-template #header>
+            <tr>
+                <th>SL No</th>
+                <th>Department Name</th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-department let-i="rowIndex">
+            <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ department.departmentName }}</td>
+                <td>
+                    <p-button [label]="isDepartmentAssigned(department.departmentId) ? 'Remove' : 'Assign'"
+                        [severity]="isDepartmentAssigned(department.departmentId) ? 'danger' : 'primary'"
+                        (click)="toggleDepartment(department)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
+
+<p-dialog [(visible)]="showClusterModal" [modal]="true" [draggable]="false"
+    (onHide)="onDialogClose()" [style]="{ width: '50rem' }">
+
+    <ng-template #header>
+        <div class="dialog-header">
+            <span class="dialog-title">Assign/Remove Cluster</span>
+            <p-tag [value]="selectedCompanyUser?.userName" severity="info"></p-tag>
+            <p-tag [value]="selectedCompanyUser?.email" severity="warn"></p-tag>
+        </div>
+    </ng-template>
+
+    <p-table [value]="clusterInfoList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <ng-template #header>
+            <tr>
+                <th>SL No</th>
+                <th>Cluster Code</th>
+                <th>Cluster Name</th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-cluster let-i="rowIndex">
+            <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ cluster.clusterCode }}</td>
+                <td>{{ cluster.clusterName }}</td>
+                <td>
+                    <p-button [label]="isClusterAssigned(cluster.clusterId) ? 'Remove' : 'Assign'"
+                        [severity]="isClusterAssigned(cluster.clusterId) ? 'danger' : 'primary'" 
+                        (click)="toggleCluster(cluster)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
+
+<p-dialog [(visible)]="showComponentModal" [modal]="true" [draggable]="false"
+    (onHide)="onDialogClose()" [style]="{ width: '50rem' }">
+
+    <ng-template #header>
+        <div class="dialog-header">
+            <span class="dialog-title">Assign/Remove Component</span>
+            <p-tag [value]="selectedCompanyUser?.userName" severity="info"></p-tag>
+            <p-tag [value]="selectedCompanyUser?.email" severity="warn"></p-tag>
+        </div>
+    </ng-template>
+
+    <p-table [value]="componentList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <ng-template #header>
+            <tr>
+                <th>SL No</th>
+                <th>Component Name</th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-component let-i="rowIndex">
+            <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ component.componentName }}</td>
+                <td>
+                    <p-button [label]="isComponentAssigned(component.componentId) ? 'Remove' : 'Assign'"
+                        [severity]="isComponentAssigned(component.componentId) ? 'danger' : 'primary'"
+                        (click)="toggleComponent(component)" />
                 </td>
             </tr>
         </ng-template>

@@ -14,6 +14,9 @@ export class CompanyUsers implements OnInit {
   showCompanyUserModal = false;
   assignUserGroupModal = false;
   showPlantMappingModal = false;
+  showClusterModal = false;
+  showDepartmentModal = false;
+  showComponentModal = false;
 
   items: MenuItem[] = [];
 
@@ -24,6 +27,12 @@ export class CompanyUsers implements OnInit {
   assignedUserGroups: any[] = [];
   plantInfoList: any[] = [];
   assignedPlants: any[] = [];
+  clusterInfoList: any[] = [];
+  departmentInfoList: any[] = [];
+  assignedActiveClusters: any[] = [];
+  assignedActiveDepartments: any[] = [];
+  componentList: any[] = [];
+  assignedActiveComponents: any[] = [];
 
   private fb = inject(FormBuilder);
 
@@ -135,13 +144,13 @@ export class CompanyUsers implements OnInit {
 
   isPlantAssigned(plantId: number): boolean{
     return this.assignedPlants.some(
-      plant => plant.id === plantId
+      plant => plant.plantId === plantId
     )
   }
 
   togglePlant(plant: any){
     try {
-      if (this.isPlantAssigned(plant.plantId)) {
+      if (this.isPlantAssigned(plant.id)) {
         this.removePlantFromUser(plant);
       } else {
         this.assignPlantToUser(plant);
@@ -152,6 +161,309 @@ export class CompanyUsers implements OnInit {
     }
   }
 
+  isClusterAssigned(clusterId: number){
+    return this.assignedActiveClusters.some(
+      cluster => cluster.clusterId === clusterId
+    )
+  }
+
+  toggleCluster(cluster: any){
+    try {
+      if (this.isClusterAssigned(cluster.clusterId)) {
+        this.removeClustersFromUser(cluster);
+      } else {
+        this.assignClustersToUser(cluster);
+      }
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchActiveClustersFromUser(){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId
+      }
+      console.log(data);
+
+      this.apiService.fetchActiveClustersFromUser(data).subscribe({
+        next: val => {
+          console.log("assignedActiveClusters", val);
+          this.assignedActiveClusters = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  assignClustersToUser(cluster: any){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        clusterId: cluster.clusterId
+      }
+      console.log(data);
+
+      this.apiService.assignClustersToUser(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Cluster Assigned Successfully' });
+          this.fetchActiveClustersFromUser();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  removeClustersFromUser(cluster: any){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        clusterId: cluster.clusterId
+      }
+      console.log(data);
+
+      this.apiService.removeClustersFromUser(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Cluster Removed Successfully' });
+          this.fetchActiveClustersFromUser();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  isDepartmentAssigned(departmentId: number){
+    return this.assignedActiveDepartments.some(
+      department => department.departmentId === departmentId
+    )
+  }
+
+  toggleDepartment(department: any){
+    try {
+      if (this.isDepartmentAssigned(department.departmentId)) {
+        this.removeDepartmentsFromUser(department);
+      } else {
+        this.assignDepartmentsToUser(department);
+      }
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchActiveDepartmentsFromUser(){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId
+      }
+      console.log(data);
+
+      this.apiService.fetchActiveDepartmentsFromUser(data).subscribe({
+        next: val => {
+          console.log("assignedActiveDepartments", val);
+          this.assignedActiveDepartments = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  assignDepartmentsToUser(department: any){
+     try {
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        departmentId: department.departmentId
+      }
+      console.log(data);
+
+      this.apiService.assignDepartmentsToUser(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Department Assigned Successfully' });
+          this.fetchActiveDepartmentsFromUser();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  removeDepartmentsFromUser(department: any){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        departmentId: department.departmentId
+      }
+      console.log(data);
+
+      this.apiService.removeDepartmentsFromUser(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Department Removed Successfully' });
+          this.fetchActiveDepartmentsFromUser();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  isComponentAssigned(componentId: number){
+    return this.assignedActiveComponents.some(
+      component => component.componentId === componentId
+    )
+  }
+
+  toggleComponent(component: any){
+    try {
+      if (this.isComponentAssigned(component.componentId)) {
+        this.removeComponentsFromUser(component);
+      } else {
+        this.assignComponentsToUser(component);
+      }
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchActiveComponentsFromUser(){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId
+      }
+      console.log(data);
+
+      this.apiService.fetchActiveComponentsFromUser(data).subscribe({
+        next: val => {
+          console.log("assignedActiveComponents", val);
+          this.assignedActiveComponents = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+
+  assignComponentsToUser(component: any){
+     try {
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        componentId: component.componentId
+      }
+      console.log(data);
+
+      this.apiService.assignComponentsToUser(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Component Assigned Successfully' });
+          this.fetchActiveComponentsFromUser();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  removeComponentsFromUser(component: any){
+    try {
+      const data = {
+        userId: this.selectedCompanyUser.userId,
+        componentId: component.componentId
+      }
+      console.log(data);
+
+      this.apiService.removeComponentsFromUser(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Component Removed Successfully' });
+          this.fetchActiveComponentsFromUser();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
 
   fetchUserGroupInfo(){
     try {
@@ -204,7 +516,7 @@ export class CompanyUsers implements OnInit {
     try {
       this.apiService.fetchPlantInfo('').subscribe({
         next: val => {
-          console.log(val);
+          console.log("plantInfoList", val);
           this.plantInfoList = val.data;
         },
         error: err => {
@@ -232,7 +544,9 @@ export class CompanyUsers implements OnInit {
 
       this.apiService.assignPlantToUser(data).subscribe({
         next: val => {
-          console.log(val);   
+          console.log("Plant Assigned Successfully:", val);   
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Assigned Successfully' });
+          this.fetchActivePlantsFromUser();
         },
         error: err => {
           console.log(err);
@@ -259,7 +573,9 @@ export class CompanyUsers implements OnInit {
 
       this.apiService.removePlantFromUser(data).subscribe({
         next: val => {
-          console.log(val);
+          console.log("Plant Removed Successfully:", val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Removed Successfully' });
+          this.fetchActivePlantsFromUser();
         },
         error: err => {
           console.log(err);
@@ -275,7 +591,7 @@ export class CompanyUsers implements OnInit {
     }
   }
 
-  fetchPlantsByUser(){
+  fetchActivePlantsFromUser(){
     try {
       const data = {
         userId: this.selectedCompanyUser.userId
@@ -283,10 +599,13 @@ export class CompanyUsers implements OnInit {
 
       console.log(data);
 
-      this.apiService.fetchPlantsByUser(data).subscribe({
+      this.apiService.fetchActivePlantsFromUser(data).subscribe({
         next: val => {
-          console.log(val);
-          this.assignedPlants = val.data;
+          console.log('ACTIVE PLANTS AFTER REMOVE:', val.data);
+
+          this.assignedPlants = val.data ?? [];
+
+          console.log('UPDATED assignedPlants:', this.assignedPlants);
         },
         error: err => {
           console.log(err);
@@ -319,7 +638,7 @@ export class CompanyUsers implements OnInit {
       this.showPlantMappingModal = true;
       this.fetchPlantInfo();
       this.fetchCompanyUser();
-      this.fetchPlantsByUser();
+      this.fetchActivePlantsFromUser();
     } catch (error) {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
@@ -397,10 +716,69 @@ export class CompanyUsers implements OnInit {
     }
   }
 
+  fetchClusterInfo(){
+    try {
+      this.apiService.fetchClusterInfo('').subscribe({
+        next: val => {
+          console.log(val);
+          this.clusterInfoList = val.data;
+        },
+        error: err => {
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchDepartmentInfo(){
+    try {
+      this.apiService.fetchDepartmentInfo('').subscribe({
+        next: val => {
+          console.log(val);
+          this.departmentInfoList = val.data;
+        },
+        error: err => {
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchAllComponents(){
+    try {
+      this.apiService.fetchAllComponents('').subscribe({
+        next: val => {
+          console.log(val);
+          this.componentList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   deleteCompanyUser(){
     this.confirmationService.confirm({
       message: 'Do you want to delete this record?',
-      header: `Delete Company User`,
+      header: `Delete ${this.selectedCompanyUser?.userName}`,
       icon: 'pi pi-info-circle',
       rejectLabel: 'Cancel',
       rejectButtonProps: {
@@ -445,17 +823,65 @@ export class CompanyUsers implements OnInit {
     }
   }
 
+  openClusterMappingModal(){
+    try {
+      this.showClusterModal = true;
+      this.fetchClusterInfo();
+      this.fetchActiveClustersFromUser();
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openDepartmentMappingModal(){
+    try {
+      this.showDepartmentModal = true;
+      this.fetchDepartmentInfo();
+      this.fetchActiveDepartmentsFromUser();
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openComponentMappingModel(){
+    try {
+      this.showComponentModal = true;
+      this.fetchAllComponents();
+      this.fetchActiveComponentsFromUser();
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   getMenuItems(){
     return [
+      {
+        label: 'Assign/Remove User Group',
+        icon: 'pi pi-user-plus',
+        command: () => this.openAssignUserGroupsModal(),
+      },
       {
         label: 'Assign/Remove Plant',
         icon: 'pi pi-user-plus',
         command: () => this.openPlantMappingModal(),
       },
       {
-        label: 'Assign/Remove User Group',
+        label: 'Assign/Remove Department',
         icon: 'pi pi-user-plus',
-        command: () => this.openAssignUserGroupsModal(),
+        command: () => this.openDepartmentMappingModal(),
+      },
+      {
+        label: 'Assign/Remove Cluster',
+        icon: 'pi pi-user-plus',
+        command: () => this.openClusterMappingModal(),
+      },
+      {
+        label: 'Assign/Remove Component',
+        icon: 'pi pi-user-plus',
+        command: () => this.openComponentMappingModel(),
       },
       {
         label: 'Edit',

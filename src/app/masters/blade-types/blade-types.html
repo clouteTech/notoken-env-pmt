@@ -51,13 +51,31 @@
     [draggable]="false" (onHide)="onDialogClose()">
     <form [formGroup]="bladeTypeForm" (ngSubmit)="createBladeType()">
         <div class="form-grid">
-            <div class="form-field">
+            <div>
                 <label for="blade-type">Blade Type</label>
                 <input type="text" pInputText formControlName="bladeType" class="w-full" id="blade-type" />
+
+                @if (bladeType?.invalid && (bladeType?.dirty || bladeType?.touched)) {
+                    @if (bladeType?.hasError('required')) {
+                    <small class="required-field">Blade Type is required.</small>
+                    }
+                    @if (bladeType?.hasError('maxlength')) {
+                    <small class="required-field">Blade Type cannot exceed 50 characters.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="count-per-wtg">Count Per WTG</label>
-                <p-inputnumber formControlName="countPerWtg" inputId="count-per-wtg" [useGrouping]="false" />
+                <p-inputnumber formControlName="countPerWtg" inputId="count-per-wtg" [useGrouping]="false" styleClass="input-full" />
+
+                @if (countPerWtg?.invalid && (countPerWtg?.dirty || countPerWtg?.touched)) {
+                    @if (countPerWtg?.hasError('required')) {
+                    <small class="required-field">Count Per WTG is required.</small>
+                    }
+                    @if (countPerWtg?.hasError('min')) {
+                    <small class="required-field">Count Per WTG cannot exceed 50 characters.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedBladeType){

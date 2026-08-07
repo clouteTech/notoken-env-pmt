@@ -53,10 +53,30 @@
             <div class="form-field">
                 <label for="tower-type">Tower Type</label>
                 <input type="text" pInputText formControlName="towerType" class="w-full" id="tower-type" />
+
+                @if (towerType?.invalid && (towerType?.dirty || towerType?.touched)) {
+                    @if (towerType?.hasError('required')) {
+                        <small class="required-field">Tower Type is required.</small>
+                    }
+                    @if (towerType?.hasError('maxlength')) {
+                        <small class="required-field">Tower Type cannot exceed 50 characters.</small>
+                    }
+                }
             </div>
             <div class="form-field">
                 <label for="section-count">Section Count</label>
-                <input type="text" pInputText formControlName="sectionCount" class="w-full" id="section-count" />
+                <p-inputnumber formControlName="sectionCount" inputId="section-count" [useGrouping]="false" styleClass="input-full" />
+
+                @if (sectionCount?.invalid && (sectionCount?.dirty || sectionCount?.touched)) {
+                    @if (sectionCount?.hasError('required')) {
+                        <small class="required-field">Section Count is required.</small>
+                    }
+                    @if (sectionCount?.hasError('min')) {
+                        <small class="required-field">
+                            Section Count must be greater than zero.
+                        </small>
+                    }
+                }
             </div>
         </div>
 

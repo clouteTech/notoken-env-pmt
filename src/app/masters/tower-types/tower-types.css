@@ -91,3 +91,7 @@
 .status-label.inactive {
     color: #dc2626;
 }
+
+.input-full {
+    width: 100%;
+}

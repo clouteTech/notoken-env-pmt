@@ -15,6 +15,7 @@ export class Cranes implements OnInit {
 
   craneList: any[] = [];
   supplierList: any[] = [];
+  assignedSuppliers: any[] = [];
 
   actionName = 'Create';
 
@@ -110,6 +111,109 @@ export class Cranes implements OnInit {
     }
   }
 
+
+  isSupplierAssigned(supplierId: number){
+    return this.assignedSuppliers.some(
+      supplier => supplier.supplierId === supplierId
+    )
+  }
+
+  toggleSupplier(supplier: any){
+    try {
+      if (this.isSupplierAssigned(supplier.supplierId)) {
+        this.removeSuppliersFromCrane(supplier);
+      } else {
+        this.assignSuppliersToCrane(supplier);
+      }
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+
+  assignSuppliersToCrane(supplier: any){
+     try {
+      const data = {
+        craneId: this.selectedCrane.craneId,
+        supplierId: supplier.supplierId
+      }
+      console.log(data);
+
+      this.apiService.assignSuppliersToCrane(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Supplier Assigned Successfully' });
+          this.fetchCraneSuppliers();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  removeSuppliersFromCrane(supplier: any){
+    try {
+      const data = {
+        craneId: this.selectedCrane.craneId,
+        supplierId: supplier.supplierId
+      }
+      console.log(data);
+
+      this.apiService.removeSuppliersFromCrane(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Supplier Removed Successfully' });
+          this.fetchCraneSuppliers();
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchCraneSuppliers(){
+    try {
+      const data = {
+        craneId: this.selectedCrane.craneId
+      }
+      console.log(data);
+
+      this.apiService.fetchCraneSuppliers(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.assignedSuppliers = val.data.suppliers;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   deleteCrane(){
     this.confirmationService.confirm({
       message: 'Do you want to delete this record?',
@@ -199,6 +303,7 @@ export class Cranes implements OnInit {
     try {
       this.showSupplierModal = true;
       this.fetchSupplierInfo();
+      this.fetchCraneSuppliers();
     } catch (error) {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
