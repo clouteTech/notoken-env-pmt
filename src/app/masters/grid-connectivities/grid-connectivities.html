@@ -53,6 +53,15 @@
                 <label for="grid-connectivity">Grid Connectivity</label>
                 <input type="text" pInputText formControlName="gridConnectivity" class="w-full" id="grid-connectivity" />
             </div>
+
+            @if (gridConnectivity?.invalid && (gridConnectivity?.dirty || gridConnectivity?.touched)) {
+                @if (gridConnectivity?.hasError('required')) {
+                <small class="required-field">Grid Connectivity is required.</small>
+                }
+                @if (gridConnectivity?.hasError('maxlength')) {
+                <small class="required-field">Grid Connectivity cannot exceed 50 characters.</small>
+                }
+            }
         </div>
         @if(selectedGridConnectivity){
         

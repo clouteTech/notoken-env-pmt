@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -24,10 +24,14 @@ export class WtgTypes implements OnInit {
 
   wtgTypeForm = this.fb.group({
     wtgTypeId: [0],
-    wtgType: [''],
+    wtgType: ['', [Validators.required, Validators.maxLength(10)]],
     isNearShore: [false],
     status: [false]
   })
+
+  get wtgType(){
+    return this.wtgTypeForm.get('wtgType');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -56,44 +60,48 @@ export class WtgTypes implements OnInit {
 
   submitWtgTypeForm(){
     try {
-      if (!this.selectedWTGType) { 
-        const data = this.wtgTypeForm.value;
-        console.log(data);
-  
-        this.apiService.createWTGTypes(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created WTG Type' });
-            this.showWTGTypeModal = false;
-            this.fetchAllWTGTypes();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.wtgTypeForm.valid) {
+        if (!this.selectedWTGType) { 
+          const data = this.wtgTypeForm.value;
+          console.log(data);
+    
+          this.apiService.createWTGTypes(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created WTG Type' });
+              this.showWTGTypeModal = false;
+              this.fetchAllWTGTypes();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.wtgTypeForm.value;
+          console.log(data);
+  
+          this.apiService.updateWTGType(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated WTG Type' });
+              this.showWTGTypeModal = false;
+              this.fetchAllWTGTypes();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }       
       } else {
-        const data = this.wtgTypeForm.value;
-        console.log(data);
-
-        this.apiService.updateWTGType(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated WTG Type' });
-            this.showWTGTypeModal = false;
-            this.fetchAllWTGTypes();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

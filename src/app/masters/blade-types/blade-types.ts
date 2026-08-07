@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -28,10 +28,18 @@ export class BladeTypes implements OnInit {
 
   bladeTypeForm = this.fb.group({
     bladeTypeId: [0],
-    bladeType: [''],
-    countPerWtg: [0],
+    bladeType: ['', [Validators.required, Validators.maxLength(50)]],
+    countPerWtg: [null, [Validators.required, Validators.min(1)]],
     status: [false]
   })
+
+  get bladeType(){
+    return this.bladeTypeForm.get('bladeType');
+  }
+
+  get countPerWtg(){
+    return this.bladeTypeForm.get('countPerWtg');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -60,44 +68,48 @@ export class BladeTypes implements OnInit {
 
   createBladeType(){
     try {
-      if (!this.selectedBladeType) {
-        const data = this.bladeTypeForm.value;
-        console.log(data);
-  
-        this.apiService.createBladeType(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Blade Type' });
-            this.showBladeTypeModal = false;
-            this.fetchAllBladeTypes();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.bladeTypeForm.valid) {
+        if (!this.selectedBladeType) {
+          const data = this.bladeTypeForm.value;
+          console.log(data);
+    
+          this.apiService.createBladeType(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Blade Type' });
+              this.showBladeTypeModal = false;
+              this.fetchAllBladeTypes();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.bladeTypeForm.value;
+          console.log(data);
+  
+          this.apiService.updateBladeType(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Blade Type' });
+              this.showBladeTypeModal = false;
+              this.fetchAllBladeTypes();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }   
       } else {
-        const data = this.bladeTypeForm.value;
-        console.log(data);
-
-        this.apiService.updateBladeType(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Blade Type' });
-            this.showBladeTypeModal = false;
-            this.fetchAllBladeTypes();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

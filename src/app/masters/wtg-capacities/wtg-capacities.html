@@ -50,13 +50,26 @@
     [draggable]="false" (onHide)="onDialogClose()">
     <form [formGroup]="wtgCapacityForm" (ngSubmit)="submitCapacityForm()">
         <div class="form-grid">
-            <div class="form-field">
+            <div>
                 <label for="wtg-capacity">Capacity</label>
-                <p-inputnumber formControlName="capacity" [useGrouping]="false" inputId="wtg-capacity" />
+                <p-inputnumber formControlName="capacity" [useGrouping]="false" inputId="wtg-capacity" styleClass="input-full" />
+
+                @if (capacity?.invalid && (capacity?.dirty || capacity?.touched)) {
+                    @if (capacity?.hasError('required')) {
+                    <small class="required-field">Capacity is required.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="unit">Unit</label>
-                <p-select [options]="unitList" formControlName="unit" inputId="unit" placeholder="Select Unit" appendTo="body" />
+                <p-select [options]="unitList" formControlName="unit" inputId="unit" placeholder="Select Unit" 
+                    appendTo="body" styleClass="input-full" />
+
+                @if (unit?.invalid && (unit?.dirty || unit?.touched)) {
+                    @if (unit?.hasError('required')) {
+                    <small class="required-field">Capacity Unit is required.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedCapacity){

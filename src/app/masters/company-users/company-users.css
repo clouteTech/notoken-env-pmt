@@ -74,3 +74,14 @@
 .status-label.inactive {
     color: #dc2626;
 }
+
+.dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dialog-title {
+    font-size: 18px;
+    font-weight: 600;
+}

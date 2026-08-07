@@ -180,6 +180,10 @@ export class Apiservice {
     return this.postMethod('master/organization/department/get', params);
   }
 
+  fetchDepartmentInfo(params: any): Observable<any>{
+    return this.postMethod('master/organization/department/info', params);
+  }
+
   // Department - Cluster Mapping
 
   assignClustersToDepartment(params: any): Observable<any>{
@@ -614,15 +618,75 @@ export class Apiservice {
   // User - Plant Mapping
 
   assignPlantToUser(params: any): Observable<any>{
-    return this.postMethod('auth/user-plant-assign', params);
+    return this.postMethod('mapping/user-plant/assign', params);
   }
 
   removePlantFromUser(params: any): Observable<any>{
-    return this.postMethod('auth/user-plant/remove', params);
+    return this.postMethod('mapping/user-plant/remove', params);
   }
 
   fetchPlantsByUser(params: any): Observable<any>{
-    return this.postMethod('auth/user-plant/get-user-plants', params);
+    return this.postMethod('mapping/user-plant/get-user-plants', params);
+  }
+
+  fetchActivePlantsFromUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-plant/get-active-user-plants', params);
+  }
+
+  // User - Cluster Mapping
+
+  assignClustersToUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-cluster/assign', params);
+  }
+
+  removeClustersFromUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-cluster/remove', params)
+  }
+
+  fetchActiveClustersFromUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-cluster/get-active-user-clusters', params);
+  }
+
+  // User - Department Mapping
+
+  assignDepartmentsToUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-department/assign', params); 
+  }
+
+  removeDepartmentsFromUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-department/remove', params);
+  }
+
+  fetchActiveDepartmentsFromUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-department/get-active-user-departments', params);
+  }
+
+  // User - Component Mapping
+
+  assignComponentsToUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-component/assign', params);
+  }
+
+  removeComponentsFromUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-component/remove', params);
+  }
+
+  fetchActiveComponentsFromUser(params: any): Observable<any>{
+    return this.postMethod('mapping/user-component/get-active-user-components', params);
+  }
+
+  // Crane - Supplier Mapping
+
+  assignSuppliersToCrane(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane-supplier-mapping/assign-supplier', params);
+  }
+
+  removeSuppliersFromCrane(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane-supplier-mapping/remove-supplier', params);
+  }
+
+  fetchCraneSuppliers(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane-supplier-mapping/get-crane-suppliers', params);
   }
 
   // auth/user-user-group/remove-group

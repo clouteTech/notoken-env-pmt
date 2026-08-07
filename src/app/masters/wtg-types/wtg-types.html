@@ -50,14 +50,23 @@
     [style]="{ width: '40rem' }" [draggable]="false" (onHide)="onDialogClose()">
     <form [formGroup]="wtgTypeForm" (ngSubmit)="submitWtgTypeForm()">
         <div class="form-grid">
-            <div class="form-field">
+            <div>
                 <label for="wtg-type">WTG Type</label>
                 <input type="text" pInputText formControlName="wtgType" class="w-full" id="wtg-type" />
+
+                @if (wtgType?.invalid && (wtgType?.dirty || wtgType?.touched)) {
+                    @if (wtgType?.hasError('required')) {
+                        <small class="required-field">WTG Type is required.</small>
+                    }
+                    @if (wtgType?.hasError('maxlength')) {
+                        <small class="required-field">WTG Type cannot exceed 10 characters.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="near-shore">Is Near Shore</label>
                 <p-select [options]="nearShoreList" formControlName="isNearShore" inputId="near-shore" 
-                    placeholder="Select Yes/No" appendTo="body" />
+                    placeholder="Select Yes/No" appendTo="body" styleClass="input-full" />
             </div>
         </div>
         @if(selectedWTGType){

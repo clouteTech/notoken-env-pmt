@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -24,9 +24,13 @@ export class GridConnectivities {
 
   gridConnectivityForm = this.fb.group({
     gridConnectivityId: [0],
-    gridConnectivity: [''],
+    gridConnectivity: ['', [Validators.required, Validators.maxLength(50)]],
     status: [false]
   })
+
+  get gridConnectivity(){
+    return this.gridConnectivityForm.get('gridConnectivity');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -56,44 +60,48 @@ export class GridConnectivities {
 
   submitGridConnectivityForm(){
     try {
-      if (!this.selectedGridConnectivity) { 
-        const data = this.gridConnectivityForm.value;
-        console.log(data);
-  
-        this.apiService.createGridConnectivity(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Grid Connectivity' });
-            this.showConnectivityModal = false;
-            this.fetchAllGridConnectivities();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.gridConnectivityForm.valid) {
+        if (!this.selectedGridConnectivity) { 
+          const data = this.gridConnectivityForm.value;
+          console.log(data);
+    
+          this.apiService.createGridConnectivity(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Grid Connectivity' });
+              this.showConnectivityModal = false;
+              this.fetchAllGridConnectivities();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.gridConnectivityForm.value;
+          console.log(data);
+    
+          this.apiService.updateGridConnectivity(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Grid Connectivity' });
+              this.showConnectivityModal = false;
+              this.fetchAllGridConnectivities();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }     
       } else {
-        const data = this.gridConnectivityForm.value;
-        console.log(data);
-  
-        this.apiService.updateGridConnectivity(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Grid Connectivity' });
-            this.showConnectivityModal = false;
-            this.fetchAllGridConnectivities();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

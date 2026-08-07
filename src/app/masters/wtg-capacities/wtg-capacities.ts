@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -26,10 +26,18 @@ export class WtgCapacities implements OnInit {
 
   wtgCapacityForm = this.fb.group({
     capacityId: [0],
-    capacity: [0],
-    unit: [''],
+    capacity: [null, Validators.required],
+    unit: ['', Validators.required],
     status: [false]
   })
+
+  get capacity(){
+    return this.wtgCapacityForm.get('capacity');
+  }
+
+  get unit(){
+    return this.wtgCapacityForm.get('unit');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -58,45 +66,49 @@ export class WtgCapacities implements OnInit {
 
   submitCapacityForm(){
     try {
-      if (!this.selectedCapacity) {  
-        const data = this.wtgCapacityForm.value;
-        console.log(data);
-  
-        this.apiService.createCapacity(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Capacity' });
-            this.showWtgCapacityModal = false;
-            this.fetchAllCapacities();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.wtgCapacityForm.valid) {
+        if (!this.selectedCapacity) {  
+          const data = this.wtgCapacityForm.value;
+          console.log(data);
+    
+          this.apiService.createCapacity(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Capacity' });
+              this.showWtgCapacityModal = false;
+              this.fetchAllCapacities();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.wtgCapacityForm.value;
+    
+          console.log(data);
+  
+          this.apiService.updateCapacity(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Capacity' });
+              this.showWtgCapacityModal = false;
+              this.fetchAllCapacities();
+            },
+            error: err => {
+              console.log(err);
+  
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }       
       } else {
-        const data = this.wtgCapacityForm.value;
-  
-        console.log(data);
-
-        this.apiService.updateCapacity(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Capacity' });
-            this.showWtgCapacityModal = false;
-            this.fetchAllCapacities();
-          },
-          error: err => {
-            console.log(err);
-
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);
