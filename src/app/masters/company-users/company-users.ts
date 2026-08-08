@@ -25,6 +25,8 @@ export class CompanyUsers implements OnInit {
   companyUserList: any[] = [];
   userGroupList:any[] = [];
   assignedUserGroups: any[] = [];
+  userGroupSearchQuery = '';
+  userGroupModalLoading = false;
   plantInfoList: any[] = [];
   assignedPlants: any[] = [];
   clusterInfoList: any[] = [];
@@ -33,6 +35,14 @@ export class CompanyUsers implements OnInit {
   assignedActiveDepartments: any[] = [];
   componentList: any[] = [];
   assignedActiveComponents: any[] = [];
+  plantSearchQuery = '';
+  plantModalLoading = false;
+  clusterSearchQuery = '';
+  clusterModalLoading = false;
+  departmentSearchQuery = '';
+  departmentModalLoading = false;
+  componentSearchQuery = '';
+  componentModalLoading = false;
 
   private fb = inject(FormBuilder);
 
@@ -142,6 +152,29 @@ export class CompanyUsers implements OnInit {
     }
   }
 
+  getUserGroupInitials(name: string | null | undefined): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    const initials = parts.length > 1 ? parts[0][0] + parts[1][0] : parts[0].slice(0, 2);
+    return initials.toUpperCase();
+  }
+
+  filteredAssignedUserGroups(){
+    const query = this.userGroupSearchQuery.trim().toLowerCase();
+    return this.userGroupList.filter(g =>
+      this.isUserGroupAssigned(g.userGroupId) &&
+      (!query || g.groupName?.toLowerCase().includes(query))
+    );
+  }
+
+  filteredAvailableUserGroups(){
+    const query = this.userGroupSearchQuery.trim().toLowerCase();
+    return this.userGroupList.filter(g =>
+      !this.isUserGroupAssigned(g.userGroupId) &&
+      (!query || g.groupName?.toLowerCase().includes(query))
+    );
+  }
+
   isPlantAssigned(plantId: number): boolean{
     return this.assignedPlants.some(
       plant => plant.plantId === plantId
@@ -161,6 +194,33 @@ export class CompanyUsers implements OnInit {
     }
   }
 
+  getMappingInitials(name: string | null | undefined): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    const initials = parts.length > 1 ? parts[0][0] + parts[1][0] : parts[0].slice(0, 2);
+    return initials.toUpperCase();
+  }
+
+  filteredAssignedPlants(){
+    const query = this.plantSearchQuery.trim().toLowerCase();
+    return this.plantInfoList.filter(p =>
+      this.isPlantAssigned(p.id) &&
+      (!query || p.plant?.toLowerCase().includes(query))
+    );
+  }
+
+  filteredAvailablePlants(){
+    const query = this.plantSearchQuery.trim().toLowerCase();
+    return this.plantInfoList.filter(p =>
+      !this.isPlantAssigned(p.id) &&
+      (!query || p.plant?.toLowerCase().includes(query))
+    );
+  }
+
+  getPlantHint(plant: any): string {
+    return [plant?.location, plant?.plantManager].filter(v => v).join(' · ');
+  }
+
   isClusterAssigned(clusterId: number){
     return this.assignedActiveClusters.some(
       cluster => cluster.clusterId === clusterId
@@ -178,6 +238,22 @@ export class CompanyUsers implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  filteredAssignedClusters(){
+    const query = this.clusterSearchQuery.trim().toLowerCase();
+    return this.clusterInfoList.filter(c =>
+      this.isClusterAssigned(c.clusterId) &&
+      (!query || c.clusterName?.toLowerCase().includes(query) || c.clusterCode?.toLowerCase().includes(query))
+    );
+  }
+
+  filteredAvailableClusters(){
+    const query = this.clusterSearchQuery.trim().toLowerCase();
+    return this.clusterInfoList.filter(c =>
+      !this.isClusterAssigned(c.clusterId) &&
+      (!query || c.clusterName?.toLowerCase().includes(query) || c.clusterCode?.toLowerCase().includes(query))
+    );
   }
 
   fetchActiveClustersFromUser(){
@@ -281,6 +357,22 @@ export class CompanyUsers implements OnInit {
     }
   }
 
+  filteredAssignedDepartments(){
+    const query = this.departmentSearchQuery.trim().toLowerCase();
+    return this.departmentInfoList.filter(d =>
+      this.isDepartmentAssigned(d.departmentId) &&
+      (!query || d.departmentName?.toLowerCase().includes(query))
+    );
+  }
+
+  filteredAvailableDepartments(){
+    const query = this.departmentSearchQuery.trim().toLowerCase();
+    return this.departmentInfoList.filter(d =>
+      !this.isDepartmentAssigned(d.departmentId) &&
+      (!query || d.departmentName?.toLowerCase().includes(query))
+    );
+  }
+
   fetchActiveDepartmentsFromUser(){
     try {
       const data = {
@@ -382,6 +474,22 @@ export class CompanyUsers implements OnInit {
     }
   }
 
+  filteredAssignedComponents(){
+    const query = this.componentSearchQuery.trim().toLowerCase();
+    return this.componentList.filter(c =>
+      this.isComponentAssigned(c.componentId) &&
+      (!query || c.componentName?.toLowerCase().includes(query))
+    );
+  }
+
+  filteredAvailableComponents(){
+    const query = this.componentSearchQuery.trim().toLowerCase();
+    return this.componentList.filter(c =>
+      !this.isComponentAssigned(c.componentId) &&
+      (!query || c.componentName?.toLowerCase().includes(query))
+    );
+  }
+
   fetchActiveComponentsFromUser(){
     try {
       const data = {
@@ -467,13 +575,16 @@ export class CompanyUsers implements OnInit {
 
   fetchUserGroupInfo(){
     try {
+      this.userGroupModalLoading = true;
       this.apiService.userGroupInfo('')
       .subscribe({
         next:val=>{
           console.log(val);
           this.userGroupList = val.data;
+          this.userGroupModalLoading = false;
         },error:(err)=>{
           console.log(err);
+          this.userGroupModalLoading = false;
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -482,6 +593,7 @@ export class CompanyUsers implements OnInit {
       })
     } catch (error) {
       console.log(error);
+      this.userGroupModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -514,13 +626,16 @@ export class CompanyUsers implements OnInit {
 
   fetchPlantInfo(){
     try {
+      this.plantModalLoading = true;
       this.apiService.fetchPlantInfo('').subscribe({
         next: val => {
           console.log("plantInfoList", val);
           this.plantInfoList = val.data;
+          this.plantModalLoading = false;
         },
         error: err => {
           console.log(err);
+          this.plantModalLoading = false;
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -529,6 +644,7 @@ export class CompanyUsers implements OnInit {
       })
     } catch (error) {
       console.log(error);
+      this.plantModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -624,6 +740,7 @@ export class CompanyUsers implements OnInit {
   openAssignUserGroupsModal(){
     try {
       this.assignUserGroupModal = true;
+      this.userGroupSearchQuery = '';
 
       this.fetchUserGroupInfo();
       this.fetchCompanyUser();
@@ -636,6 +753,7 @@ export class CompanyUsers implements OnInit {
   openPlantMappingModal(){
     try {
       this.showPlantMappingModal = true;
+      this.plantSearchQuery = '';
       this.fetchPlantInfo();
       this.fetchCompanyUser();
       this.fetchActivePlantsFromUser();
@@ -718,12 +836,15 @@ export class CompanyUsers implements OnInit {
 
   fetchClusterInfo(){
     try {
+      this.clusterModalLoading = true;
       this.apiService.fetchClusterInfo('').subscribe({
         next: val => {
           console.log(val);
           this.clusterInfoList = val.data;
+          this.clusterModalLoading = false;
         },
         error: err => {
+          this.clusterModalLoading = false;
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
@@ -731,18 +852,22 @@ export class CompanyUsers implements OnInit {
       })
     } catch (error) {
       console.log(error);
+      this.clusterModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
   fetchDepartmentInfo(){
     try {
+      this.departmentModalLoading = true;
       this.apiService.fetchDepartmentInfo('').subscribe({
         next: val => {
           console.log(val);
           this.departmentInfoList = val.data;
+          this.departmentModalLoading = false;
         },
         error: err => {
+          this.departmentModalLoading = false;
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
@@ -750,19 +875,23 @@ export class CompanyUsers implements OnInit {
       })
     } catch (error) {
       console.log(error);
+      this.departmentModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
   fetchAllComponents(){
     try {
+      this.componentModalLoading = true;
       this.apiService.fetchAllComponents('').subscribe({
         next: val => {
           console.log(val);
           this.componentList = val.data;
+          this.componentModalLoading = false;
         },
         error: err => {
           console.log(err);
+          this.componentModalLoading = false;
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -771,6 +900,7 @@ export class CompanyUsers implements OnInit {
       })
     } catch (error) {
       console.log(error);
+      this.componentModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -826,6 +956,7 @@ export class CompanyUsers implements OnInit {
   openClusterMappingModal(){
     try {
       this.showClusterModal = true;
+      this.clusterSearchQuery = '';
       this.fetchClusterInfo();
       this.fetchActiveClustersFromUser();
     } catch (error) {
@@ -837,6 +968,7 @@ export class CompanyUsers implements OnInit {
   openDepartmentMappingModal(){
     try {
       this.showDepartmentModal = true;
+      this.departmentSearchQuery = '';
       this.fetchDepartmentInfo();
       this.fetchActiveDepartmentsFromUser();
     } catch (error) {
@@ -848,6 +980,7 @@ export class CompanyUsers implements OnInit {
   openComponentMappingModel(){
     try {
       this.showComponentModal = true;
+      this.componentSearchQuery = '';
       this.fetchAllComponents();
       this.fetchActiveComponentsFromUser();
     } catch (error) {

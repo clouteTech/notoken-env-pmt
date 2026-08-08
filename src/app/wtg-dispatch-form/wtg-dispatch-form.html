@@ -1,5 +1,8 @@
 <div class="card">
-    <h2 class="title">Dispatch Plan & Configuration</h2>
+    <div class="dispatch-header">
+        <h2 class="title">Dispatch Plan & Configuration</h2>
+        <p-button label="Back" icon="pi pi-arrow-circle-left" routerLink="/wtg-dispatch" />
+    </div>
     <div class="project-select">
         <label for="p-code">Project Code</label>
         <p-select [options]="pCodeList" inputId="p-code" placeholder="Select Project Code" 
