@@ -125,6 +125,7 @@ export class CreateProjectComponent implements OnInit {
 
   // ── Step 1 form fields ────────────────────────────────────────────────────
   pCode = '';
+  projectDescription = '';
   customerName = '';
   cityInfo = '';
   selectedState: any = '';
@@ -517,6 +518,7 @@ getSPVList(addFirst = false): void {
 
   const requiredFields = [
     { key: this.pCode, name: 'Project Code' },
+    { key: this.projectDescription, name: 'Project Description' },
     { key: this.customerName, name: 'Customer' },
     { key: this.cityInfo, name: 'City Info' },
     { key: this.selectedState, name: 'State' },
@@ -524,7 +526,6 @@ getSPVList(addFirst = false): void {
     { key: this.projectQTY, name: 'Project QTY' },
     { key: this.projectTotalCapacity, name: 'Project Total Capacity' },
     { key: this.projectProbalityValue, name: 'Project Probability' },
-    { key: this.ContractStatusValue, name: 'Contract Status' },
     { key: this.projectTermValue, name: 'Project Term' },
 
     { key: this.selectedProjectManager, name: 'Project Manager' },
@@ -547,6 +548,26 @@ getSPVList(addFirst = false): void {
       severity: 'warn',
       summary: 'Required',
       detail: `${invalidField.name} is required`
+    });
+
+    return;
+  }
+
+  if (this.pCode.trim().length > 10) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Invalid',
+      detail: 'Project Code must not exceed 10 characters'
+    });
+
+    return;
+  }
+
+  if (this.projectDescription.trim().length > 100) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Invalid',
+      detail: 'Project Description must not exceed 100 characters'
     });
 
     return;
@@ -713,6 +734,16 @@ buildOptsList(): void {
 
   saveSPV(): void {
     try{
+      if (!this.spvEntries || this.spvEntries.length === 0) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Required',
+          detail: 'Project SPV Details are required'
+        });
+
+        return;
+      }
+
       console.log('SPV Entries:', JSON.stringify(this.spvEntries, null, 2));
     console.log('Overall Total Capacity:', this.overallTotalCapacity);
 
@@ -745,7 +776,7 @@ buildOptsList(): void {
     } */
     let data = {
       "projectCode": this.pCode,
-      "projectDescription": "ASD",
+      "projectDescription": this.projectDescription,
       "customerId": this.customerName,
       "city": this.cityInfo,
       "country": this.selectedState,
@@ -773,7 +804,14 @@ buildOptsList(): void {
 
       },error:(err)=>{
         console.log(err);
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+          
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+        }
+
+        if (err.status === 404) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+        }
       }
     })
     }catch(e){

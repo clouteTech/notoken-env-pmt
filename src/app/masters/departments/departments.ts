@@ -23,6 +23,8 @@ export class Departments implements OnInit {
   clusterInfoList: any[] = [];
 
   assignedClusters: any[] = [];
+  deptClusterSearchQuery = '';
+  deptClusterModalLoading = false;
 
   items: MenuItem[] = [];
 
@@ -189,15 +191,41 @@ export class Departments implements OnInit {
     }
   }
 
+  getDeptMappingInitials(name: string | null | undefined): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    const initials = parts.length > 1 ? parts[0][0] + parts[1][0] : parts[0].slice(0, 2);
+    return initials.toUpperCase();
+  }
+
+  filteredAssignedClusters(){
+    const query = this.deptClusterSearchQuery.trim().toLowerCase();
+    return this.clusterInfoList.filter(c =>
+      this.isClusterAssigned(c.clusterId) &&
+      (!query || c.clusterName?.toLowerCase().includes(query) || c.clusterCode?.toLowerCase().includes(query))
+    );
+  }
+
+  filteredAvailableClusters(){
+    const query = this.deptClusterSearchQuery.trim().toLowerCase();
+    return this.clusterInfoList.filter(c =>
+      !this.isClusterAssigned(c.clusterId) &&
+      (!query || c.clusterName?.toLowerCase().includes(query) || c.clusterCode?.toLowerCase().includes(query))
+    );
+  }
+
   fetchClusterInfo(){
     try {
+      this.deptClusterModalLoading = true;
       this.apiService.fetchClusterInfo('').subscribe({
         next: val => {
           console.log(val);
           this.clusterInfoList = val.data;
+          this.deptClusterModalLoading = false;
         },
         error: err => {
           console.log(err);
+          this.deptClusterModalLoading = false;
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -206,6 +234,7 @@ export class Departments implements OnInit {
       })
     } catch (error) {
       console.log(error);
+      this.deptClusterModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -316,6 +345,7 @@ export class Departments implements OnInit {
   openClusterModal(){
     try {
       this.showClusterModal = true;
+      this.deptClusterSearchQuery = '';
       this.fetchClusterInfo();
       this.fetchClusterHead();
       this.fetchDepartmentById();

@@ -16,6 +16,8 @@ export class Cranes implements OnInit {
   craneList: any[] = [];
   supplierList: any[] = [];
   assignedSuppliers: any[] = [];
+  supplierSearchQuery = '';
+  supplierModalLoading = false;
 
   actionName = 'Create';
 
@@ -129,6 +131,29 @@ export class Cranes implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  getSupplierMappingInitials(name: string | null | undefined): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    const initials = parts.length > 1 ? parts[0][0] + parts[1][0] : parts[0].slice(0, 2);
+    return initials.toUpperCase();
+  }
+
+  filteredAssignedSuppliers(){
+    const query = this.supplierSearchQuery.trim().toLowerCase();
+    return this.supplierList.filter(s =>
+      this.isSupplierAssigned(s.supplierId) &&
+      (!query || s.supplierName?.toLowerCase().includes(query))
+    );
+  }
+
+  filteredAvailableSuppliers(){
+    const query = this.supplierSearchQuery.trim().toLowerCase();
+    return this.supplierList.filter(s =>
+      !this.isSupplierAssigned(s.supplierId) &&
+      (!query || s.supplierName?.toLowerCase().includes(query))
+    );
   }
 
 
@@ -260,13 +285,16 @@ export class Cranes implements OnInit {
 
   fetchSupplierInfo(){
     try {
+      this.supplierModalLoading = true;
       this.apiService.fetchSupplierInfo('').subscribe({
         next: val => {
           console.log(val);
           this.supplierList = val.data;
+          this.supplierModalLoading = false;
         },
         error: err => {
           console.log(err);
+          this.supplierModalLoading = false;
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -275,6 +303,7 @@ export class Cranes implements OnInit {
       })
     } catch (error) {
       console.log(error);
+      this.supplierModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -302,6 +331,7 @@ export class Cranes implements OnInit {
   openSupplierModal(){
     try {
       this.showSupplierModal = true;
+      this.supplierSearchQuery = '';
       this.fetchSupplierInfo();
       this.fetchCraneSuppliers();
     } catch (error) {

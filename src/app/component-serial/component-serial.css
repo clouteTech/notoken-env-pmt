@@ -4,6 +4,12 @@
     justify-content: space-between;
 }
 
+.serial-subHeader {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .serial-filter {
     display: flex;
     align-items: center;

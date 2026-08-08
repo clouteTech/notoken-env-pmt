@@ -18,6 +18,7 @@ import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { Shared } from '../shared/services/shared';
 import { Apiservice } from '../service/apiservice';
+import { Router } from '@angular/router';
 
 export interface WtgRow {
   wtgId: string;
@@ -308,7 +309,8 @@ export class Installation implements OnInit {
     ],
   };
 
-  constructor(private fb: FormBuilder, private messageService: MessageService, private apiService: Apiservice) {}
+  constructor(private fb: FormBuilder, private messageService: MessageService, 
+      private apiService: Apiservice, private router: Router) {}
 
   ngOnInit() {
     const maxWtg = Math.max(this.wtgQty, ...this.summaryRows.map(r => r.wtgCount));
@@ -1107,6 +1109,19 @@ export class Installation implements OnInit {
 
   getMenuItems(){
     return [
+      {
+        label: 'Assign Project Crane detail',
+        icon: 'pi pi-truck',
+        command: () => this.router.navigate(['/project', 
+          this.selectedProject.projectId, 
+          'cranes'],
+          {
+            state: {
+              project: this.selectedProject
+            }
+          }
+        )
+      },
       {
         label: 'Import',
         icon: 'pi pi-upload',

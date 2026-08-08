@@ -19,6 +19,8 @@ export class UserGroups implements OnInit {
   userGroupList: any[] = [];
   roleInfoList: any[] = [];
   assignedRoles: any[] = [];
+  roleSearchQuery = '';
+  roleModalLoading = false;
 
   selectedUsergroup: any;
 
@@ -180,6 +182,29 @@ export class UserGroups implements OnInit {
     }
   }
 
+  getRoleMappingInitials(name: string | null | undefined): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    const initials = parts.length > 1 ? parts[0][0] + parts[1][0] : parts[0].slice(0, 2);
+    return initials.toUpperCase();
+  }
+
+  filteredAssignedRoles(){
+    const query = this.roleSearchQuery.trim().toLowerCase();
+    return this.roleInfoList.filter(r =>
+      this.isRoleAssigned(r.roleId) &&
+      (!query || r.roleKey?.toLowerCase().includes(query) || r.description?.toLowerCase().includes(query))
+    );
+  }
+
+  filteredAvailableRoles(){
+    const query = this.roleSearchQuery.trim().toLowerCase();
+    return this.roleInfoList.filter(r =>
+      !this.isRoleAssigned(r.roleId) &&
+      (!query || r.roleKey?.toLowerCase().includes(query) || r.description?.toLowerCase().includes(query))
+    );
+  }
+
   assignRole(role: any){
     try {
       const data = {
@@ -242,13 +267,16 @@ export class UserGroups implements OnInit {
 
   fetchRoleInfo(){
     try {
+      this.roleModalLoading = true;
       this.apiService.fetchRoleInfo('').subscribe({
         next: val => {
           console.log(val);
           this.roleInfoList = val.data;
+          this.roleModalLoading = false;
         },
         error: err => {
           console.log(err);
+          this.roleModalLoading = false;
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -257,6 +285,7 @@ export class UserGroups implements OnInit {
       })
     } catch (error) {
       console.log(error);
+      this.roleModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -289,6 +318,7 @@ export class UserGroups implements OnInit {
   openRoleModal(){
     try {
       this.showRoleModal = true;
+      this.roleSearchQuery = '';
       this.fetchRoleInfo();
       this.fetchUsergroup();
     } catch (error) {

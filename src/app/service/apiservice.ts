@@ -565,6 +565,10 @@ export class Apiservice {
     return this.postMethod('master/equipment/crane/delete', params);
   }
 
+  fetchCraneInfo(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane/info', params);
+  }
+
   // Crane Supplier Master
 
   fetchAllCraneSuppliers(params: any): Observable<any>{
@@ -687,6 +691,24 @@ export class Apiservice {
 
   fetchCraneSuppliers(params: any): Observable<any>{
     return this.postMethod('master/equipment/crane-supplier-mapping/get-crane-suppliers', params);
+  }
+
+  // Project Crane Details
+
+  fetchAllProjectCraneDetails(params: any): Observable<any>{
+    return this.postMethod('project/crane-detail/get-all', params);
+  }
+
+  assignPrjCraneDetail(params: any): Observable<any>{
+    return this.postMethod('project/crane-detail/create', params);
+  }
+
+  updatePrjCraneDetail(params: any): Observable<any>{
+    return this.postMethod('project/crane-detail/update', params);
+  }
+
+  deletePrjCraneDetail(params: any): Observable<any>{
+    return this.postMethod('project/crane-detail/delete', params);
   }
 
   // auth/user-user-group/remove-group

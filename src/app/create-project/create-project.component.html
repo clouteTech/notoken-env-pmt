@@ -93,7 +93,11 @@
             <div class="s1-grid">
                 <div class="s1-field">
                     <label class="s1-label">Project Code <span class="s1-req">*</span></label>
-                    <input pInputText type="text" class="s1-input" [(ngModel)]="pCode" placeholder="Enter code" />
+                    <input pInputText type="text" class="s1-input" [(ngModel)]="pCode" maxlength="10" placeholder="Enter code" />
+                </div>
+                <div class="s1-field">
+                    <label class="s1-label">Project Description <span class="s1-req">*</span></label>
+                    <input pInputText type="text" class="s1-input" [(ngModel)]="projectDescription" maxlength="100" placeholder="Enter description" />
                 </div>
                 <div class="s1-field">
                     <label class="s1-label">Customer <span class="s1-req">*</span></label>
@@ -133,7 +137,7 @@
                         optionLabel="label" optionValue="value" styleClass="s1-select" placeholder="Select Contract Status"/>
                 </div>
                 <div class="s1-field">
-                    <label class="s1-label">Contract Status <span class="s1-req">*</span></label>
+                    <label class="s1-label">Contract Status</label>
                     <input pInputText type="text" class="s1-input" [(ngModel)]="ContractStatusValue" placeholder="Enter Status" />
                 </div>
                 <div class="s1-field">
@@ -245,7 +249,7 @@
 
             <div class="s1-footer">
                 <button pButton label="Next: Add SPV Details" icon="pi pi-arrow-right"
-                    (click)="submitProject()"></button> <!-- submitProject validateStep1 -->
+                    (click)="validateStep1()"></button>
                 <button pButton label="Cancel" class="p-button-outlined" icon="pi pi-times"
                     severity="danger" (click)="addProjectDialog = false"></button>
             </div>

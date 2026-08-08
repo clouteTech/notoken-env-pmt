@@ -223,6 +223,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'project/:id/cranes',
+    loadComponent: () => import('./assign-project-crane-details/assign-project-crane-details').then(m => m.AssignProjectCraneDetails),
+    canActivate: [authGuard]
+  },
+  {
     path: 'project/:projectId/wtg-location',
     loadComponent: () => import('./project-wtg-location-details/project-wtg-location-details').then(m => m.ProjectWtgLocationDetails),
     canActivate: [authGuard]
