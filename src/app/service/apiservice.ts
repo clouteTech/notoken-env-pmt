@@ -456,6 +456,18 @@ export class Apiservice {
     return this.postMethod('project/get', params);
   }
 
+  updateProjectDetails(params: any): Observable<any>{
+    return this.postMethod('project/update-details', params);
+  }
+
+  updateProjectSpv(params: any): Observable<any>{
+    return this.postMethod('project/spv/update', params);
+  }
+
+  updatePrjSpvWtgConfig(params: any): Observable<any>{
+    return this.postMethod('project/config/update', params);
+  }
+
   // project location 
 
   fetchPrjLocationInfo(params: any): Observable<any>{

@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { ButtonModule }      from 'primeng/button';
 import { InputTextModule }   from 'primeng/inputtext';
 import { TextareaModule }    from 'primeng/textarea';
@@ -124,6 +124,7 @@ export class CreateProjectComponent implements OnInit {
   projectHeader: string = 'Step 1: Create Project';
   isProjectCreated = false;
   step1 = true;
+  showEditProjectModal = false;
 
   items: MenuItem[] = [];
 
@@ -148,6 +149,8 @@ export class CreateProjectComponent implements OnInit {
   projectTermValue = '';
   projectProbalityValue = '';
 
+  projectDetails: any;
+
 
   // ── Step 1 date fields ────────────────────────────────────────────────────
   dateAnchorCage: Date | null = null;
@@ -165,38 +168,10 @@ export class CreateProjectComponent implements OnInit {
   dateServiceSign: Date | null = null;
   dateLTSASign: Date | null = null;
 
+  customerSPVList: any[] = [];
+
   // ── Step 1 dropdown options ───────────────────────────────────────────────
-  states = [
-    /* { label: 'Andhra Pradesh', value: '1' },
-    { label: 'Arunachal Pradesh', value: '2' },
-    { label: 'Assam', value: '3' },
-    { label: 'Bihar', value: '4' },
-    { label: 'Chhattisgarh', value: '5' },
-    { label: 'Goa', value: '6' },
-    { label: 'Gujarat', value: '7' },
-    { label: 'Haryana', value: '8' },
-    { label: 'Himachal Pradesh', value: '9' },
-    { label: 'Jharkhand', value: '10' },
-    { label: 'Karnataka', value: '11' },
-    { label: 'Kerala', value: '12' },
-    { label: 'Madhya Pradesh', value: '13' },
-    { label: 'Maharashtra', value: '14' },
-    { label: 'Manipur', value: '15' },
-    { label: 'Meghalaya', value: '16' },
-    { label: 'Mizoram', value: '17' },
-    { label: 'Nagaland', value: '18' },
-    { label: 'Odisha', value: '19' },
-    { label: 'Punjab', value: '20' },
-    { label: 'Rajasthan', value: '21' },
-    { label: 'Sikkim', value: '22' },
-    { label: 'Tamil Nadu', value: '23' },
-    { label: 'Telangana', value: '24' },
-    { label: 'Tripura', value: '25' },
-    { label: 'Uttar Pradesh', value: '26' },
-    { label: 'Uttarakhand', value: '27' },
-    { label: 'West Bengal', value: '28' },
-    { label: 'Delhi', value: '29' } */
-  ];
+  states = [];
 
   cityStateMap: { [key: string]: string } = {
     chennai: 'Tamil Nadu', coimbatore: 'Tamil Nadu', salem: 'Tamil Nadu',
@@ -223,10 +198,7 @@ export class CreateProjectComponent implements OnInit {
     { label: 'EN182', value: '182' }, { label: 'EN156(NS)', value: '156' },
     { label: 'EN182(NS)', value: '182' } */
   ];
-   getCapacityOpts     = [
-  /*   { label: '2.5', value: '1' }, { label: '3.5', value: '2' },
-    { label: '5', value: '5' } */
-  ];
+   getCapacityOpts: any[] = [];
   towerOptions   = [
     /* { label: '120HH-304T', value: '1' }, { label: '140HH-474T', value: '2' },
     { label: '130HH-420T', value: '3' }, { label: '140HH-353T', value: '4' }*/
@@ -251,6 +223,68 @@ export class CreateProjectComponent implements OnInit {
   spvOptions: { label: string; value: any }[] = [];
   spvOptsList: { label: string; value: any; disabled: boolean }[][] = [];
   overallTotalCapacity = 0;
+
+  private fb = inject(FormBuilder);
+
+  projectForm = this.fb.group({
+    projectId: [0],
+    customerId: [0],
+    projectDescription: [""],
+    city: [""],
+    country: [""],
+    clusterId: [0],
+    projectTotalQty: [{ value: 0, disabled: true }],
+    projectTotalCapacity: [{ value: 0, disabled: true }],
+    clusterHeadId: [0],
+    zoneId: [0],
+    projectManagerId: [0],
+    bdManagerId: [0],
+    solutionManagerId: [0],
+    siteManagerId: [0],
+    projectTerm: [""],
+    probability: [""],
+    projectStatus: [{ value: "", disabled: true }],
+    contractStatus: [""]
+  })
+
+  projectSpvForm = this.fb.group({
+    spvs: this.fb.array([])
+  })
+
+  get spvs(): FormArray{
+    return this.projectSpvForm.get('spvs') as FormArray;
+  }
+
+  createSpvForm(spv?: any): FormGroup{
+    const wtgConfigurations = this.fb.array(
+      (spv?.wtgConfigurations ?? []).map((config: any) =>
+        this.createWtgConfigForm(config) 
+      )
+    )
+
+    return this.fb.group({
+      projectSpvId: [spv?.projectSpvId ?? 0],
+      customerSpvId: [spv?.customerSpv?.customerSpvId ?? null],
+      wtgConfigurations: wtgConfigurations
+    });
+  }
+
+  getWtgConfigurations(spvIndex: number): FormArray {
+    return this.spvs.at(spvIndex).get('wtgConfigurations') as FormArray;
+  }
+
+  createWtgConfigForm(config?: any): FormGroup{
+    return this.fb.group({
+      wtgConfigId: [config?.wtgConfigId ?? 0],
+      wtgTypeId: [config?.wtgType?.wtgTypeId ?? null],
+      capacityId: [config?.capacity?.capacityId ?? null],
+      towerTypeId: [config?.towerType?.towerTypeId ?? null],
+      bladeTypeId: [config?.bladeType?.bladeTypeId ?? null],
+      gridConnectivityId: [config?.gridConnectivity?.gridConnectivityId ?? null],
+      ppaTypeId: [config?.ppaType?.ppaTypeId ?? null],
+      wtgQty: [{ value: config?.wtgQty ?? 0, disabled: true }]
+    })
+  }
 
   constructor(private messageService: MessageService,private apiService:Apiservice, 
       private confirmationService: ConfirmationService) {}
@@ -306,6 +340,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.zoneInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           this.zoneOptions = res.data
         },error:(err)=>{
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
@@ -323,6 +358,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.wtgTypeInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           this.WTGOptions = res.data
         },error:(err)=>{
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
@@ -340,6 +376,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.capacityInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           this.getCapacityOpts = res.data
         },error:(err)=>{
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
@@ -357,6 +394,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.towerTypeInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           this.towerOptions = res.data
         },error:(err)=>{
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
@@ -374,6 +412,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.bladeTypeInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           this.bladeOptions = res.data
         },error:(err)=>{
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
@@ -391,6 +430,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.gridConnectivityInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           this.gridOptions = res.data
         },error:(err)=>{
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
@@ -408,6 +448,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.ppaTypeInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           this.ppaOptions = res.data
         },error:(err)=>{
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
@@ -425,6 +466,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.customerInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           var filt = res.data.filter((itm:any)=>{
             return itm.status == true
           })
@@ -445,6 +487,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.clusterInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           var filt = res.data.filter((itm:any)=>{
             return itm.status == true
           })
@@ -465,6 +508,7 @@ export class CreateProjectComponent implements OnInit {
       this.apiService.companyUserInfo(data)
       .subscribe({
         next:(res)=>{
+          console.log(res);
           var filt = res.data.filter((itm:any)=>{
             return itm.status == true
           })
@@ -933,11 +977,211 @@ buildOptsList(): void {
   trackById(_: number, item: { id: number }) { return item.id; }
   trackByIdx(i: number) { return i; }
 
+  fetchProjectDetails(){
+    try {
+      const data = {
+        projectId: this.selectedProject.projectId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchProjectDetails(data).subscribe({
+        next: val => {
+          console.log(val);
+
+          this.projectDetails = val.data;
+          this.projectForm.patchValue({
+            ...this.projectDetails,
+            projectId: this.projectDetails.projectCode,
+            customerId: this.projectDetails?.customer?.customerId,
+            clusterId: this.projectDetails?.cluster?.clusterId,
+            zoneId: this.projectDetails?.zone?.zoneId,
+            projectManagerId: this.projectDetails?.projectManager?.userId,
+            bdManagerId: this.projectDetails?.bdManager?.userId,
+            solutionManagerId: this.projectDetails?.solutionManager?.userId,
+            clusterHeadId: this.projectDetails?.clusterHead?.userId,
+            siteManagerId: this.projectDetails?.siteManager?.userId,
+            projectStatus: this.projectDetails?.projectStatus
+          });
+
+          this.fetchCustomerSPVInfo();
+
+          this.spvs.clear();
+
+          this.projectDetails?.projectSpvDetails?.forEach((spv: any) => {
+            this.spvs.push(this.createSpvForm(spv));
+          });
+
+          console.log('SPV Forms:', this.spvs.value);
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  updateProject(){
+    try {
+      const data = {
+        ...this.projectForm.value,
+        projectId: this.selectedProject.projectId,
+        projectTotalQty: this.projectDetails.projectTotalQty,
+        projectTotalCapacity: this.projectDetails.projectTotalCapacity,
+        projectStatus: this.projectDetails?.projectStatus
+      };
+      console.log(data);
+
+      this.apiService.updateProjectDetails(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Updated Project Details'});
+          this.showEditProjectModal = false;
+          this.getProjectList();
+        },
+        error: err => {
+          console.log(err);
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  fetchCustomerSPVInfo(){
+    try {
+      const data = {
+        customerId: this.projectDetails?.customer?.customerId
+      }
+
+      console.log(data);
+      
+      this.apiService.customerSpvInfo(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.customerSPVList = val.data;
+        },
+        error: err => {
+          console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  updateProjectSpv(index: number){
+    try {
+      const spvForm = this.spvs.at(index);
+  
+      console.log(spvForm.value);
+  
+      const data = {
+        projectSpvId: spvForm.get('projectSpvId')?.value,
+        customerSpvId: spvForm.get('customerSpvId')?.value
+      }
+  
+      console.log('Update SPV Payload:', data);
+  
+      this.apiService.updateProjectSpv(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Updated Project SPV'});
+          this.getProjectList();
+        },
+        error: err => {
+          console.log(err);
+  
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  getTotalCapacity(config: any){
+    const formValue = config.getRawValue();
+
+    const capacity = this.getCapacityOpts.find((cap: any) => cap?.capacityId === formValue.capacityId);
+
+    if(!capacity){
+      return 0
+    };
+
+    if(capacity?.capacity === 2.5){
+      return formValue.wtgQty;
+    } else if(capacity?.capacity === 2500){
+      return formValue.wtgQty * 2;
+    }
+  }
+
+  updateConfiguration(spvIndex: number, configIndex: number){
+    try {
+      const configForm = this.getWtgConfigurations(spvIndex).at(configIndex);
+  
+      console.log(configForm.value);
+  
+      const data = configForm.getRawValue();
+  
+      console.log('Update SPV Payload:', data);
+  
+      this.apiService.updatePrjSpvWtgConfig(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Updated Project SPV WTG Configuration'});
+          this.getProjectList();
+        },
+        error: err => {
+          console.log(err);
+  
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  editProjectDetails(){
+    try {
+      this.showEditProjectModal = true;
+
+      this.fetchProjectDetails();
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   getMenuItems(){
     return [
       {
         label: 'Edit',
-        icon: 'pi pi-pencil'
+        icon: 'pi pi-pencil',
+        command: () => this.editProjectDetails()
       },
       {
         label: 'Delete',
@@ -949,6 +1193,34 @@ buildOptsList(): void {
 
   projectMenu(event: Event, menu: any, project: any){
     this.selectedProject = project;
+    console.log(this.selectedProject);
     menu.toggle(event);
   }
+
+  onDialogClose(){
+
+  }
+
+  projectStatus = [
+    {
+      label: 'DRAFT',
+      value: 'DRAFT'
+    },
+    {
+      label: 'ACTIVE',
+      value: 'ACTIVE'
+    },
+    {
+      label: 'ON_HOLD',
+      value: 'ON_HOLD'
+    },
+    {
+      label: 'COMPLETED',
+      value: 'COMPLETED'
+    },
+    {
+      label: 'CANCELLED',
+      value: 'CANCELLED'
+    }
+  ]
 }

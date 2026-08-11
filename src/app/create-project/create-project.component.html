@@ -503,4 +503,183 @@
     </p-fluid>
 </p-dialog>
 
+<p-dialog header="Edit Project Details" [(visible)]="showEditProjectModal" [modal]="true" 
+    [draggable]="false" (onHide)="onDialogClose()" [style]="{ width: '60rem' }">
+    <form [formGroup]="projectForm" (ngSubmit)="updateProject()">
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="project-code">Project Code</label>
+                <input type="text" pInputText formControlName="projectId" id="project-code" />
+            </div>
+            <div class="form-field">
+                <label for="project-description">Project Description</label>
+                <input type="text" pInputText formControlName="projectDescription" id="project-description" />
+            </div>
+            <div class="form-field">
+                <label for="customer">Customer</label>
+                <p-select [options]="CustomerNameList" formControlName="customerId" optionLabel="customerName" 
+                    optionValue="customerId" [filter]="true"
+                    filterBy="customerName" [showClear]="true" placeholder="Select Customer" appendTo="body" />
+            </div>
+            <div class="form-field">
+                <label for="city">City</label>
+                <input type="text" pInputText formControlName="city" id="city" />
+            </div>
+            <div class="form-field">
+                <label for="cluster">Cluster</label>
+                <p-select [options]="states" formControlName="clusterId" optionLabel="clusterName" optionValue="clusterId"
+                    [filter]="true" filterBy="clusterName" [showClear]="true" 
+                    placeholder="Select Cluster" appendTo="body" inputId="cluster" />
+            </div>
+            <div class="form-field">
+                <label for="zone">Zone</label>
+                <p-select [options]="zoneOptions" formControlName="zoneId" optionLabel="zone" optionValue="zoneId" [filter]="true"
+                    filterBy="zone" [showClear]="true" placeholder="Select Zone" appendTo="body" inputId="zone" />
+            </div>
+            <div class="form-field">
+                <label for="country">Country</label>
+                <input type="text" pInputText formControlName="country" id="country" />
+            </div>
+            <div class="form-field">
+                <label for="qty">Project Total Qty</label>
+                <input type="text" pInputText id="qty" formControlName="projectTotalQty" />
+            </div>
+            <div class="form-field">
+                <label for="capacity">Project Total Capacity</label>
+                <input type="text" pInputText id="capacity" formControlName="projectTotalCapacity" />
+            </div>
+            <div class="form-field">
+                <label for="project-status">Project Status</label>
+                <input type="text" pInputText id="project-status" formControlName="projectStatus" />
+            </div>
+            <div class="form-field">
+                <label for="probability">Project Probability</label>
+                <p-select [options]="projectProbality" formControlName="probability" optionLabel="label" optionValue="value" 
+                    [filter]="true" filterBy="label"
+                    [showClear]="true" placeholder="Select Probability" appendTo="body" inputId="probability" />
+            </div>
+            <div class="form-field">
+                <label for="contract-status">Contract Status</label>
+                <input type="text" pInputText formControlName="contractStatus" id="contract-status" />
+            </div>
+            <div class="form-field">
+                <label for="project-term">Project Term</label>
+                <p-select [options]="projectTerm" formControlName="projectTerm" optionLabel="label" optionValue="value" [filter]="true" filterBy="label"
+                    [showClear]="true" placeholder="Select Project Term" appendTo="body" inputId="project-term" />
+            </div>
+            <div class="form-field">
+                <label for="project-manager">Project Manager</label>
+                <p-select [options]="PMOptions" formControlName="projectManagerId" optionLabel="userName" optionValue="userId" [filter]="true" filterBy="label"
+                    [showClear]="true" placeholder="Select Project Manager" appendTo="body" inputId="project-manager" />
+            </div>
+            <div class="form-field">
+                <label for="bd-manager">BD Manager</label>
+                <p-select [options]="PMOptions" formControlName="bdManagerId" optionLabel="userName" optionValue="userId" [filter]="true" filterBy="label"
+                    [showClear]="true" placeholder="Select Project Manager" appendTo="body" inputId="bd-manager" />
+            </div>
+            <div class="form-field">
+                <label for="solution-manager">Solution Manager</label>
+                <p-select [options]="PMOptions" formControlName="siteManagerId" optionLabel="userName" optionValue="userId" [filter]="true" filterBy="label"
+                    [showClear]="true" placeholder="Select Project Manager" appendTo="body" inputId="solution-manager" />
+            </div>
+            <div class="form-field">
+                <label for="cluster-head">Cluster Head</label>
+                <p-select [options]="PMOptions" formControlName="clusterHeadId" optionLabel="userName" optionValue="userId" [filter]="true" filterBy="label"
+                    [showClear]="true" placeholder="Select Project Manager" appendTo="body" inputId="cluster-head" />
+            </div>
+            <div class="form-field">
+                <label for="site-manager">Site Manager</label>
+                <p-select [options]="PMOptions" formControlName="siteManagerId" optionLabel="userName" optionValue="userId" [filter]="true" filterBy="label"
+                    [showClear]="true" placeholder="Select Project Manager" appendTo="body" inputId="site-manager" />
+            </div>
+        </div>
+        <div class="submit-btn">
+            <button pButton pRipple type="submit">Update</button>
+        </div>
+    </form>
+
+    <form [formGroup]="projectSpvForm">
+        <h3>SPV & WTG Configuration</h3>
+        <ng-container formArrayName="spvs">
+            @for (spv of spvs.controls; track $index; let i = $index) {
+                <ng-container [formGroupName]="i">
+                    <div class="spv-border">
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="site-manager">Customer SPV</label>
+                                <p-select [options]="customerSPVList" formControlName="customerSpvId" optionLabel="spvName" optionValue="customerSpvId"
+                                    [filter]="true" filterBy="label" [showClear]="true" placeholder="Select Customer SPV" appendTo="body"
+                                    inputId="site-manager" />
+                            </div>
+                            <div class="update-spv-btn">
+                                <button pButton pRipple type="submit"
+                                    (click)="updateProjectSpv(i)">Update SPV</button>
+                            </div>
+                        </div>
+    
+                        <ng-container formArrayName="wtgConfigurations">
+                            @for (config of getWtgConfigurations(i).controls; track $index; let j = $index) {
+                                <div class="wtg-border">
+                                    <div class="form-grid" [formGroupName]="j">
+                                        <!-- <div class="form-field">
+                                            <label for="address">Shipment Address</label>
+                                            <input type="text" pInputText id="address" />
+                                        </div> -->
+                                        <div class="form-field">
+                                            <label for="wtg-type">WTG Type</label>
+                                            <p-select [options]="WTGOptions" formControlName="wtgTypeId" optionLabel="wtgType"
+                                                optionValue="wtgTypeId" [filter]="true" filterBy="wtgType" [showClear]="true"
+                                                placeholder="Select WTG Type" appendTo="body" inputId="wtg-type" />
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="wtg-type">Capacity/WTG (MW)</label>
+                                            <p-select [options]="getCapacityOpts" formControlName="capacityId" optionLabel="capacity" optionValue="capacityId" 
+                                                [filter]="true" filterBy="capacity" [showClear]="true" placeholder="Select Capacity" appendTo="body" inputId="wtg-type" />
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="tower-type">Tower Type</label>
+                                            <p-select [options]="towerOptions" formControlName="towerTypeId" optionLabel="towerType" optionValue="towerTypeId" [filter]="true"
+                                                filterBy="towerType" [showClear]="true" placeholder="Select Tower Type" appendTo="body" inputId="tower-type" />
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="blade-type">Blade Type</label>
+                                            <p-select [options]="bladeOptions" formControlName="bladeTypeId" optionLabel="bladeType" optionValue="bladeTypeId" [filter]="true"
+                                                filterBy="bladeType" [showClear]="true" placeholder="Select Blade Type" appendTo="body" inputId="blade-type" />
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="connectivity">Grid Connectivity</label>
+                                            <p-select [options]="gridOptions" formControlName="gridConnectivityId" optionLabel="gridConnectivity" optionValue="gridConnectivityId" [filter]="true"
+                                                filterBy="gridConnectivity" [showClear]="true" placeholder="Select Grid Connectivity" appendTo="body" 
+                                                inputId="connectivity" />
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="ppa-type">PPA Type</label>
+                                            <p-select [options]="ppaOptions" formControlName="ppaTypeId" optionLabel="ppaType" optionValue="ppaTypeId" [filter]="true"
+                                                filterBy="ppaType" [showClear]="true" placeholder="Select PPA Type" appendTo="body" inputId="ppa-type" />
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="wtg-qty">WTG Qty</label>
+                                            <input type="text" pInputText formControlName="wtgQty" id="wtg-qty" />
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="total-capacity">Total Capacity (MW)</label>
+                                            <input type="text" pInputText id="total-capacity" [value]="getTotalCapacity(config)" [disabled]="true" />
+                                        </div>
+                                    </div>
+                                    <div class="submit-btn">
+                                        <button pButton pRipple type="button"
+                                            (click)="updateConfiguration(i, j)">Update Configuration</button>
+                                    </div>
+                                </div>
+                            }
+                        </ng-container>
+                    </div>
+                </ng-container>
+
+            }
+        </ng-container>
+    </form>
+
+</p-dialog>
+
 <p-confirmdialog />

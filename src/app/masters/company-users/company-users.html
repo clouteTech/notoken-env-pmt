@@ -4,7 +4,12 @@
         <p-button icon="pi pi-plus" label="Create Company User" (onClick)="openCompanyUserModal()" />
     </div>
     <div class="custom-container">
-        <p-table [value]="companyUserList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <p-table [value]="companyUserList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }"
+            [paginator]="true" [rows]="size" [first]="first" [showCurrentPageReport]="true" [lazy]="true"
+            [totalRecords]="totalRecords"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            (onLazyLoad)="loadUser($event)"
+            [rowsPerPageOptions]="[10, 25, 50]">
             <ng-template #header>
                 <tr>
                     <th>SL No</th>
@@ -236,7 +241,7 @@
     </div>
 </p-dialog>
 
-<p-dialog [(visible)]="showPlantMappingModal" [modal]="true" [draggable]="false"
+<!-- <p-dialog [(visible)]="showPlantMappingModal" [modal]="true" [draggable]="false"
     (onHide)="onDialogClose()" [style]="{ width: '44rem' }">
 
     <ng-template #header>
@@ -246,7 +251,7 @@
             </div>
             <div class="upm-header-titles">
                 <span class="upm-title">Plant Mapping</span>
-                <span class="upm-subtitle">Assign or remove plants for this user</span>
+                <span class="upm-subtitle">Assign a single plant to this user</span>
             </div>
         </div>
     </ng-template>
@@ -257,7 +262,11 @@
             <div class="upm-user-name">{{ selectedCompanyUser?.userName }}</div>
             <div class="upm-user-email">{{ selectedCompanyUser?.email }}</div>
         </div>
-        <div class="upm-assigned-count">{{ assignedPlants.length }} of {{ plantInfoList.length }} assigned</div>
+        @if (currentAssignedPlant(); as current) {
+            <div class="upm-assigned-count">{{ current.plant }}</div>
+        } @else {
+            <div class="upm-assigned-count upm-assigned-count-muted">No plant assigned</div>
+        }
     </div>
 
     <div class="upm-search-row">
@@ -275,15 +284,13 @@
     <div class="upm-body">
         @if (plantModalLoading) {
             <div class="upm-section">
-                <div class="upm-section-head upm-assigned"><span class="upm-dot"></span><span class="upm-section-title">Assigned plants</span></div>
+                <div class="upm-section-head upm-assigned"><span class="upm-dot"></span><span class="upm-section-title">Currently assigned</span></div>
                 <div class="upm-list">
-                    @for (n of [1, 2]; track n) {
-                        <div class="upm-skeleton-row">
-                            <div class="upm-skel upm-skel-icon"></div>
-                            <div class="upm-skel-lines"><div class="upm-skel upm-skel-line" style="width: 45%;"></div></div>
-                            <div class="upm-skel" style="width: 72px; height: 26px; border-radius: 20px;"></div>
-                        </div>
-                    }
+                    <div class="upm-skeleton-row">
+                        <div class="upm-skel upm-skel-icon"></div>
+                        <div class="upm-skel-lines"><div class="upm-skel upm-skel-line" style="width: 45%;"></div></div>
+                        <div class="upm-skel" style="width: 72px; height: 26px; border-radius: 20px;"></div>
+                    </div>
                 </div>
             </div>
             <div class="upm-section">
@@ -304,7 +311,7 @@
                 <div class="upm-empty-title">No plants exist yet</div>
                 <div class="upm-empty-sub">Create a plant first, then come back to assign it here.</div>
             </div>
-        } @else if (plantSearchQuery && !filteredAssignedPlants().length && !filteredAvailablePlants().length) {
+        } @else if (plantSearchQuery && !currentPlantMatchesSearch() && !filteredAvailablePlants().length) {
             <div class="upm-empty-state">
                 <i class="pi pi-search"></i>
                 <div class="upm-empty-title">No plants match "{{ plantSearchQuery }}"</div>
@@ -314,26 +321,27 @@
             <div class="upm-section">
                 <div class="upm-section-head upm-assigned">
                     <span class="upm-dot"></span>
-                    <span class="upm-section-title">Assigned plants</span>
-                    <span class="upm-section-count">{{ filteredAssignedPlants().length }}</span>
+                    <span class="upm-section-title">Currently assigned</span>
                 </div>
                 <div class="upm-list">
-                    @for (plant of filteredAssignedPlants(); track plant.id) {
-                        <div class="upm-row upm-row-assigned">
-                            <div class="upm-row-icon"><i class="pi pi-check"></i></div>
-                            <div class="upm-row-name-wrap">
-                                <div class="upm-row-name">{{ plant.plant }}</div>
-                                @if (getPlantHint(plant)) {
-                                    <div class="upm-row-hint">{{ getPlantHint(plant) }}</div>
-                                }
+                    @if (currentAssignedPlant(); as current) {
+                        @if (currentPlantMatchesSearch()) {
+                            <div class="upm-row upm-row-assigned">
+                                <div class="upm-row-icon"><i class="pi pi-check"></i></div>
+                                <div class="upm-row-name-wrap">
+                                    <div class="upm-row-name">{{ current.plant }}</div>
+                                    @if (getPlantHint(current)) {
+                                        <div class="upm-row-hint">{{ getPlantHint(current) }}</div>
+                                    }
+                                </div>
+                                <p-button label="Remove" icon="pi pi-minus" size="small" severity="danger"
+                                    styleClass="upm-btn upm-btn-remove" (click)="confirmRemovePlant(current)" />
                             </div>
-                            <p-button label="Remove" icon="pi pi-minus" size="small" severity="danger"
-                                styleClass="upm-btn upm-btn-remove" (click)="togglePlant(plant)" />
-                        </div>
-                    } @empty {
+                        }
+                    } @else {
                         <div class="upm-empty-state upm-empty-state-sm">
-                            <div class="upm-empty-title">No plants assigned yet</div>
-                            <div class="upm-empty-sub">Use "Assign" below to add this user to a plant.</div>
+                            <div class="upm-empty-title">No plant assigned yet</div>
+                            <div class="upm-empty-sub">Select a plant below to assign this user.</div>
                         </div>
                     }
                 </div>
@@ -355,21 +363,67 @@
                                     <div class="upm-row-hint">{{ getPlantHint(plant) }}</div>
                                 }
                             </div>
-                            <p-button label="Assign" icon="pi pi-plus" size="small" severity="primary"
-                                styleClass="upm-btn upm-btn-assign" (click)="togglePlant(plant)" />
+                            @if (currentAssignedPlant()) {
+                                <p-button label="Switch to this plant" icon="pi pi-sync" size="small" severity="primary"
+                                    styleClass="upm-btn upm-btn-assign" (click)="confirmSwitchPlant(plant)" />
+                            } @else {
+                                <p-button label="Assign" icon="pi pi-plus" size="small" severity="primary"
+                                    styleClass="upm-btn upm-btn-assign" (click)="assignPlantToUser(plant)" />
+                            }
                         </div>
                     } @empty {
                         <div class="upm-empty-state upm-empty-state-sm">
-                            <div class="upm-empty-title">All plants assigned</div>
-                            <div class="upm-empty-sub">This user belongs to every available plant.</div>
+                            <div class="upm-empty-title">No other plants available</div>
+                            <div class="upm-empty-sub">All remaining plants are already accounted for.</div>
                         </div>
                     }
                 </div>
             </div>
         }
     </div>
-</p-dialog>
+</p-dialog> -->
 
+<p-dialog [(visible)]="showPlantMappingModal" [modal]="true" [draggable]="false" (onHide)="onDialogClose()"
+    [style]="{ width: '50rem' }">
+    <ng-template #header>
+        <div class="dialog-header">
+            <span class="dialog-title">Assign/Remove Plant</span>
+            <p-tag [value]="selectedCompanyUser?.userName" severity="info"></p-tag>
+            <p-tag [value]="selectedCompanyUser?.email" severity="warn"></p-tag>
+        </div>
+    </ng-template>
+
+    <p-table [value]="plantInfoList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <ng-template #header>
+            <tr>
+                <th>SL No</th>
+                <th>Plant Name</th>
+                <th>Location</th>
+                <th>Plant Manager</th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-plant let-i="rowIndex">
+            <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ plant.plant }}</td>
+                <td>{{ plant.location }}</td>
+                <td>{{ plant.plantManager }}</td>
+                <td>
+                    <p-button [label]="isPlantAssigned(plant.id) ? 'Remove' : 'Assign'"
+                        [severity]="isPlantAssigned(plant.id) ? 'danger' : 'primary'" 
+                        [disabled]="isAssignDisabled(plant.id)"
+                        (click)="togglePlant(plant)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
 <p-dialog [(visible)]="showDepartmentModal" [modal]="true" [draggable]="false"
     (onHide)="onDialogClose()" [style]="{ width: '44rem' }">
 
