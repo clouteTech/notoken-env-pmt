@@ -14,6 +14,13 @@ export class UserGroups implements OnInit {
   showUserGroupModal = false;
   showRoleModal = false;
 
+  first = 0;
+
+  rows = 10;
+  page = 0;
+  size = 10;
+  totalRecords = 0;
+
   items: MenuItem[] = [];
 
   userGroupList: any[] = [];
@@ -363,5 +370,15 @@ export class UserGroups implements OnInit {
   onDialogClose(){
     this.selectedUsergroup = null;
     this.userGroupForm.reset();
+  }
+
+  loadUser(event: any) {
+    console.log(event);
+    this.first = event.first;
+
+    this.page = event.first / event.rows;
+    this.size = event.rows;
+
+    this.fetchAllUserGroups();
   }
 }
