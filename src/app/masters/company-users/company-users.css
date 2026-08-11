@@ -533,6 +533,12 @@
     white-space: nowrap;
 }
 
+.upm-assigned-count-muted {
+    background: var(--surface);
+    color: var(--text3);
+    border-color: var(--border2);
+}
+
 .upm-search-row {
     margin-bottom: 14px;
 }

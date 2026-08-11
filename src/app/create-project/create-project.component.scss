@@ -497,3 +497,41 @@ label { font-weight: bold; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.form-field {
+  display: grid;
+}
+
+.submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-top: 10px;
+}
+
+.update-spv-btn {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-top: 20px;
+}
+
+.spv-border{
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.wtg-border {
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  border-radius: 10px;
+  padding: 15px;
+}

@@ -20,6 +20,13 @@ export class CompanyUsers implements OnInit {
 
   items: MenuItem[] = [];
 
+  first = 0;
+
+  rows = 10;
+  page = 0;
+  size = 10;
+  totalRecords = 0;
+
   selectedCompanyUser: any;
 
   companyUserList: any[] = [];
@@ -28,7 +35,7 @@ export class CompanyUsers implements OnInit {
   userGroupSearchQuery = '';
   userGroupModalLoading = false;
   plantInfoList: any[] = [];
-  assignedPlants: any[] = [];
+  assignedPlant: any | null = null;
   clusterInfoList: any[] = [];
   departmentInfoList: any[] = [];
   assignedActiveClusters: any[] = [];
@@ -66,8 +73,8 @@ export class CompanyUsers implements OnInit {
       const data = {
         search: null,
         status: null,
-        page: 0,
-        size: 10,
+        page: this.page,
+        size: this.size,
         sortBy: 'createdOn',
         sortDirection: 'asc'
       }
@@ -78,6 +85,7 @@ export class CompanyUsers implements OnInit {
         next: val => {
           console.log(val);
           this.companyUserList = val.data.content;
+          this.totalRecords = val.data.totalElements;
         },
         error: err => {
           console.log(err);
@@ -175,10 +183,13 @@ export class CompanyUsers implements OnInit {
     );
   }
 
-  isPlantAssigned(plantId: number): boolean{
-    return this.assignedPlants.some(
-      plant => plant.plantId === plantId
-    )
+  isPlantAssigned(plantId: number): boolean {
+    return this.assignedPlant?.plantId === plantId;
+  }
+
+  isAssignDisabled(plantId: number): boolean {
+    return this.assignedPlant !== null &&
+          this.assignedPlant?.plantId !== plantId;
   }
 
   togglePlant(plant: any){
@@ -199,14 +210,6 @@ export class CompanyUsers implements OnInit {
     const parts = name.trim().split(/\s+/);
     const initials = parts.length > 1 ? parts[0][0] + parts[1][0] : parts[0].slice(0, 2);
     return initials.toUpperCase();
-  }
-
-  filteredAssignedPlants(){
-    const query = this.plantSearchQuery.trim().toLowerCase();
-    return this.plantInfoList.filter(p =>
-      this.isPlantAssigned(p.id) &&
-      (!query || p.plant?.toLowerCase().includes(query))
-    );
   }
 
   filteredAvailablePlants(){
@@ -661,8 +664,10 @@ export class CompanyUsers implements OnInit {
       this.apiService.assignPlantToUser(data).subscribe({
         next: val => {
           console.log("Plant Assigned Successfully:", val);   
+          this.assignedPlant = plant.id;
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Assigned Successfully' });
           this.fetchActivePlantsFromUser();
+          // this.showPlantMappingModal = false;
         },
         error: err => {
           console.log(err);
@@ -679,32 +684,55 @@ export class CompanyUsers implements OnInit {
   }
 
   removePlantFromUser(plant: any){
-    try {
-      const data = {
-        userId: this.selectedCompanyUser.userId,
-        plantId: plant.id
-      }
-
-      console.log(data);
-
-      this.apiService.removePlantFromUser(data).subscribe({
-        next: val => {
-          console.log("Plant Removed Successfully:", val);
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Removed Successfully' });
-          this.fetchActivePlantsFromUser();
-        },
-        error: err => {
-          console.log(err);
-
-          if (err.status === 400) {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+    this.confirmationService.confirm({
+      message: 'Do you want to remove this plant?',
+      header: 'Remove Plant',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+          label: 'Cancel',
+          severity: 'secondary',
+          outlined: true
+      },
+      acceptButtonProps: {
+          label: 'Delete',
+          severity: 'danger'
+      },
+      accept: () => {
+        try {
+          const data = {
+            userId: this.selectedCompanyUser.userId,
+            plantId: plant.id
           }
+
+          console.log(data);
+
+          this.apiService.removePlantFromUser(data).subscribe({
+            next: val => {
+              console.log("Plant Removed Successfully:", val);
+              this.assignedPlant = null;
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Removed Successfully' });
+              this.fetchActivePlantsFromUser();
+              // this.showPlantMappingModal = false;
+            },
+            error: err => {
+              console.log(err);
+
+              // if (err.status === 400) {
+              //   this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              // }
+
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.data });
+              }
+            }
+          })
+        } catch (error) {
+          console.log(error);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
         }
-      })
-    } catch (error) {
-      console.log(error);
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
-    }
+      }
+    });
   }
 
   fetchActivePlantsFromUser(){
@@ -717,11 +745,13 @@ export class CompanyUsers implements OnInit {
 
       this.apiService.fetchActivePlantsFromUser(data).subscribe({
         next: val => {
-          console.log('ACTIVE PLANTS AFTER REMOVE:', val.data);
+          console.log(val);
+          console.log('ACTIVE PLANTS:', val.data);
 
-          this.assignedPlants = val.data ?? [];
+          const list = val.data ?? [];
+          this.assignedPlant = list.length ? list[0] : null;
 
-          console.log('UPDATED assignedPlants:', this.assignedPlants);
+          console.log('UPDATED assignedPlant:', this.assignedPlant);
         },
         error: err => {
           console.log(err);
@@ -1038,5 +1068,16 @@ export class CompanyUsers implements OnInit {
   onDialogClose() {
     this.selectedCompanyUser = null;
     this.companyUserForm.reset();
+    // this.assignedPlant = null;
+  }
+
+  loadUser(event: any) {
+    console.log(event);
+    this.first = event.first;
+
+    this.page = event.first / event.rows;
+    this.size = event.rows;
+
+    this.fetchAllCompanyUser();
   }
 }

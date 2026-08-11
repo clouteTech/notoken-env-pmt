@@ -14,6 +14,9 @@ export class Roles implements OnInit {
 
   rows = 10;
 
+  page = 0;
+  size = 10;
+
   roleList: any[] = [];
 
   constructor(private confirmationService: ConfirmationService, 
@@ -29,8 +32,8 @@ export class Roles implements OnInit {
         search: null,
         resource: null,
         action: null,
-        page: 0,
-        size: 10
+        page: this.page,
+        size: this.size
       }
 
       console.log(data);
@@ -55,6 +58,9 @@ export class Roles implements OnInit {
 
   pageChange(event: any) {
     this.first = event.first;
-    this.rows = event.rows;
+    // this.rows = event.rows;
+
+    this.page = event.first / event.rows;
+    this.size = event.rows;
   }
 }
