@@ -1099,6 +1099,14 @@
     color: var(--text-color);
 }
 
+.text-red-500 {
+  display: block;
+  margin-top: 4px;
+  color: #ef4444 !important;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 @media (max-width: 1024px) {
   .summary-cards {
     grid-template-columns: repeat(2, 1fr);

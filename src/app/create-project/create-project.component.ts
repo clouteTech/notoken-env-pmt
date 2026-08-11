@@ -10,7 +10,7 @@ import { AccordionModule }   from 'primeng/accordion';
 import { TableModule }       from 'primeng/table';
 import { ToastModule }       from 'primeng/toast';
 import { CardModule }        from 'primeng/card';
-import { MessageService }    from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService }    from 'primeng/api';
 import { IconFieldModule }   from 'primeng/iconfield';
 import { TagModule }         from 'primeng/tag';
 import { InputIconModule }   from 'primeng/inputicon';
@@ -22,6 +22,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DividerModule }     from 'primeng/divider';
 import { TooltipModule }     from 'primeng/tooltip';
 import { Apiservice } from '../service/apiservice';
+import { Shared } from '../shared/services/shared';
 
 // ─── Domain Types ────────────────────────────────────────────────────────────
 
@@ -81,13 +82,14 @@ function nextId() { return ++_id; }
     ToastModule, CardModule, IconFieldModule, TagModule, InputIconModule,
     DialogModule, ConfirmDialogModule,
     FluidModule, CheckboxModule, InputNumberModule,
-    DividerModule, TooltipModule
+    DividerModule, TooltipModule, Shared
   ],
   providers: [MessageService],
   templateUrl: './create-project.component.html',
   styleUrls: ['./create-project.component.scss']
 })
 export class CreateProjectComponent implements OnInit {
+  selectedProject: any;
 
   // ── Project list (table) ──────────────────────────────────────────────────
   projectList:any; /* = [
@@ -122,6 +124,8 @@ export class CreateProjectComponent implements OnInit {
   projectHeader: string = 'Step 1: Create Project';
   isProjectCreated = false;
   step1 = true;
+
+  items: MenuItem[] = [];
 
   // ── Step 1 form fields ────────────────────────────────────────────────────
   pCode = '';
@@ -248,7 +252,8 @@ export class CreateProjectComponent implements OnInit {
   spvOptsList: { label: string; value: any; disabled: boolean }[][] = [];
   overallTotalCapacity = 0;
 
-  constructor(private messageService: MessageService,private apiService:Apiservice) {}
+  constructor(private messageService: MessageService,private apiService:Apiservice, 
+      private confirmationService: ConfirmationService) {}
 
   ngOnInit(): void {
     this.getProjectList();
@@ -262,6 +267,7 @@ export class CreateProjectComponent implements OnInit {
     this.getCustomerList();
     this.getClusterList();
     this.getManagerList();
+    this.items = this.getMenuItems();
   }
 
   getProjectList(){
@@ -730,17 +736,73 @@ buildOptsList(): void {
     this.recalcOverallCapacity();
   }
 
+  // ─── Step 2: Validation ───────────────────────────────────────────────────
+
+  validateSpvDetails(): boolean {
+
+  if (!this.spvEntries || this.spvEntries.length === 0) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Required',
+      detail: 'Project SPV Details are required'
+    });
+
+    return false;
+  }
+
+  const checks: { valid: boolean; message: string }[] = [];
+
+  this.spvEntries.forEach((entry, si) => {
+    const spvLabel = `SPV ${si + 1}`;
+
+    checks.push({
+      valid: entry.spv !== null && entry.spv !== undefined && entry.spv !== '',
+      message: `Please select an SPV for ${spvLabel}.`
+    });
+
+    checks.push({
+      valid: !!entry.wtgConfigs && entry.wtgConfigs.length > 0,
+      message: `At least one WTG configuration is required for ${spvLabel}.`
+    });
+
+    (entry.wtgConfigs || []).forEach((cfg, ci) => {
+      const rowLabel = `${spvLabel}, WTG Configuration ${ci + 1}`;
+
+      checks.push({ valid: !!cfg.wtgType?.[0], message: `Please select WTG Type for ${rowLabel}.` });
+      checks.push({ valid: !!cfg.capacity, message: `Please select Capacity for ${rowLabel}.` });
+
+      if (this.towerScopeChecked) {
+        checks.push({ valid: !!cfg.towerType, message: `Please select Tower Type for ${rowLabel}.` });
+        checks.push({ valid: !!cfg.bladeTypeId, message: `Please select Blade Type for ${rowLabel}.` });
+      }
+
+      checks.push({ valid: !!cfg.gridConnectivity, message: `Please select Grid Connectivity for ${rowLabel}.` });
+      checks.push({ valid: !!cfg.ppaType, message: `Please select PPA Type for ${rowLabel}.` });
+      checks.push({ valid: !!(cfg.wtgQty && cfg.wtgQty > 0), message: `WTG Quantity must be greater than 0 for ${rowLabel}.` });
+    });
+  });
+
+  const firstInvalid = checks.find(c => !c.valid);
+
+  if (firstInvalid) {
+
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Required',
+      detail: firstInvalid.message
+    });
+
+    return false;
+  }
+
+  return true;
+  }
+
   // ─── Step 2: Save ─────────────────────────────────────────────────────────
 
   saveSPV(): void {
     try{
-      if (!this.spvEntries || this.spvEntries.length === 0) {
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'Required',
-          detail: 'Project SPV Details are required'
-        });
-
+      if (!this.validateSpvDetails()) {
         return;
       }
 
@@ -750,8 +812,8 @@ buildOptsList(): void {
     var spvDetails:any = []
     this.spvEntries.forEach((spvEntry: any) => {
       spvDetails.push({
-        projectSpvId:  0, //spvEntry.spv ||
-        customerSpvId: 1,
+        projectSpvId: 0,
+        customerSpvId: spvEntry.spv,
         wtgConfigurations: spvEntry.wtgConfigs.map((cfg: any) => ({
           wtgConfigId: 0,
           wtgTypeId: cfg.wtgType?.[0] || 0,
@@ -822,7 +884,71 @@ buildOptsList(): void {
     
   }
 
+  deleteProject(){
+    this.confirmationService.confirm({
+      message: 'Do you want to delete this record?',
+      header: `Delete Project`,
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+          label: 'Cancel',
+          severity: 'secondary',
+          outlined: true
+      },
+      acceptButtonProps: {
+          label: 'Delete',
+          severity: 'danger'
+      },
+      accept: () => {
+        try {
+          const data = {
+            projectId: this.selectedProject.projectId
+          }
+    
+          console.log(data);
+          
+          this.apiService.deleteProject(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Project' });
+              this.getProjectList();
+            },
+            error: err => {
+              console.log(err);
+
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        } catch (error) {
+          console.log(error);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        }
+      }
+    });
+  }
+
   // ─── Trackers ─────────────────────────────────────────────────────────────
   trackById(_: number, item: { id: number }) { return item.id; }
   trackByIdx(i: number) { return i; }
+
+  getMenuItems(){
+    return [
+      {
+        label: 'Edit',
+        icon: 'pi pi-pencil'
+      },
+      {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        command: () => this.deleteProject()
+      }
+    ]
+  }
+
+  projectMenu(event: Event, menu: any, project: any){
+    this.selectedProject = project;
+    menu.toggle(event);
+  }
 }

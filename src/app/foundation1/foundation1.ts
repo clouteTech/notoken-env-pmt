@@ -97,6 +97,8 @@ export class Foundation1 {
     { projectCode: 'P-8003', projectName: 'India_ReNewPower_Jaisalmer_Rajasthan_Phase1_320MW', totalWtgs: 3 }, */
   ];
 
+  touchedFields: { [key: string]: boolean } = {};
+
   steps = [
     { id: 1, label: 'Soil Test', fields: ['soilTestStartDate', 'soilTestStartActual', 'soilTestStartDelayReason', 'soilTestEndDate', 'soilTestEndActual', 'soilTestEndDelayReason', 'designSBC', 'actualSBC'] },
     // { id: 2, label: 'Numbers (Design SBC / Actual SBC)', fields: ['designSBC', 'actualSBC'] },
@@ -249,6 +251,93 @@ export class Foundation1 {
   DocName:any = "";
   uploadLocationTemplate:boolean = false;
 
+    private requiredFields: { [key: number]: string[] } = {
+    0: [
+      'soilTestActualStart',
+      'soilTestActualFinish',
+      'actualSbc'
+    ],
+
+    1: [
+      'excavationActualStart',
+      'excavationActualFinish'
+    ],
+
+    2: [
+      'pccActual'
+    ],
+
+    3: [
+      'bottomFlangeActual',
+      'topFlangeActual'
+    ],
+
+    4: [
+      'reinforcementActualStart',
+      'reinforcementActualFinish'
+    ],
+
+    5: [
+      'earthingStripActual'
+    ],
+
+    6: [
+      'shutteringActual'
+    ],
+
+    7: [
+      'raftCastingPlan',
+      'raftCastingActual',
+      'raftCastingForecast',
+      'raftCastingDelayReason'
+    ],
+
+    8: [
+      'pedestalCastingPlan',
+      'pedestalCastingActual',
+      'pedestalCastingForecast',
+      'pedestalCastingDelayReason'
+    ],
+
+    9: [
+      'foundationCubeTest7Days',
+      'foundationCubeTest21Days',
+      'foundationCubeTest28Days'
+    ],
+
+    10: [
+      'groutingActual'
+    ],
+
+    11: [
+      'groutingCubeTest7Days',
+      'groutingCubeTest28Days'
+    ],
+
+    12: [
+      'backfillingActual'
+    ],
+
+    13: [
+      'approachRoadActual'
+    ],
+
+    14: [
+      'cranePlatformActual'
+    ],
+
+    15: [
+      'locationClearanceActual'
+    ]
+  };
+
+  validationAttempted: {
+    [stepIdx: number]: {
+      [rowIdx: number]: {
+        [field: string]: boolean
+      }
+    }
+  } = {};
 
   stepConfig: {
     [key: number]: {
@@ -356,6 +445,45 @@ export class Foundation1 {
   const today = new Date();
   this.maxDate = new Date(today);
 }
+
+  private getFieldKey(stepIdx: number, rowIdx: number, field: string): string {
+    return `${stepIdx}_${rowIdx}_${field}`;
+  }
+
+  markFieldTouched(stepIdx: number, rowIdx: number, field: string): void {
+    const key = this.getFieldKey(stepIdx, rowIdx, field);
+    this.touchedFields[key] = true;
+  }
+
+  isFieldInvalid(stepIdx: number, rowIdx: number, field: string): boolean {
+    const key = this.getFieldKey(stepIdx, rowIdx, field);
+
+    if (!this.touchedFields[key]) {
+      return false;
+    }
+
+    const value = this.getStepFormValue(stepIdx, rowIdx, field);
+
+    return value === null ||
+          value === undefined ||
+          value === '';
+  }
+
+  isStepValid(stepIdx: number, rowIdx: number): boolean {
+    const form = this.stepForms[stepIdx]?.[rowIdx];
+
+    if (!form) {
+      return false;
+    }
+
+    const requiredFields = this.requiredFields[stepIdx] || [];
+
+    return requiredFields.every(field => {
+      const control = form.get(field);
+
+      return control && control.valid;
+    });
+  }
 
 // Call this after you know the WTG count from the selected row
 rebuildWtgRowsAndForms(totalWtgs: number) {
@@ -502,70 +630,103 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
     return `${year}-${month}-${day}`;
   }
 
-  getStepPayload(stepIdx: number){
-    const key = this.stepConfig[stepIdx].key;
+  // getStepPayload(stepIdx: number){
+  //   const key = this.stepConfig[stepIdx].key;
 
-    return this.stepForms[stepIdx].map((form, index) => {
+  //   return this.stepForms[stepIdx]
+  //     .map((form, index) => ({ form, index }))
+  //     .filter(({ form }) => form.dirty) 
+  //     .map(({form, index}) => {
+
+  //     const formValue = { ...form.value };
+
+  //     Object.keys(formValue).forEach(field => {
+  //       if(formValue[field] instanceof Date){
+  //         formValue[field] = this.formatDate(formValue[field]);
+  //       }
+  //     })
+
+  //     return {
+  //       locationId: this.prjWTGDetails[index]?.location?.locationId,
+  //       [key]: formValue
+  //     }
+  //   });
+  // }
+
+  getStepPayload(stepIdx: number) {
+  const key = this.stepConfig[stepIdx].key;
+
+  return this.prjWTGDetails
+    .map((wtg: any, rowIdx: number) => ({
+      wtg,
+      rowIdx
+    }))
+    .filter(({ rowIdx }) => {
+      const form = this.stepForms[stepIdx]?.[rowIdx];
+
+      if (!form) return false;
+
+      return Object.values(form.value).some(v =>
+        v !== null &&
+        v !== '' &&
+        v !== undefined
+      );
+    })
+    .map(({ wtg, rowIdx }) => {
+
+      const form = this.stepForms[stepIdx][rowIdx];
 
       const formValue = { ...form.value };
 
       Object.keys(formValue).forEach(field => {
-        if(formValue[field] instanceof Date){
+        if (formValue[field] instanceof Date) {
           formValue[field] = this.formatDate(formValue[field]);
         }
-      })
+      });
 
       return {
-        locationId: this.prjWTGDetails[index]?.location?.locationId,
+        locationId: wtg.location?.locationId ?? 0,
         [key]: formValue
-      }
+      };
     });
-  }
+}
 
   markStepComplete(stepIdx: number) {
     try {
-      if (this.isStepRowsFilled(stepIdx)) {
-        const payload = this.getStepPayload(stepIdx);
-        console.log(payload);
-  
-        this.stepConfig[stepIdx].api(payload).subscribe({
-          next: (val: any) => {
-            console.log(val);
-  
-            console.log('API Success');
-            console.log('Current Step:', stepIdx);
-  
-            this.stepCompleted[stepIdx] = true;
-  
-            if (stepIdx + 1 < this.steps.length) {
-              this.wtgPopupActiveStep = stepIdx + 1;
-            }
-  
-            console.log('New Active Step:', this.activeStep);
-  
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Step Saved',
-              detail: `${this.steps[stepIdx].label} data saved successfully.`
-            });
-          },
-          error: (err: any) => {
-            console.log(err);
-  
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Save Failed',
-              detail: err?.error?.detail || 'Unable to save data.'
-            });
+      const payload = this.getStepPayload(stepIdx);
+      console.log(payload);
+
+      this.stepConfig[stepIdx].api(payload).subscribe({
+        next: (val: any) => {
+          console.log(val);
+
+          console.log('API Success');
+          console.log('Current Step:', stepIdx);
+
+          this.stepCompleted[stepIdx] = true;
+
+          if (stepIdx + 1 < this.steps.length) {
+            this.wtgPopupActiveStep = stepIdx + 1;
           }
-        })
-      } else {
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'No Data',
-          detail: 'Please fill at least one field before saving this step.'
-        });
-      }
+
+          console.log('New Active Step:', this.activeStep);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Step Saved',
+            detail: `${this.steps[stepIdx].label} data saved successfully.`
+          });
+        },
+        error: (err: any) => {
+          console.log(err);
+
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Save Failed',
+            detail: err?.error?.detail || 'Unable to save data.'
+          });
+        }
+      })
       
     } catch (error) {
       console.log(error);
@@ -622,6 +783,76 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
     this.viewAllData();
   }
 
+  patchFoundationData(data: any[]) {
+
+    if (!this.stepForms.length) {
+      console.warn('stepForms are not created yet');
+      return;
+    }
+
+    data.forEach((wtg: any, rowIdx: number) => {
+
+      const stepDataMap: any = {
+        0: wtg.soilTest?.soilTest,
+        1: wtg.excavation?.excavation,
+        2: wtg.pcc?.pcc,
+        3: wtg.flange?.flange,
+        4: wtg.reinforcement?.reinforcement,
+        5: wtg.earthing?.earthing,
+        6: wtg.shuttering?.shuttering,
+        7: wtg.raftCasting?.raftCasting,
+        8: wtg.pedestalCasting?.pedestalCasting,
+        9: wtg.foundationCubeTest?.foundationCubeTest,
+        10: wtg.grouting?.grouting,
+        11: wtg.groutingCubeTest?.groutingCubeTest,
+        12: wtg.backfilling?.backfilling,
+        13: wtg.approachRoad?.approachRoad,
+        14: wtg.cranePlatform?.cranePlatform,
+        15: wtg.locationClearance?.locationClearance
+      };
+
+      this.steps.forEach((step, stepIdx) => {
+
+        const apiData = stepDataMap[stepIdx];
+
+        if (!apiData) {
+          return;
+        }
+
+        const form = this.stepForms[stepIdx]?.[rowIdx];
+
+        if (!form) {
+          console.warn(
+            `Form missing: step ${stepIdx}, row ${rowIdx}`
+          );
+          return;
+        }
+
+        const patchObj: any = {};
+
+        this.stepColumnDefs[stepIdx].forEach(col => {
+
+          const value = apiData[col.field];
+
+          if (value !== undefined && value !== null) {
+
+            patchObj[col.field] =
+              col.type === 'date'
+                ? new Date(value)
+                : value;
+          }
+        });
+
+        // console.log(
+        //   `Patching step ${stepIdx}, row ${rowIdx}:`,
+        //   patchObj
+        // );
+
+        form.patchValue(patchObj);
+      });
+    });
+  }
+
   viewAllData(){
     try{
       let data = {
@@ -635,6 +866,12 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
           if (!res.data || res.data.length === 0) return;
 
           this.foundationActivitiesDetails = res.data;
+
+          this.patchFoundationData(res.data);
+
+          if (this.stepForms.length) {
+            this.patchFoundationData(res.data);
+          }
 
           // this.rebuildWtgRowsAndForms(res.data.length);
 
@@ -751,7 +988,14 @@ bindApiDataToStepForms(data: any[]) {
           const group: any = {};
 
           cols.forEach(col => {
-            group[col.field] = [null];
+
+            const isRequired =
+              this.requiredFields[stepIdx]?.includes(col.field);
+
+            group[col.field] = [
+              null,
+              isRequired ? Validators.required : []
+            ];
           });
 
           return this.fb.group(group);
@@ -781,6 +1025,12 @@ bindApiDataToStepForms(data: any[]) {
           );
 
           this.createForms();
+
+          if (this.foundationActivitiesDetails.length) {
+            this.patchFoundationData(
+              this.foundationActivitiesDetails
+            );
+          }
         },
         error: err => {
           console.log(err);
@@ -799,7 +1049,7 @@ bindApiDataToStepForms(data: any[]) {
     this.selectedSummaryRow = row;
     this.wtgPopupActiveStep = 0;
     this.wtgPopupVisible = true;
-    // this.viewAllData(this.selectedSummaryRow);
+    this.viewAllData();
     this.fetchPrjWTGDetails();
   }
 

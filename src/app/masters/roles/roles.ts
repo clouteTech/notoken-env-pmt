@@ -10,6 +10,10 @@ import { Shared } from 'src/app/shared/services/shared';
   styleUrl: './roles.css',
 })
 export class Roles implements OnInit {
+  first = 0;
+
+  rows = 10;
+
   roleList: any[] = [];
 
   constructor(private confirmationService: ConfirmationService, 
@@ -47,5 +51,10 @@ export class Roles implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  pageChange(event: any) {
+    this.first = event.first;
+    this.rows = event.rows;
   }
 }

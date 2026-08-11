@@ -507,14 +507,76 @@
                       <td class="col-frozen col-location" pFrozenColumn>{{ wtg?.location?.locationCode || '-' }}</td>
                       <td class="col-frozen col-maximo" pFrozenColumn alignFrozen="left">{{ wtg?.location?.maximoId || '-' }}</td>
                       <td *ngFor="let col of stepColumnDefs[stepIdx]" class="col-field-cell" [class.cell-disabled]="!isRowEnabled(stepIdx, rowIdx)">
-                        <p-datepicker *ngIf="col.type === 'date'" 
+                        <!-- <p-datepicker *ngIf="col.type === 'date'" 
                           [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" 
                           (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" 
                           dateFormat="dd-mm-yy" placeholder="DD-MM-YYYY" styleClass="table-datepicker" 
                           appendTo="body" [disabled]="!isRowEnabled(stepIdx, rowIdx)"
                           [maxDate]="maxDate" />
-                        <p-inputNumber *ngIf="col.type === 'number'" [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" placeholder="0.00" [minFractionDigits]="0" [maxFractionDigits]="2" styleClass="table-inputnumber" [disabled]="!isRowEnabled(stepIdx, rowIdx)" />
-                        <input *ngIf="col.type === 'text'" type="text" pInputText [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" placeholder="Enter reason..." class="table-input table-input-text" [disabled]="!isRowEnabled(stepIdx, rowIdx)" />
+
+                          <small *ngIf="isFieldInvalid(stepIdx, rowIdx, col.field)" class="text-red-500">
+                            {{ col.header }} is required
+                          </small> -->
+
+                          <ng-container *ngIf="col.type === 'date'">
+                          
+                            <p-datepicker [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
+                              (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" dateFormat="dd-mm-yy"
+                              placeholder="DD-MM-YYYY" styleClass="table-datepicker" appendTo="body" 
+                              (onBlur)="markFieldTouched(stepIdx, rowIdx, col.field)"
+                              [disabled]="!isRowEnabled(stepIdx, rowIdx)"
+                              [maxDate]="maxDate">
+                            </p-datepicker>
+                          
+                            <small *ngIf="isFieldInvalid(stepIdx, rowIdx, col.field)" class="text-red-500">
+                              {{ col.header }} is required
+                            </small>
+                          
+                          </ng-container>
+                        <!-- <p-inputNumber *ngIf="col.type === 'number'" 
+                          [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" 
+                          (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" 
+                          placeholder="0.00" [minFractionDigits]="0" [maxFractionDigits]="2" 
+                          styleClass="table-inputnumber" [disabled]="!isRowEnabled(stepIdx, rowIdx)" />
+
+                          <small *ngIf="isFieldInvalid(stepIdx, rowIdx, col.field)" class="text-red-500">
+                            {{ col.header }} is required
+                          </small> -->
+
+                          <ng-container *ngIf="col.type === 'number'">
+                          
+                            <p-inputNumber [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
+                              (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" placeholder="0.00" [minFractionDigits]="0"
+                              (onBlur)="markFieldTouched(stepIdx, rowIdx, col.field)"
+                              [maxFractionDigits]="2" styleClass="table-inputnumber" [disabled]="!isRowEnabled(stepIdx, rowIdx)">
+                            </p-inputNumber>
+                          
+                            <small *ngIf="isFieldInvalid(stepIdx, rowIdx, col.field)" class="text-red-500">
+                              {{ col.header }} is required
+                            </small>
+                          
+                          </ng-container>
+                        <!-- <input *ngIf="col.type === 'text'" type="text" pInputText 
+                          [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)" 
+                          (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" 
+                          placeholder="Enter reason..." class="table-input table-input-text" 
+                          [disabled]="!isRowEnabled(stepIdx, rowIdx)" />
+
+                          <small *ngIf="isFieldInvalid(stepIdx, rowIdx, col.field)" class="text-red-500">
+                            {{ col.header }} is required
+                          </small> -->
+                          <ng-container *ngIf="col.type === 'text'">
+                          
+                            <input type="text" pInputText [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
+                              (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)" placeholder="Enter reason..."
+                              (onBlur)="markFieldTouched(stepIdx, rowIdx, col.field)"
+                              class="table-input table-input-text" [disabled]="!isRowEnabled(stepIdx, rowIdx)" />
+                          
+                            <small *ngIf="isFieldInvalid(stepIdx, rowIdx, col.field)" class="text-red-500">
+                              {{ col.header }} is required
+                            </small>
+                          
+                          </ng-container>
                       </td>
                     </tr>
                   </ng-template>
