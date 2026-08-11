@@ -3,11 +3,15 @@
         <h2>Roles</h2>
     </div>
     <div class="custom-container">
-        <p-table [value]="roleList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <p-table [value]="roleList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }"
+            [paginator]="true" [rows]="5" [first]="first" [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            (onPage)="pageChange($event)"
+            [rowsPerPageOptions]="[10, 25, 50]">
             <ng-template #header>
                 <tr>
                     <th>SL No</th>
-                    <th>Role</th>
+                    <th>Role</th> 
                     <th>Access</th>
                     <th>Resource</th>
                     <th>Description</th>

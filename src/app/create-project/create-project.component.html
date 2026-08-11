@@ -27,6 +27,7 @@
                <!-- <th style="min-width:8rem">State</th> -->
                 <th style="min-width:5rem">WTG qty</th>
                 <th style="min-width:6rem">Total Capacity</th>
+                <th style="min-width:6rem">Action</th>
                 <!-- <th style="min-width:9rem">Project manager</th> -->
                 <!-- <th style="min-width:11rem">Cluster head</th>
                 <th style="min-width:9rem">Site incharge</th>
@@ -55,6 +56,18 @@
                 </td>-->
                 <td><span class="dpr-qty-pill">{{ row.totalWtgs  }}</span></td>
                  <td>{{ row.totalCapacity }}</td>
+                <td>
+                    <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
+                    <button pButton pRipple text rounded severity="secondary" type="button" (click)="projectMenu($event, menu, row)">
+                        <i pButtonIcon>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
+                                <rect width="24" height="24" fill="none" />
+                                <path fill="currentColor"
+                                    d="M12 7a2 2 0 1 0-2-2a2 2 0 0 0 2 2m0 10a2 2 0 1 0 2 2a2 2 0 0 0-2-2m0-7a2 2 0 1 0 2 2a2 2 0 0 0-2-2" />
+                            </svg>
+                        </i>
+                    </button>
+                </td>
                 <!--<td>{{ row.PM }}</td>
                 <td>{{ row.StateHead }}</td>
                 <td>{{ row.ConstructionManager }}</td>
@@ -400,7 +413,7 @@
                                         <label class="field-label">Capacity/WTG (MW) <span class="req">*</span></label>
                                         <p-select appendTo="body" [filter]="true" [options]="getCapacityOpts"
                                             [(ngModel)]="cfg.capacity" optionLabel="capacity" optionValue="capacityId"
-                                            placeholder="Select Capacity" 
+                                            placeholder="Select Capacity"
                                             [style]="{'width':'100%'}"
                                              /><!-- (onChange)="onCapacityChange(cfg)" [disabled]="!cfg.wtgType[0]" -->
                                     </div>
@@ -467,7 +480,7 @@
                         <!-- Add SPV -->
                         <div class="add-spv-wrap">
                             <p-button label="Add Next SPV" icon="pi pi-plus-circle" severity="success"
-                                size="small" (onClick)="addSpvEntry()"
+                                size="small" (onClick)="addSpvEntry()" pTooltip="No more SPVs are available for this customer"
                                 [disabled]="spvEntries.length >= spvOptions.length && spvOptions.length > 0" />
                         </div>
 
@@ -489,3 +502,5 @@
 
     </p-fluid>
 </p-dialog>
+
+<p-confirmdialog />

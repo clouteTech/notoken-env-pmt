@@ -111,10 +111,14 @@ export class Installation implements OnInit {
   // Crane supplier dropdown options (5 or 6 tower sections)
   // craneSupplierOptions = [];
 
-  // Per-row crane supplier form values (stepIdx=0, rowIdx → value)
-  // P-8001 rows get a dropdown (5/6), P-8002 rows get fixed 0 (no dropdown)
+  // Per-row crane supplier state (stepIdx=0, rowIdx → supplierId), restored from
+  // installationActivityDetails[rowIdx].projectCraneDetail.supplier.supplierId.
+  // P-8002 rows get fixed 0 (no dropdown) — see rowCraneSupplierFixed.
   rowCraneSupplierValues: { [rowIdx: number]: number } = {};
   rowCraneSupplierFixed: { [rowIdx: number]: boolean } = {}; // true = fixed 0, no dropdown
+
+  // Per-row crane list for the Main Crane Model dropdown, loaded for that row's supplier
+  rowSupplierCraneList: { [rowIdx: number]: any[] } = {};
 
   // ── Per-row assembly method state (rowIdx → 'Rotor'|'Hub(DD)'|null) ────
   rowAssemblyMethod: { [rowIdx: number]: string | null } = {};
@@ -134,9 +138,9 @@ export class Installation implements OnInit {
     return !!this.rowCraneSupplierFixed[rowIdx];
   }
 
-  getCraneSupplierDisplay(rowIdx: number): number {
+  getCraneSupplierDisplay(rowIdx: number): number | null {
     if (this.rowCraneSupplierFixed[rowIdx]) return 0;
-    return this.rowCraneSupplierValues[rowIdx] ?? 5;
+    return this.rowCraneSupplierValues[rowIdx] ?? null;
   }
 
   isProjectRow(projectCode: string, rowIdx: number): boolean {
@@ -445,7 +449,6 @@ export class Installation implements OnInit {
     if(!date) return null;
 
     const d = new Date(date);
-    console.log(d);
 
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -758,6 +761,14 @@ export class Installation implements OnInit {
 
         if(!form) return;
 
+        // Restore Crane Supplier for this row, and load that supplier's crane
+        // list so the Main Crane Model dropdown below has options to match against.
+        const supplierId = item.projectCraneDetail?.supplier?.supplierId ?? null;
+        if (supplierId !== null && !this.rowCraneSupplierFixed[rowIdx]) {
+          this.rowCraneSupplierValues[rowIdx] = supplierId;
+          this.selectedSupplier(rowIdx, supplierId);
+        }
+
         form.patchValue({
           installationPlanStart: item.installationPlanStart ? new Date(item.installationPlanStart) : null,
           installationPlanFinish: item.installationPlanFinish ? new Date(item.installationPlanFinish) : null,
@@ -779,7 +790,6 @@ export class Installation implements OnInit {
           rotorAssemblyDate: item.rotorAssemblyDate ? new Date(item.rotorAssemblyDate) : null,
 
           assemblyMethod: item.assemblyMethod,
-          // mainCraneMob: item.projectCraneDetail?.supplier?.supplierId ?? null,
           mainCraneModel: item.projectCraneDetail?.crane?.craneId ?? null,
           bottomPlatformAssembly: item.bottomPlatformAssembly ? new Date(item.bottomPlatformAssembly) : null,
           converterPanelInstallation: item.converterPanelInstallation ? new Date(item.converterPanelInstallation) : null,
@@ -894,6 +904,9 @@ export class Installation implements OnInit {
           console.log(this.prjWTGDetails);
 
           this.createForms();
+          // Installation activities are patched into stepForms — must run after
+          // createForms() builds them, never before, or the patch gets discarded.
+          this.fetchInstallationActivities();
         },
         error: err => {
           console.log(err);
@@ -927,6 +940,30 @@ export class Installation implements OnInit {
     }
   }
 
+  selectedSupplier(rowIdx: number, supplierId: number){
+    try {
+      const data = {
+        supplierId: supplierId
+      }
+
+      console.log(data);
+
+      this.apiService.fetchCranesBySupplier(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.rowSupplierCraneList[rowIdx] = val.data.cranes;
+        },
+        error: err => {
+          console.log(err);
+        }
+      })
+    } catch(error){
+      console.log(error);
+
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   openWtgPopup(row: SummaryRow) {
     this.selectedProject = row;
     this.selectedSummaryRow = row;
@@ -936,6 +973,7 @@ export class Installation implements OnInit {
     // Reset per-row crane supplier state for this popup
     this.rowCraneSupplierFixed = {};
     this.rowCraneSupplierValues = {};
+    this.rowSupplierCraneList = {};
 
     const count = row.wtgCount;
     for (let rowIdx = 0; rowIdx < count; rowIdx++) {
@@ -943,15 +981,13 @@ export class Installation implements OnInit {
         // P-8002: all WTGs fixed at 0 — no dropdown, all tower sections N/A
         this.rowCraneSupplierFixed[rowIdx] = true;
       } else {
-        // All other projects: dropdown with 5/6, default to 5
+        // All other projects: dropdown, restored from installation data once it loads
         this.rowCraneSupplierFixed[rowIdx] = false;
-        this.rowCraneSupplierValues[rowIdx] = 5;
       }
     }
 
     this.fetchPrjCraneDetails();
     this.fetchPrjWTGDetails();
-    this.fetchInstallationActivities();
   }
 
   closeWtgPopup() {

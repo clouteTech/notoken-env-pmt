@@ -360,6 +360,11 @@ export class Apiservice {
   projectCreate(params: any): Observable<any>{
     return this.postMethod('project/create', params);
   }
+
+  deleteProject(params: any): Observable<any>{
+    return this.postMethod('project/delete', params);
+  }
+
   foundationActivities(params: any): Observable<any>{
     return this.postMethod('foundation/activities', params);
   }
@@ -691,6 +696,10 @@ export class Apiservice {
 
   fetchCraneSuppliers(params: any): Observable<any>{
     return this.postMethod('master/equipment/crane-supplier-mapping/get-crane-suppliers', params);
+  }
+
+  fetchCranesBySupplier(params: any): Observable<any>{
+    return this.postMethod('master/equipment/crane-supplier-mapping/get-supplier-cranes', params);
   }
 
   // Project Crane Details

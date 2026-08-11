@@ -589,14 +589,14 @@
                       <td class="col-cranesupplier crane-supplier-cell">
                         <!-- P-8002 rows: fixed 0, no dropdown -->
                         <span *ngIf="isCraneSupplierFixed(rowIdx)" class="crane-supplier-badge crane-zero">0</span>
-                        <!-- Other projects: dropdown with 5 / 6 -->
+                        <!-- Other projects: supplier dropdown, restored from installation data -->
                         <p-select *ngIf="!isCraneSupplierFixed(rowIdx)"
                           appendTo="body"
                           [options]="prjCraneDetails"
                           [ngModel]="getCraneSupplierDisplay(rowIdx)"
                           (ngModelChange)="onCraneSupplierChange(rowIdx, $event)"
                           optionLabel="supplier.supplierName" optionValue="supplier.supplierId"
-                          placeholder="Select Supplier" />
+                          placeholder="Select Supplier" (onChange)="selectedSupplier(rowIdx, $event.value)" />
                       </td>
                       <ng-container *ngFor="let col of stepColumnDefs[stepIdx]">
                         <!-- Hidden when field is not applicable (tower section count / assembly method) -->
@@ -646,10 +646,10 @@
                           <!-- Main Crane Model dropdown -->
                           <p-select *ngIf="col.type === 'select' && col.field === 'mainCraneModel'"
                             appendTo="body"
-                            [options]="prjCraneDetails"
+                            [options]="rowSupplierCraneList[rowIdx] ?? []"
                             [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
                             (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)"
-                            optionLabel="crane.craneModel" optionValue="crane.craneId"
+                            optionLabel="craneModel" optionValue="craneId"
                             placeholder="Select Model..."
                             [disabled]="!isRowEnabled(stepIdx, rowIdx)"
                             styleClass="table-select" />
