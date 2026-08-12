@@ -550,7 +550,9 @@
             </div>
             <div class="form-field">
                 <label for="project-status">Project Status</label>
-                <input type="text" pInputText id="project-status" formControlName="projectStatus" />
+                <p-select [options]="projectStatus" formControlName="projectStatus" optionLabel="label" optionValue="value"
+                    [filter]="true" filterBy="label" [showClear]="true" placeholder="Select Project Status" appendTo="body"
+                    inputId="project-status" />
             </div>
             <div class="form-field">
                 <label for="probability">Project Probability</label>

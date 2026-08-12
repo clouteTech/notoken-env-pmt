@@ -243,7 +243,7 @@ export class CreateProjectComponent implements OnInit {
     siteManagerId: [0],
     projectTerm: [""],
     probability: [""],
-    projectStatus: [{ value: "", disabled: true }],
+    projectStatus: [""],
     contractStatus: [""]
   })
 
@@ -1034,8 +1034,7 @@ buildOptsList(): void {
         ...this.projectForm.value,
         projectId: this.selectedProject.projectId,
         projectTotalQty: this.projectDetails.projectTotalQty,
-        projectTotalCapacity: this.projectDetails.projectTotalCapacity,
-        projectStatus: this.projectDetails?.projectStatus
+        projectTotalCapacity: this.projectDetails.projectTotalCapacity
       };
       console.log(data);
 

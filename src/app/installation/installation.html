@@ -646,7 +646,7 @@
                           <!-- Main Crane Model dropdown -->
                           <p-select *ngIf="col.type === 'select' && col.field === 'mainCraneModel'"
                             appendTo="body"
-                            [options]="rowSupplierCraneList[rowIdx] ?? []"
+                            [options]="rowSupplierCraneList[rowIdx]"
                             [ngModel]="getStepFormValue(stepIdx, rowIdx, col.field)"
                             (ngModelChange)="setStepFormValue(stepIdx, rowIdx, col.field, $event)"
                             optionLabel="craneModel" optionValue="craneId"
@@ -789,4 +789,103 @@
 
   </p-fileUpload>
 
+</p-dialog>
+
+<p-dialog header="Edit Installation" [(visible)]="showEditInstallationModal" [modal]="true" [draggable]="false"
+  (onHide)="onDialogClose()" [style]="{ width: '60rem' }">
+  <h3>Step 1: Installation</h3>
+  <ng-container *ngFor="let step of steps; let stepIdx = index; trackBy: trackByIndex">
+    <p-table [value]="installationActivityDetails" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+      <ng-template #header>
+        <tr>
+          <th>SL No</th>
+          <th>WTG Code</th>
+          <th>Location No</th>
+          <th>Maximo ID</th>
+          <th>WTG Type</th>
+          <th>Tower Type</th>
+          <th>Section Count</th>
+          <th>Main Crane Supplier</th>
+          @for (column of stepColumnDefs[stepIdx]; track column.field) {
+            <th>{{ column.header }}</th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template #body let-installation let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ installation?.projectWtgs?.[0]?.wtgCode || '-'}}</td>
+          <td>{{ installation?.projectLocation?.locationCode || '-' }}</td>
+          <td>{{ installation?.projectLocation?.maximoId || '-' }}</td>
+          <td>{{ installation?.projectWtgs?.[0]?.wtgType?.wtgType || '-' }}</td>
+          <td>{{ installation?.projectWtgs?.[0]?.towerType?.towerType || '-' }}</td>
+          <td>{{ installation?.projectWtgs?.[0]?.towerType?.sectionCount || '-' }}</td>
+          <td>
+            <p-select *ngIf="!isCraneSupplierFixed(i)" appendTo="body" [options]="prjCraneDetails"
+              optionLabel="supplier.supplierName" optionValue="supplier.supplierId" 
+              [ngModel]="getCraneSupplierDisplay(i)" (ngModelChange)="onCraneSupplierChange(i, $event)"
+              placeholder="Select Supplier" [filter]="true" filterBy="supplier.supplierName" 
+              (onChange)="selectedSupplier(i, $event.value)" />
+          </td>
+          @for (column of stepColumnDefs[stepIdx]; track column.field) {
+            <td>
+              @if (column.type === 'date') {
+                <p-datepicker dateFormat="dd/mm/yy"
+                  placeholder="DD-MM-YYYY" [maxDate]="maxDate" appendTo="body"
+                  [ngModel]="getStepFormValue(stepIdx, i, column.field)"
+                  (ngModelChange)="setStepFormValue(stepIdx, i, column.field, $event)"></p-datepicker>
+              }
+  
+              @if (column.type === 'text') {
+                <input type="text" pInputText placeholder="Enter reason"
+                  [value]="getStepFormValue(stepIdx, i, column.field)"
+                  (input)="setStepFormValue(stepIdx, i, column.field, $any($event.target).value)" />
+              }
+  
+              @if (column.type === 'number') {
+                <p-inputNumber 
+                  placeholder="0.00" [minFractionDigits]="0"
+                  [maxFractionDigits]="2" styleClass="table-inputnumber"
+                  [ngModel]="getStepFormValue(stepIdx, i, column.field)"
+                  (ngModelChange)="setStepFormValue(stepIdx, i, column.field, $event)" />
+              }
+  
+              @if (column.type === 'select' && column.field === 'mainCraneModel') {
+                <p-select [options]="rowSupplierCraneList[i]"
+                  [ngModel]="getStepFormValue(stepIdx, i, column.field)"
+                  (ngModelChange)="setStepFormValue(stepIdx, i, column.field, $event)" 
+                  optionLabel="craneModel" optionValue="craneId" placeholder="Select Crane Model"
+                  [filter]="true" filterBy="craneModel" appendTo="body">
+                </p-select>
+              }
+  
+              @if (column.type === 'select' && column.field === 'assemblyMethod') {
+                <p-select [options]="assemblyMethodOptions"
+                  [ngModel]="getStepFormValue(stepIdx, i, column.field)"
+                  (ngModelChange)="onAssemblyMethodChange(stepIdx, i, $event)"
+                  optionLabel="label" optionValue="value"
+                  placeholder="Select Assembly Method" appendTo="body">
+                </p-select>
+              }
+            </td>
+          }
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <ng-template #footer>
+      <div class="view-popup-footer">
+        <span class="view-popup-footer-info">
+          <i class="pi pi-info-circle" style="color:#6366f1;margin-right:0.3rem"></i>
+          Showing {{ selectedProject?.totalWtgs }} WTG records for <strong style="margin: 0 4px 0;">{{
+            selectedProject?.projectCode }}</strong> — {{ selectedProject?.customer?.customerName }}
+        </span>
+        <button pButton type="button" (click)="updateInstallation()">Update Installation</button>
+      </div>
+    </ng-template>
+  </ng-container>
 </p-dialog>

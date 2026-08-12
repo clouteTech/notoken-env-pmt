@@ -440,6 +440,10 @@ export class Apiservice {
     return this.postMethod('installation/activities', params);
   }
 
+  updateInstallation(params: any): Observable<any>{
+    return this.postMethod('installation/update', params);
+  }
+
   // Commissioning
 
   commissioningExport(params: any): Observable<any>{
