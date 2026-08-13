@@ -1118,6 +1118,96 @@ buildOptsList(): void {
     }
   }
 
+  deleteProjectSpv(projectSpvId: number){
+    try {
+      console.log(this.projectSpvForm.value);
+      console.log(this.spvs.value);
+
+
+      const data = {
+        projectId: this.selectedProject.projectId,
+        projectSpvId: projectSpvId
+      }
+
+      console.log(data);
+
+      this.apiService.deleteProjectSpv(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Deleted Project SPV'});
+
+          const formArrayIndex = this.spvs.controls.findIndex(
+            control => control.get('projectSpvId')?.value === projectSpvId
+          );
+
+          console.log('Deleting FormArray index:', formArrayIndex);
+
+          if (formArrayIndex !== -1) {        
+            this.spvs.removeAt(formArrayIndex);
+          }
+
+          this.spvs.updateValueAndValidity();
+
+          console.log('Remaining SPVs:', this.spvs.value);
+          // this.getProjectList();
+        },
+        error: err => {
+          console.log(err);
+  
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  deletePrjSpvWtg(spvIdx: number, spv: any, config: any){
+    try{
+      console.log(this.projectSpvForm.value);
+      console.log(this.spvs.value);
+      console.log(spv.value);
+      console.log(config.value);
+
+      const data = {
+        projectSpvId: spv.value.projectSpvId,
+        wtgConfigId: config.value.wtgConfigId
+      }
+
+      console.log(data);
+
+      this.apiService.deletePrjSpvWtg(data).subscribe({
+        next: val => {
+          console.log(val);
+          this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Deleted Project SPV WTG Configuration'});
+
+          const index = this.getWtgConfigurations(spvIdx).controls.findIndex(
+            control => control.get('wtgConfigId')?.value === config.value.wtgConfigId
+          )
+
+          console.log(index);
+
+          if (index !== -1) {
+            this.getWtgConfigurations(spvIdx).removeAt(index);
+          }
+        },
+        error: err => {
+          console.log(err);
+  
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   getTotalCapacity(config: any){
     const formValue = config.getRawValue();
 

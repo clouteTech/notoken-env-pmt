@@ -793,7 +793,32 @@
 
 <p-dialog header="Edit Installation" [(visible)]="showEditInstallationModal" [modal]="true" [draggable]="false"
   (onHide)="onDialogClose()" [style]="{ width: '60rem' }">
-  <h3>Step 1: Installation</h3>
+  <!-- <h3>Step 1: Installation</h3> -->
+  <ng-template #header>
+    <div class="view-popup-header">
+      <div class="view-popup-title-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"
+          style="flex-shrink:0">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 9h18M9 21V9" />
+        </svg>
+        <span class="view-popup-title">Edit Installation</span>
+        <span class="view-popup-subtitle">
+          <span class="tag-pcode">{{ selectedProject?.projectCode }}</span>
+          <span class="tag-wtg">{{ selectedProject?.totalWtgs }} WTGs</span>
+          <span class="tag-location">{{ selectedProject?.customer?.customerName }}</span>
+          <!-- <span class="tag-progress">{{ getCompletedCount() }} / {{ steps.length }} Steps Completed</span> -->
+        </span>
+      </div>
+      <span class="view-popup-readonly-badge wtg-popup-live-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        Live View
+      </span>
+    </div>
+  </ng-template>
   <ng-container *ngFor="let step of steps; let stepIdx = index; trackBy: trackByIndex">
     <p-table [value]="installationActivityDetails" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
       <ng-template #header>
@@ -828,12 +853,24 @@
               (onChange)="selectedSupplier(i, $event.value)" />
           </td>
           @for (column of stepColumnDefs[stepIdx]; track column.field) {
-            <td>
+            <td *ngIf="isEditFieldVisible(stepIdx, i, column.field)"
+                class="col-field-cell"
+                [class.cell-disabled]="!isRowEnabled(stepIdx, i)"
+                [class.col-rotor-field]="isRotorField(column.field)"
+                [class.col-hub-field]="isHubField(column.field)">
               @if (column.type === 'date') {
                 <p-datepicker dateFormat="dd/mm/yy"
                   placeholder="DD-MM-YYYY" [maxDate]="maxDate" appendTo="body"
                   [ngModel]="getStepFormValue(stepIdx, i, column.field)"
-                  (ngModelChange)="setStepFormValue(stepIdx, i, column.field, $event)"></p-datepicker>
+                  (ngModelChange)="setStepFormValue(stepIdx, i, column.field, $event)"
+                  [styleClass]="
+                    stepForms[stepIdx][i].get(column.field)?.invalid &&
+                    stepForms[stepIdx][i].get(column.field)?.touched
+                      ? 'table-datepicker border-red'
+                      : 'table-datepicker'
+                  " 
+                  appendTo="body"
+                  [disabled]="!isRowEnabled(stepIdx, i)"></p-datepicker>
               }
   
               @if (column.type === 'text') {
@@ -863,10 +900,26 @@
                 <p-select [options]="assemblyMethodOptions"
                   [ngModel]="getStepFormValue(stepIdx, i, column.field)"
                   (ngModelChange)="onAssemblyMethodChange(stepIdx, i, $event)"
+                  (onBlur)="stepForms[stepIdx][i].get(column.field)?.markAsTouched()"
                   optionLabel="label" optionValue="value"
-                  placeholder="Select Assembly Method" appendTo="body">
+                  placeholder="Select Assembly Method" appendTo="body"
+                  [ngClass]="{
+                    'border-red':
+                      stepForms[stepIdx][i].get(column.field)?.invalid &&
+                      stepForms[stepIdx][i].get(column.field)?.touched
+                  }">
                 </p-select>
               }
+              <small class="p-error" *ngIf="
+                  isFieldRequired(stepIdx, i, column.field) &&
+                  stepForms[stepIdx][i].get(column.field)?.invalid &&
+                  stepForms[stepIdx][i].get(column.field)?.touched
+                ">
+                This field is required.
+              </small>
+            </td>
+            <td *ngIf="!isEditFieldVisible(stepIdx, i, column.field)" class="col-field-cell col-field-hidden">
+              <span class="field-na">N/A</span>
             </td>
           }
         </tr>
@@ -884,7 +937,7 @@
           Showing {{ selectedProject?.totalWtgs }} WTG records for <strong style="margin: 0 4px 0;">{{
             selectedProject?.projectCode }}</strong> — {{ selectedProject?.customer?.customerName }}
         </span>
-        <button pButton type="button" (click)="updateInstallation()">Update Installation</button>
+        <button pButton type="button" (click)="updateInstallation(stepIdx)">Update Installation</button>
       </div>
     </ng-template>
   </ng-container>

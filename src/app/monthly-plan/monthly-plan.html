@@ -15,7 +15,12 @@
     </div>
 
     <div class="custom-container">
-        <p-table [value]="monthlyDemandPlanList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <p-table [value]="monthlyDemandPlanList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }"
+            [paginator]="true" [rows]="size" [first]="first" [showCurrentPageReport]="true" [lazy]="true"
+            [totalRecords]="totalRecords"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            (onLazyLoad)="loadMonthlyPlan($event)"
+            [rowsPerPageOptions]="[10, 25, 50]">
             <ng-template #header>
                 <tr>
                     <th>SL NO</th>

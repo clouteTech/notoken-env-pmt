@@ -11,6 +11,13 @@ import { Shared } from 'src/app/shared/services/shared';
   styleUrl: './customers.css',
 })
 export class Customers {
+  first = 0;
+
+  rows = 10;
+  page = 0;
+  size = 10;
+  totalRecords = 0;
+
   items: MenuItem[] = [];
   customerList:any;
   private router = inject(Router);
@@ -37,6 +44,8 @@ export class Customers {
           console.log(val);
           console.log(val.data);
           this.customerList = val.data.content;
+
+          this.totalRecords = val.data.totalElements ?? 0;
         },
         error: err => {
           console.log(err);
@@ -51,34 +60,7 @@ export class Customers {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
-
-/*   customerList = [
-    {
-      customerCode: 'CUST001',
-      customerName: 'Reliance Power Ltd'
-    },
-    {
-      customerCode: 'CUST002',
-      customerName: 'Adani Green Energy'
-    },
-    {
-      customerCode: 'CUST003',
-      customerName: 'Tata Power Renewable'
-    },
-    {
-      customerCode: 'CUST004',
-      customerName: 'Suzlon Energy'
-    },
-    {
-      customerCode: 'CUST005',
-      customerName: 'ReNew Power'
-    },
-    {
-      customerCode: 'CUST006',
-      customerName: 'JSW Energy'
-    }
-  ]; */
-
+  
   getMenuItems(row: any){
     return [
       {
@@ -102,5 +84,15 @@ export class Customers {
     }catch(e){
 
     }
+  }
+
+  loadCustomer(event: any){
+    console.log(event);
+    this.first = event.first;
+
+    this.page = event.first / event.rows;
+    this.size = event.rows;
+
+    this.getCustomerList();
   }
 }
