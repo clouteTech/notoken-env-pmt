@@ -18,6 +18,13 @@ import { Shared } from '../shared/services/shared';
   styleUrl: './monthly-plan.css',
 })
 export class MonthlyPlan implements OnInit {
+  first = 0;
+
+  rows = 10;
+  page = 0;
+  size = 10;
+  totalRecords = 0;
+
   items: MenuItem[] = [];
   actionItems: MenuItem[] = [];
 
@@ -62,6 +69,8 @@ export class MonthlyPlan implements OnInit {
         next: val => {
           console.log(val);
           this.monthlyDemandPlanList = val.data.data;
+
+          this.totalRecords = val.data.totalElements ?? 0;
         },
         error: err => {
           console.log(err);
@@ -321,5 +330,15 @@ export class MonthlyPlan implements OnInit {
     this.selectedMonthlyPlan = monthlyPlan;
     console.log(this.selectedMonthlyPlan);
     menu.toggle(event);
+  }
+
+  loadMonthlyPlan(event: any){
+    console.log(event);
+    this.first = event.first;
+
+    this.page = event.first / event.rows;
+    this.size = event.rows;
+
+    this.fetchAllMonthlyDemandPlan();
   }
 }

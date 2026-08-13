@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -14,7 +14,7 @@ import { MessageService } from 'primeng/api';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   username = '';
   password = '';
   showPassword = false;
@@ -38,6 +38,10 @@ export class LoginComponent {
     email: [''],
     otp: [null]
   })
+
+  ngOnInit(): void {
+    sessionStorage.clear();
+  }
 
   // onSubmit() {
   //   this.error = '';
@@ -126,6 +130,7 @@ export class LoginComponent {
         next: val => {
           this.auth.setUser(this.sendOtpResponse.email);
           console.log(val);
+          sessionStorage.setItem("token", val.data.token);
 
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login Successfully' });
           this.router.navigate(['/foundation1']);

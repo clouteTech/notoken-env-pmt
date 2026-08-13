@@ -241,6 +241,40 @@ export class Installation implements OnInit {
     return true;
   }
 
+  getEditTowerSectionCount(rowIdx: number): number{
+    const wtg = this.installationActivityDetails?.[rowIdx];
+    return wtg?.projectWtgs?.[0]?.towerType?.sectionCount ?? 0;
+  }
+
+  isEditTowerSectionVisible(rowIdx: number, sectionNum: number): boolean {
+    return sectionNum <= this.getEditTowerSectionCount(rowIdx);
+  }
+
+  isEditFieldVisible(stepIdx: number, rowIdx: number, field: string): boolean{
+    const method = this.getAssemblyMethod(stepIdx, rowIdx);
+
+    if (this.isTowerSection(field)) {
+      const sectionNum = this.getTowerSectionNumber(field);
+
+      return this.isEditTowerSectionVisible(rowIdx, sectionNum);
+    }
+
+    if (this.isUpperBoltsSection(field)) {
+      const sectionNum = this.getUpperBoltsSectionNumber(field);
+      return this.isEditTowerSectionVisible(rowIdx, sectionNum);
+    }
+
+    if (this.isRotorField(field)) {
+      return method === 'ROTOR';
+    }
+
+    if (this.isHubField(field)) {
+      return method === 'HUB';
+    }
+
+    return true;
+  }
+
   // ─── STEPS (7 logical groups from the Excel) ─────────────────────────────
   // Single step — all 54 fields in exact Excel column order (cols 7–60)
   steps = [
@@ -906,7 +940,9 @@ export class Installation implements OnInit {
           console.log(val);
           this.installationActivityDetails = val.data;
 
-          this.createEditInstallationForm();
+          if(this.showEditInstallationModal){
+            this.createEditInstallationForm();
+          }
 
           
           this.patchInstallationActivities();
@@ -1039,7 +1075,7 @@ export class Installation implements OnInit {
       this.apiService.fetchCranesBySupplier(data).subscribe({
         next: val => {
           console.log(val);
-          this.rowSupplierCraneList[rowIdx] = val.data.cranes;
+          this.rowSupplierCraneList[rowIdx] = val?.data?.cranes;
         },
         error: err => {
           console.log(err);
@@ -1250,22 +1286,37 @@ export class Installation implements OnInit {
         console.log(wtg);
         const form = this.stepForms[0][rowIdx];
           
-        const sectionCount = wtg.projectWtg?.towerType?.sectionCount ?? 0;
+        const existingTowerInstallations = wtg.towerInstallations ?? [];
+
+        const sectionCount = wtg.projectWtgs?.[0]?.towerType?.sectionCount ?? 0;
 
         const towerInstallations = [];
 
         for (let i = 1; i <= sectionCount; i++) {
+          const existingTower = existingTowerInstallations.find(
+            (tower: any) => tower.section === i
+          );
+
           towerInstallations.push({
+            towerInstallationId: existingTower?.towerInstallationId ?? 0,
             section: i,
             installationDate: this.formatDate(form.get(`s${i}TowerInstallation`)?.value),
             torqueCheckDate: this.formatDate(form.get(`s${i}UpperBolts10pct`)?.value)
           });
         }
 
+        const existingBladeInstallations = wtg.bladeInstallations ?? [];
+
         const bladeInstallations = [];
 
         for (let i = 1; i <= 3; i++) {
+          const existingBlade = existingBladeInstallations.find(
+            (blade: any) => blade.bladeNo === i
+          );
+
+
           bladeInstallations.push({
+            bladeInstallationId: existingBlade.bladeInstallationId,
             bladeNo: i,
             installationDate: this.formatDate(form.get(`blade${i}Installation`)?.value),
             torqueCheckDate: this.formatDate(form.get(`blade${i}Bolts10pct`)?.value)
@@ -1400,12 +1451,49 @@ export class Installation implements OnInit {
           bladeInstallations
 
         };
-
     })
   }
 
-  updateInstallation(){
+  updateInstallation(stepIdx: number){
     try {
+      const requiredFields = [
+        'installationPlanStart',
+        'installationPlanFinish',
+        'mainCraneMob',
+        'assemblyMethod'
+      ];
+  
+      let hasError = false;
+  
+      this.stepForms[stepIdx].forEach(form => {
+        const rowStarted = Object.values(form.value).some(
+          value => value !== null && value !== '' && value !== undefined
+        );
+  
+        if(!rowStarted){
+          return;
+        }
+  
+        requiredFields.forEach(field => {
+          const control = form.get(field);
+  
+          control?.markAsTouched();
+          control?.updateValueAndValidity();
+  
+          if(control?.invalid){
+            hasError = true;
+          }
+        })
+      })
+  
+      if (hasError) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Validation Error',
+          detail: 'Please fill all required fields.'
+        });
+        return;
+      }
       const payload = this.buildEditInstallationPayload();
       console.log(payload);
 

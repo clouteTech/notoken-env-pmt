@@ -4,7 +4,12 @@
         <p-button icon="pi pi-plus" label="Add Customer" routerLink="/customers/add" />
     </div>
     <div class="custom-container">
-        <p-table [value]="customerList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+        <p-table [value]="customerList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }"
+            [paginator]="true" [rows]="size" [first]="first" [showCurrentPageReport]="true" [lazy]="true"
+            [totalRecords]="totalRecords"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            (onLazyLoad)="loadCustomer($event)"
+            [rowsPerPageOptions]="[10, 25, 50]">
             <ng-template #header>
                 <tr>
                     <th>SL No</th>

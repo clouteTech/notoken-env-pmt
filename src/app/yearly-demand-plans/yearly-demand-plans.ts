@@ -10,6 +10,13 @@ import { MessageService } from 'primeng/api';
   styleUrl: './yearly-demand-plans.css',
 })
 export class YearlyDemandPlans implements OnInit {
+  first = 0;
+
+  rows = 10;
+  page = 0;
+  size = 10;
+  totalRecords = 0;
+
   yearlyDemandPlanList: any[] = [];
 
   constructor(private apiService: Apiservice, private messageService: MessageService){}
@@ -38,6 +45,8 @@ export class YearlyDemandPlans implements OnInit {
         next: val => {
           console.log(val);
           this.yearlyDemandPlanList = val.data.content;
+
+          this.totalRecords = val.data.totalElements ?? 0;
         },
         error: err => {
           console.log(err);
@@ -56,5 +65,15 @@ export class YearlyDemandPlans implements OnInit {
         detail: 'Please Try Again.'
       });
     }
+  }
+
+  loadYearlyPlan(event: any){
+    console.log(event);
+    this.first = event.first;
+
+    this.page = event.first / event.rows;
+    this.size = event.rows;
+
+    this.fetchAllYearlyDemandPlan();
   }
 }

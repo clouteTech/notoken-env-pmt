@@ -21,7 +21,7 @@ export class Apiservice {
     return this.postMethod('auth/send-otp', params);
   }
 
-  validateOtp(params: any){
+  validateOtp(params: any): Observable<any>{
     return this.postMethod('auth/validate-otp', params);
   }
 
@@ -470,6 +470,14 @@ export class Apiservice {
 
   updatePrjSpvWtgConfig(params: any): Observable<any>{
     return this.postMethod('project/config/update', params);
+  }
+
+  deleteProjectSpv(params: any): Observable<any>{
+    return this.postMethod('project/spv/delete', params);
+  }
+
+  deletePrjSpvWtg(params: any): Observable<any>{
+    return this.postMethod('project/config/delete', params);
   }
 
   // project location 

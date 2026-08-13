@@ -66,6 +66,8 @@ export class UserGroups implements OnInit {
         next: val => {
           console.log(val);
           this.userGroupList = val.data.content;
+
+          this.totalRecords = val.data.totalElements ?? 0;
         },
         error: err => {
           console.log(err);

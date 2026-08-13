@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { DataService, ProjectEntry, WtgRow, CUSTOMERS, YEARS } from '../data.service';
 
 // PrimeNG v20
@@ -55,7 +55,68 @@ export class DemandPlanComponent implements OnInit {
   // Summary dialog
   summaryVisible = false;
 
+  private fb = inject(FormBuilder);
+
   constructor(private ds: DataService, private msgSvc: MessageService, private apiService: Apiservice) {}
+
+  yearlyDemandPlanForm = this.fb.group({
+    planYear: [],
+    customerId: [],
+    projects: this.fb.array([])
+  })
+
+  get projectsArray(): FormArray{
+    return this.yearlyDemandPlanForm.get('projects') as FormArray;
+  }
+
+  createProjectForm(project?: any): FormGroup{
+    const spvs = this.fb.array(
+      (project?.spvs ?? []).map((spv: any) => 
+        this.createSpvForm(spv)
+      )
+    );
+
+    return this.fb.group({
+      projectId: [project?.projectId ?? null],
+      spvs: spvs
+    })
+  }
+
+  createSpvForm(spv?: any): FormGroup{
+    const wtgs = this.fb.array(
+      (spv?.wtgs ?? []).map((wtg: any) => 
+        this.createWtgForm(wtg)
+      )
+    );
+
+    return this.fb.group({
+      spvId: [spv?.spvId ?? null],
+      wtgs: wtgs
+    })
+  }
+
+  createWtgForm(wtg?: any): FormGroup{
+    return this.fb.group({
+      wtgConfigId: [wtg?.wtgConfigId ?? null],
+      wtgType: [wtg?.wtgType ?? null],
+      capMw: [wtg?.capMw ?? null],
+      towerType: [wtg?.towerType ?? null],
+      bladeType: [wtg?.bladeType ?? null],
+      totalQty: [wtg?.totalQty ?? 0],
+      janQty: [wtg?.janQty ?? 0],
+      febQty: [wtg?.febQty ?? 0],
+      marQty: [wtg?.marQty ?? 0],
+      aprQty: [wtg?.aprQty ?? 0],
+      mayQty: [wtg?.mayQty ?? 0],
+      junQty: [wtg?.junQty ?? 0],
+      julQty: [wtg?.julQty ?? 0],
+      augQty: [wtg?.augQty ?? 0],
+      sepQty: [wtg?.sepQty ?? 0],
+      octQty: [wtg?.octQty ?? 0],
+      novQty: [wtg?.novQty ?? 0],
+      decQty: [wtg?.decQty ?? 0]
+    })
+  }
 
   ngOnInit() {
     this.fetchAllCustomer();
