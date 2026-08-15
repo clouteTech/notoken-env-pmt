@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -35,10 +35,14 @@ export class Departments implements OnInit {
   
   departmentForm = this.fb.group({
     departmentId: [0],
-    departmentName: [''],
+    departmentName: ['', [Validators.required, Validators.maxLength(20)]],
     departmentHeadId: [0],
     status: [false]
   })
+
+  get departmentName(){
+    return this.departmentForm.get('departmentName')
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -114,44 +118,48 @@ export class Departments implements OnInit {
 
   submitDepartmentForm(){
     try {
-      if (!this.selectedDepartment) {
-        const data = this.departmentForm.value;
-        console.log(data);
-
-        this.apiService.createDepartments(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Department' });
-            this.showDepartmentModal = false;
-            this.fetchAllDepartments();
-          },
-          error: err => {
-            console.log(err);
-
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.departmentForm.valid) {   
+        if (!this.selectedDepartment) {
+          const data = this.departmentForm.value;
+          console.log(data);
+  
+          this.apiService.createDepartments(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Department' });
+              this.showDepartmentModal = false;
+              this.fetchAllDepartments();
+            },
+            error: err => {
+              console.log(err);
+  
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.departmentForm.value;
+          console.log(data);
+  
+          this.apiService.updateDepartments(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Department' });
+              this.showDepartmentModal = false;
+              this.fetchAllDepartments();
+            },
+            error: err => {
+              console.log(err);
+  
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }
       } else {
-        const data = this.departmentForm.value;
-        console.log(data);
-
-        this.apiService.updateDepartments(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Department' });
-            this.showDepartmentModal = false;
-            this.fetchAllDepartments();
-          },
-          error: err => {
-            console.log(err);
-
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

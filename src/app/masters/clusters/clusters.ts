@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -26,10 +26,18 @@ export class Clusters implements OnInit {
 
   clusterForm = this.fb.group({
     clusterId: [''],
-    clusterCode: [''],
-    clusterName: [''],
+    clusterCode: ['', [Validators.required, Validators.maxLength(2)]],
+    clusterName: ['', [Validators.required, Validators.maxLength(50)]],
     status: [false]
   })
+
+  get clusterCode(){
+    return this.clusterForm.get('clusterCode');
+  }
+
+  get clusterName(){
+    return this.clusterForm.get('clusterName');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -58,44 +66,48 @@ export class Clusters implements OnInit {
 
   submitClusterForm(){
     try {
-      if (!this.selectedCluster) {
-        const data = this.clusterForm.value;
-        console.log(data);
-
-        this.apiService.createCluster(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Cluster' });
-            this.showClusterModal = false;
-            this.fetchAllClusters();
-          },
-          error: err => {
-            console.log(err);
-
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.clusterForm.valid) {   
+        if (!this.selectedCluster) {
+          const data = this.clusterForm.value;
+          console.log(data);
+  
+          this.apiService.createCluster(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Cluster' });
+              this.showClusterModal = false;
+              this.fetchAllClusters();
+            },
+            error: err => {
+              console.log(err);
+  
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.clusterForm.value;
+          console.log(data);
+  
+          this.apiService.updateCluster(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Cluster' });
+              this.showClusterModal = false;
+              this.fetchAllClusters();
+            },
+            error: err => {
+              console.log(err);
+  
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }
       } else {
-        const data = this.clusterForm.value;
-        console.log(data);
-
-        this.apiService.updateCluster(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Cluster' });
-            this.showClusterModal = false;
-            this.fetchAllClusters();
-          },
-          error: err => {
-            console.log(err);
-
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

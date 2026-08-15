@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -28,9 +28,13 @@ export class Zones implements OnInit {
 
   zoneForm = this.fb.group({
     zoneId: [0],
-    zone: [''],
+    zone: ['', [Validators.required, Validators.maxLength(12)]],
     status: [false]
   })
+
+  get zone(){
+    return this.zoneForm.get('zone');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -60,44 +64,48 @@ export class Zones implements OnInit {
 
   submitZoneForm(){
     try {
-      if (!this.selectedZone) {
-        const data = this.zoneForm.value;
-        console.log(data);
-
-        this.apiService.createZone(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
-            this.showZoneModal = false;
-            this.fetchAllZones();
-          },
-          error: err => {
-            console.log(err);
+      if (this.zoneForm.valid) {   
+        if (!this.selectedZone) {
+          const data = this.zoneForm.value;
+          console.log(data);
   
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          this.apiService.createZone(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
+              this.showZoneModal = false;
+              this.fetchAllZones();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.zoneForm.value;
+          console.log(data);
+  
+          this.apiService.updateZone(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
+              this.showZoneModal = false;
+              this.fetchAllZones();
+            },
+            error: err => {
+              console.log(err);
+  
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }
       } else {
-        const data = this.zoneForm.value;
-        console.log(data);
-
-        this.apiService.updateZone(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
-            this.showZoneModal = false;
-            this.fetchAllZones();
-          },
-          error: err => {
-            console.log(err);
-
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

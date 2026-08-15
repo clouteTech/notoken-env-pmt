@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -58,10 +58,19 @@ export class CompanyUsers implements OnInit {
 
   companyUserForm = this.fb.group({
     userId: [0],
-    userName: [''],
-    email: [''],
+    userName: ['', [Validators.required, Validators.maxLength(50)]],
+    email: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/),
+      Validators.maxLength(80)]],
     status: [false]
   })
+
+  get userName(){
+    return this.companyUserForm.get('userName');
+  }
+
+  get email(){
+    return this.companyUserForm.get('email');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -102,44 +111,48 @@ export class CompanyUsers implements OnInit {
 
   submitCompanyUserForm(){
     try {
-      if (!this.selectedCompanyUser) {   
-        const data = this.companyUserForm.value;
-        console.log(data);
-  
-        this.apiService.createCompanyUsers(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Company User' });
-            this.showCompanyUserModal = false;
-            this.fetchAllCompanyUser();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.companyUserForm.valid) {  
+        if (!this.selectedCompanyUser) {   
+          const data = this.companyUserForm.value;
+          console.log(data);
+    
+          this.apiService.createCompanyUsers(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Company User' });
+              this.showCompanyUserModal = false;
+              this.fetchAllCompanyUser();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.companyUserForm.value;
+          console.log(data);
+  
+          this.apiService.updateCompanyUsers(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Company User' });
+              this.showCompanyUserModal = false;
+              this.fetchAllCompanyUser();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }
       } else {
-        const data = this.companyUserForm.value;
-        console.log(data);
-
-        this.apiService.updateCompanyUsers(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Company User' });
-            this.showCompanyUserModal = false;
-            this.fetchAllCompanyUser();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

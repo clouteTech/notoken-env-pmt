@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -34,11 +34,23 @@ export class Cranes implements OnInit {
 
   craneForm = this.fb.group({
     craneId: [0],
-    craneType: [''],
-    craneModel: [''],
-    craneMake: [''],
+    craneType: ['', [Validators.required, Validators.maxLength(100)]],
+    craneModel: ['', [Validators.required, Validators.maxLength(100)]],
+    craneMake: ['', [Validators.required, Validators.maxLength(100)]],
     status: [false]
   })
+
+  get craneType(){
+    return this.craneForm.get('craneType');
+  }
+
+  get craneModel(){
+    return this.craneForm.get('craneModel');
+  }
+
+  get craneMake(){
+    return this.craneForm.get('craneMake');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -68,44 +80,48 @@ export class Cranes implements OnInit {
 
   submitCraneForm(){
     try {
-      if (!this.selectedCrane) {
-        const data = this.craneForm.value;
-        console.log(data);
-  
-        this.apiService.createCrane(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Crane' });
-            this.showCraneModal = false;
-            this.fetchAllCranes();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.craneForm.valid) {    
+        if (!this.selectedCrane) {
+          const data = this.craneForm.value;
+          console.log(data);
+    
+          this.apiService.createCrane(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Crane' });
+              this.showCraneModal = false;
+              this.fetchAllCranes();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.craneForm.value;
+          console.log(data);
+  
+          this.apiService.updateCrane(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Crane' });
+              this.showCraneModal = false;
+              this.fetchAllCranes();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }
       } else {
-        const data = this.craneForm.value;
-        console.log(data);
-
-        this.apiService.updateCrane(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Crane' });
-            this.showCraneModal = false;
-            this.fetchAllCranes();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

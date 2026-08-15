@@ -51,6 +51,15 @@
             <div class="form-field">
                 <label for="zone">Zone</label>
                 <input type="text" pInputText formControlName="zone" class="w-full" id="zone" />
+
+                @if (zone?.invalid && (zone?.dirty || zone?.touched)) {
+                    @if (zone?.hasError('required')) {
+                        <small class="required-field">Zone is required.</small>
+                    }
+                    @if (zone?.hasError('maxlength')) {
+                        <small class="required-field">Zone cannot exceed 12 characters.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedZone){

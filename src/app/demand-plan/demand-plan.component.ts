@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormGroup, FormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DataService, ProjectEntry, WtgRow, CUSTOMERS, YEARS } from '../data.service';
 
 // PrimeNG v20
@@ -27,13 +27,14 @@ import { Apiservice } from '../service/apiservice';
     TableModule, SelectModule, ButtonModule,
     InputTextModule, InputNumberModule,
     DialogModule, ToastModule, TagModule,
-    CardModule, ConfirmDialogModule, DividerModule,
+    CardModule, ConfirmDialogModule, DividerModule, ReactiveFormsModule
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './demand-plan.component.html',
   styleUrls: ['./demand-plan.component.scss']
 })
 export class DemandPlanComponent implements OnInit {
+  selectedYear = '2026';
 
   year     = '2026';
   customer = '';
@@ -49,7 +50,7 @@ export class DemandPlanComponent implements OnInit {
   projectSpvWtgDetailList: any[] = [];
 
   // p-select options
-  yearOptions     = YEARS.map(y => ({ label: y, value: y }));
+  yearOptions = YEARS.map(y => ({ label: y, value: y }));
   // customerOptions = CUSTOMERS.map(c => ({ label: c, value: c }));
 
   // Summary dialog
@@ -117,6 +118,10 @@ export class DemandPlanComponent implements OnInit {
       decQty: [wtg?.decQty ?? 0]
     })
   }
+
+  getWtgsArray(spv: FormGroup): FormArray {
+    return spv.get('wtgs') as FormArray;
+  } 
 
   ngOnInit() {
     this.fetchAllCustomer();
@@ -262,7 +267,12 @@ export class DemandPlanComponent implements OnInit {
     return n > 0 ? `${n} project(s) · ${r} rows · ${u} units` : 'No data entered';
   }
 
-  onYearChange()    { /* month labels refresh automatically */ }
+  onYearChange(event: any){ 
+    /* month labels refresh automatically */ 
+    console.log(event);
+
+    this.selectedYear = event;
+  }
   onCustomerChange(customerId: number) {
     console.log(customerId);
     this.selectedCustomerId = customerId;
@@ -270,6 +280,7 @@ export class DemandPlanComponent implements OnInit {
     // this.projects = [];
     // this.uidSeed  = 0;
     if (this.filtersReady) { this.addProject(); }
+    console.log(this.yearlyDemandPlanForm.value);
   }
 
   addProject() {
@@ -290,6 +301,20 @@ export class DemandPlanComponent implements OnInit {
     p.projectCode = code; p.spv = ''; p.rows = [];
 
     this.fetchSPVsByProject();
+  }
+
+  selectedProject(projectId: number){
+    try {
+      this.selectedProjectId = Number(projectId);
+
+      this.fetchSPVsByProject();
+    } catch(error) {
+      console.log(error);
+    }
+  }
+
+  selectedSpv(spvId: number){
+    this.fetchWtgDetailsByProjectSPV(spvId);
   }
 
   onSPVChange(uid: number, spv: string) {

@@ -56,21 +56,51 @@
     [(visible)]="showSupplierModal" [style]="{ width: '40rem' }" [draggable]="false" (onHide)="onDialogClose()">
     <form [formGroup]="craneSupplierForm" (ngSubmit)="submitCraneSupplierForm()">
         <div class="form-grid">
-            <div class="form-field">
+            <div>
                 <label for="crane-supplier">Crane Supplier</label>
-                <input type="text" pInputText formControlName="supplierName" class="w-full" id="crane-supplier" />
+                <input type="text" pInputText formControlName="supplierName" class="w-full" id="crane-supplier" class="validation-field"  />
+
+                @if (supplierName?.invalid && (supplierName?.dirty || supplierName?.touched)) {
+                    @if (supplierName?.hasError('required')) {
+                        <small class="required-field">Supplier is required.</small>
+                    }
+                    @if (supplierName?.hasError('maxlength')) {
+                        <small class="required-field">Supplier cannot exceed 150 characters.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="crane-email">Email</label>
-                <input type="text" pInputText formControlName="email" class="w-full" id="crane-email" />
+                <input type="text" pInputText formControlName="email" class="w-full" id="crane-email" class="validation-field"  />
+
+                @if (email?.invalid && (email?.dirty || email?.touched)) {
+                    @if (email?.hasError('pattern')) {
+                        <small class="required-field">Please Enter a valid Email Address.</small>
+                    }
+                    @if (email?.hasError('maxlength')) {
+                        <small class="required-field">Email cannot exceed 100 characters.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="crane-contact-number">Contact Number</label>
-                <p-inputnumber formControlName="mobileNo" inputId="crane-contact-number" [useGrouping]="false" />
+                <p-inputnumber formControlName="mobileNo" inputId="crane-contact-number" [useGrouping]="false" styleClass="w-full"  />
+
+                @if (mobileNo?.invalid && (mobileNo?.dirty || mobileNo?.touched)) {
+                    @if (mobileNo?.hasError('maxlength')) {
+                        <small class="required-field">Contact Number cannot exceed 15 characters.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="crane-contact-person">Contact Person</label>
-                <input type="text" pInputText formControlName="contactPerson" class="w-full" id="crane-contact-person" />
+                <input type="text" pInputText formControlName="contactPerson" class="w-full" id="crane-contact-person" class="validation-field"  />
+
+                @if (contactPerson?.invalid && (contactPerson?.dirty || contactPerson?.touched)) {
+                    @if (contactPerson?.hasError('maxlength')) {
+                    <small class="required-field">Contact Person cannot exceed 100 characters.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedCraneSupplier){
