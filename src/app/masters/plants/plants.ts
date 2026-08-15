@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
@@ -32,11 +32,23 @@ export class Plants implements OnInit {
 
   plantForm = this.fb.group({
     plantId: [''],
-    plant: [''],
-    location: [''],
-    plantManager: [''],
+    plant: ['', Validators.required],
+    location: ['', Validators.required],
+    plantManager: ['', Validators.required],
     status: [false]
   })
+
+  get plant(){
+    return this.plantForm.get('plant');
+  }
+
+  get location(){
+    return this.plantForm.get('location');
+  }
+
+  get plantManager(){
+    return this.plantForm.get('plantManager');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -96,44 +108,48 @@ export class Plants implements OnInit {
 
   submitPlantForm(){
     try {
-      if (!this.selectedPlant) {
-        const data = this.plantForm.value;
-        console.log(data);
-        
-        this.apiService.createPlant(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Plant' });
-            this.showPlantModal = false;
-            this.fetchPlantList();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.plantForm.valid) {
+        if (!this.selectedPlant) {
+          const data = this.plantForm.value;
+          console.log(data);
+          
+          this.apiService.createPlant(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Plant' });
+              this.showPlantModal = false;
+              this.fetchPlantList();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.plantForm.value;
+          console.log(data);
+  
+          this.apiService.updatePlant(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Plant' });
+              this.showPlantModal = false;
+              this.fetchPlantList();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }  
       } else {
-        const data = this.plantForm.value;
-        console.log(data);
-
-        this.apiService.updatePlant(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Plant' });
-            this.showPlantModal = false;
-            this.fetchPlantList();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

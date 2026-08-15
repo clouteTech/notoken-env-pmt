@@ -55,17 +55,44 @@
     [style]="{ width: '40rem' }" [draggable]="false" (onHide)="onDialogClose()">
     <form [formGroup]="craneForm" (ngSubmit)="submitCraneForm()">
         <div class="form-grid">
-            <div class="form-field">
+            <div>
                 <label for="crane-type">Crane Type</label>
-                <input type="text" pInputText formControlName="craneType" class="w-full" id="crane-type" />
+                <input type="text" pInputText formControlName="craneType" class="w-full" id="crane-type" class="validation-field" />
+
+                @if (craneType?.invalid && (craneType?.dirty || craneType?.touched)) {
+                    @if (craneType?.hasError('required')) {
+                    <small class="required-field">Crane Type is required.</small>
+                    }
+                    @if (craneType?.hasError('maxlength')) {
+                    <small class="required-field">Crane Type cannot exceed 100 characters.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="crane-model">Crane Model</label>
-                <input type="text" pInputText formControlName="craneModel" class="w-full" id="crane-model" />
+                <input type="text" pInputText formControlName="craneModel" class="w-full" id="crane-model" class="validation-field" />
+
+                @if (craneModel?.invalid && (craneModel?.dirty || craneModel?.touched)) {
+                    @if (craneModel?.hasError('required')) {
+                    <small class="required-field">Crane Model is required.</small>
+                    }
+                    @if (craneModel?.hasError('maxlength')) {
+                    <small class="required-field">Crane Model cannot exceed 100 characters.</small>
+                    }
+                }
             </div>
             <div class="form-field">
                 <label for="crane-make">Crane Make</label>
-                <input type="text" pInputText formControlName="craneMake" class="w-full" id="crane-make" />
+                <input type="text" pInputText formControlName="craneMake" class="w-full" id="crane-make" class="validation-field" />
+
+                @if (craneMake?.invalid && (craneMake?.dirty || craneMake?.touched)) {
+                    @if (craneMake?.hasError('required')) {
+                        <small class="required-field">Crane Make is required.</small>
+                    }
+                    @if (craneMake?.hasError('maxlength')) {
+                        <small class="required-field">Crane Make cannot exceed 100 characters.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedCrane){

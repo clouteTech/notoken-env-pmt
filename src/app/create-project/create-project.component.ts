@@ -1118,6 +1118,12 @@ buildOptsList(): void {
     }
   }
 
+  addMoreWtgConfig(spvIndex: number){
+    const wtgConfigurations = this.getWtgConfigurations(spvIndex);
+    const newWtgConfig = this.createWtgConfigForm();
+    wtgConfigurations.push(newWtgConfig);
+  }
+
   deleteProjectSpv(projectSpvId: number){
     try {
       console.log(this.projectSpvForm.value);

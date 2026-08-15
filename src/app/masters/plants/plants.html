@@ -52,18 +52,36 @@
     [draggable]="false" (onHide)="onDialogClose()">
     <form [formGroup]="plantForm" (ngSubmit)="submitPlantForm()">
         <div class="form-grid">
-            <div class="form-field">
+            <div>
                 <label for="plant-name">Plant</label>
-                <input type="text" pInputText formControlName="plant" id="plant-name" />
+                <input type="text" pInputText formControlName="plant" id="plant-name" class="validation-field" />
+
+                @if (plant?.invalid && (plant?.dirty || plant?.touched)) {
+                    @if (plant?.hasError('required')) {
+                        <small class="required-field">Plant is required.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="location">Location</label>
-                <input type="text" pInputText formControlName="location" id="location" />
+                <input type="text" pInputText formControlName="location" id="location" class="validation-field" />
+
+                @if (location?.invalid && (location?.dirty || location?.touched)) {
+                    @if (location?.hasError('required')) {
+                        <small class="required-field">Location is required.</small>
+                    }
+                }
             </div>
             <div class="form-field">
                 <label for="plant-manager">Plant Manager</label>
                 <p-select [options]="userList" optionLabel="user.userName" optionValue="user.userName" inputId="near-shore" 
                     placeholder="Select Plant Manager" appendTo="body" [filter]="true" formControlName="plantManager" filterBy="label" />
+
+                @if (plantManager?.invalid && (plantManager?.dirty || plantManager?.touched)) {
+                    @if (plantManager?.hasError('required')) {
+                    <small class="required-field">Plant Manager is required.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedPlant){

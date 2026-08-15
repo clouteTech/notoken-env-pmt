@@ -55,16 +55,37 @@
 </div>
 
 <p-dialog [header]="selectedCompanyUser ? 'Update Company User' : 'Create Company User'" [(visible)]="showCompanyUserModal" 
-    [modal]="true" [draggable]="false" (onHide)="onDialogClose()" [style]="{ width: '40rem' }">
+    [modal]="true" [draggable]="false" (onHide)="onDialogClose()" [style]="{ width: '30rem' }">
     <form [formGroup]="companyUserForm" (ngSubmit)="submitCompanyUserForm()">
         <div class="form-grid">
             <div class="form-field">
                 <label for="userName">Username</label>
                 <input type="text" pInputText formControlName="userName" id="userName" />
+
+                @if (userName?.invalid && (userName?.dirty || userName?.touched)) {
+                    @if (userName?.hasError('required')) {
+                        <small class="required-field">Company User is required.</small>
+                    }
+                    @if (userName?.hasError('maxlength')) {
+                        <small class="required-field">Company User cannot exceed 50 characters.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="email">Email</label>
-                <input type="text" pInputText formControlName="email" id="email" />
+                <input type="text" pInputText formControlName="email" id="email" class="validation-field" />
+
+                @if (email?.invalid && (email?.dirty || email?.touched)) {
+                    @if (email?.hasError('required')) {
+                        <small class="required-field">Email is required.</small>
+                    }
+                    @if (email?.hasError('pattern')) {
+                        <small class="required-field">Please Enter a valid Email Address.</small>
+                    }
+                    @if (email?.hasError('maxlength')) {
+                        <small class="required-field">Email cannot exceed 80 characters.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedCompanyUser){

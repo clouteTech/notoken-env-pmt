@@ -68,9 +68,9 @@ export class MonthlyPlan implements OnInit {
       this.apiService.fetchAllMonthlyDemandPlan(data).subscribe({
         next: val => {
           console.log(val);
-          this.monthlyDemandPlanList = val.data.data;
+          this.monthlyDemandPlanList = val?.data?.data?.content;
 
-          this.totalRecords = val.data.totalElements ?? 0;
+          this.totalRecords = val?.data?.data?.totalElements ?? 0;
         },
         error: err => {
           console.log(err);

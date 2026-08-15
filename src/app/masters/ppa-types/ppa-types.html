@@ -51,6 +51,15 @@
             <div class="form-field">
                 <label for="ppa-type">PPA Type</label>
                 <input type="text" formControlName="ppaType" pInputText class="w-full" id="ppa-type" />
+
+                @if (ppaType?.invalid && (ppaType?.dirty || ppaType?.touched)) {
+                    @if (ppaType?.hasError('required')) {
+                        <small class="required-field">PPA Type is required.</small>
+                    }
+                    @if (ppaType?.hasError('maxlength')) {
+                        <small class="required-field">PPA Type cannot exceed 50 characters.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedPpaType){

@@ -16,11 +16,11 @@
       <label class="filter-label">Plan Year</label>
       <p-select appendTo="body" 
         [options]="yearOptions"
-        [(ngModel)]="year"
+        [(ngModel)]="selectedYear"
         optionLabel="label"
         optionValue="value"
         placeholder="Select Year"
-        (onChange)="onYearChange()"
+        (onChange)="onYearChange($event.value)"
         [style]="{'min-width':'160px'}"
       />
     </div>
@@ -207,6 +207,65 @@
 
   </div><!-- /project-card -->
 </div><!-- /projects wrap -->
+
+<form [formGroup]="yearlyDemandPlanForm">
+    <div class="filter-bar mb-4">
+      <div class="flex align-items-end gap-4 flex-wrap">
+        <div class="flex flex-column gap-2">
+          <label class="filter-label">Plan Year</label>
+          <p-select appendTo="body" [options]="yearOptions" formControlName="planYear" optionLabel="label" optionValue="value"
+            placeholder="Select Year" (onChange)="onYearChange($event.value)" [style]="{'min-width':'160px'}" />
+        </div>
+        <div class="flex flex-column gap-2">
+          <label class="filter-label">Customer</label>
+          <p-select appendTo="body" [options]="customerInfoList" formControlName="customerId" optionLabel="customerName"
+            optionValue="customerId" placeholder="Select Customer" (onChange)="onCustomerChange($event.value)"
+            [style]="{'min-width':'180px'}" />
+        </div>
+
+        <div class="flex-1"></div>
+        
+        <p-button label="Add More Project" icon="pi pi-plus" severity="secondary" size="small" [outlined]="true"
+          (onClick)="addProject()" />
+        <p-button label="View Summary" icon="pi pi-table" size="small" [disabled]="!hasData" (onClick)="openSummary()" />
+      </div>
+    </div>
+
+    <div class="flex flex-column gap-4">
+      <div class="project-card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <!-- <div class="idx-badge">{{ displayIndex(proj.uid) }}</div> -->
+            <!-- <div class="card-head-title">Project Entry #{{ displayIndex(proj.uid) }}</div> -->
+          </div>
+          <div class="card-head-right">
+        
+            <!-- Project Code -->
+            <div class="sel-grp">
+              <label>Project Code</label>
+              <p-select appendTo="body" [options]="customerProjectList"
+                optionLabel="projectCode" optionValue="projectId"
+                (onChange)="selectedProject($event.value)"
+                placeholder="-- Select --" [style]="{'min-width':'148px','font-size':'12px'}" />
+            </div>
+        
+            <!-- SPV -->
+            <div class="sel-grp">
+              <label>SPV</label>
+              <p-select appendTo="body" [options]="projectSpvList"
+                (onChange)="selectedSpv($event.value)"
+                optionLabel="spvName" optionValue="customerSpvId"
+                placeholder="-- Select --" [style]="{'min-width':'148px','font-size':'12px'}" />
+            </div>
+        
+            <!-- Remove -->
+            <p-button *ngIf="projects.length > 1" icon="pi pi-times" label="Remove" severity="danger" size="small" [text]="true"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+</form>
 
 
 <!-- ══ SUMMARY DIALOG ══ -->

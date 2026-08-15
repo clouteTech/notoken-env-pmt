@@ -48,16 +48,34 @@
 </div>
 
 <p-dialog [header]="selectedCluster ? 'Edit Cluster' : 'Create Cluster'" [modal]="true"
-    [(visible)]="showClusterModal" [style]="{ width: '40rem' }" [draggable]="false" (onHide)="onDialogClose()">
+    [(visible)]="showClusterModal" [style]="{ width: '30rem' }" [draggable]="false" (onHide)="onDialogClose()">
     <form [formGroup]="clusterForm" (ngSubmit)="submitClusterForm()">
         <div class="form-grid">
             <div class="form-field">
                 <label for="cluster-code">Cluster Code</label>
                 <input type="text" pInputText formControlName="clusterCode" class="w-full" id="cluster-code" />
+
+                @if (clusterCode?.invalid && (clusterCode?.dirty || clusterCode?.touched)) {
+                    @if (clusterCode?.hasError('required')) {
+                        <small class="required-field">Cluster Code is required.</small>
+                    }
+                    @if (clusterCode?.hasError('maxlength')) {
+                        <small class="required-field">Cluster Code cannot exceed 2 characters.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="cluster-name">Cluster Name</label>
                 <input type="text" pInputText formControlName="clusterName" class="w-full" id="cluster-name" />
+
+                @if (clusterName?.invalid && (clusterName?.dirty || clusterName?.touched)) {
+                    @if (clusterName?.hasError('required')) {
+                        <small class="required-field">Cluster Name is required.</small>
+                    }
+                    @if (clusterName?.hasError('maxlength')) {
+                        <small class="required-field">Cluster Name cannot exceed 50 characters.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedCluster){

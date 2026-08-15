@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -27,9 +27,13 @@ export class PpaTypes implements OnInit {
 
   ppaTypeForm = this.fb.group({
     ppaTypeId: [0],
-    ppaType: [''],
+    ppaType: ['', [Validators.required, Validators.maxLength(50)]],
     status: [false]
   })
+
+  get ppaType(){
+    return this.ppaTypeForm.get('ppaType');
+  }
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
@@ -58,44 +62,48 @@ export class PpaTypes implements OnInit {
 
   submitPpaTypeForm(){
     try {
-      if (!this.selectedPpaType) { 
-        const data = this.ppaTypeForm.value;
-        console.log(data);
-  
-        this.apiService.createPpaType(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
-            this.showPpaModal = false;
-            this.fetchAllPpaTypes();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.ppaTypeForm.valid) {
+        if (!this.selectedPpaType) { 
+          const data = this.ppaTypeForm.value;
+          console.log(data);
+    
+          this.apiService.createPpaType(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
+              this.showPpaModal = false;
+              this.fetchAllPpaTypes();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })
+          })
+        } else {
+          const data = this.ppaTypeForm.value;
+          console.log(data);
+  
+          this.apiService.updatePpaType(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
+              this.showPpaModal = false;
+              this.fetchAllPpaTypes();
+            },
+            error: err => {
+              console.log(err);
+  
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }      
       } else {
-        const data = this.ppaTypeForm.value;
-        console.log(data);
-
-        this.apiService.updatePpaType(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
-            this.showPpaModal = false;
-            this.fetchAllPpaTypes();
-          },
-          error: err => {
-            console.log(err);
-
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

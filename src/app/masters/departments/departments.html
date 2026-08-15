@@ -52,18 +52,27 @@
 
 <p-dialog [header]="selectedDepartment ? 'Edit Department' : 'Create Department'" [(visible)]="showDepartmentModal" [modal]="true" 
     [draggable]="false" (onHide)="onDialogClose()"
-    [style]="{ width: '40rem' }">
+    [style]="{ width: '30rem' }">
     <form [formGroup]="departmentForm" (ngSubmit)="submitDepartmentForm()">
         <div class="form-grid">
             <div class="form-field">
                 <label for="department">Department</label>
-                <input type="text" pInputText formControlName="departmentName" id="department" />
+                <input type="text" pInputText formControlName="departmentName" id="department" class="validation-field" />
+
+                @if (departmentName?.invalid && (departmentName?.dirty || departmentName?.touched)) {
+                    @if (departmentName?.hasError('required')) {
+                        <small class="required-field">Department Name is required.</small>
+                    }
+                    @if (departmentName?.hasError('maxlength')) {
+                        <small class="required-field">Department Name cannot exceed 20 characters.</small>
+                    }
+                }
             </div>
-            <div class="form-field">
+            <div>
                 <label for="department-head">Department Head</label>
                 <p-select [options]="userList" formControlName="departmentHeadId" optionLabel="user.userName" 
                     optionValue="user.userId" [filter]="true" filterBy="user.userName" [showClear]="true"
-                    placeholder="Select Department Head" appendTo="body" />
+                    placeholder="Select Department Head" appendTo="body" styleClass="w-full" />
             </div>
         </div>
         @if(selectedDepartment){

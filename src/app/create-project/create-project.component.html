@@ -626,7 +626,8 @@
                         </div>
     
                         <ng-container formArrayName="wtgConfigurations">
-                            @for (config of getWtgConfigurations(i).controls; track config?.get('wtgConfigId')?.value; let j = $index) {
+                            @for (config of getWtgConfigurations(i).controls; track config?.get('wtgConfigId')?.value; 
+                                let j = $index; let last = $last) {
                                 <div class="wtg-border">
                                     <div class="wtg-header">
                                         <h4>WTG Configuration {{ j + 1 }}</h4>
@@ -681,6 +682,14 @@
                                             <input type="text" pInputText id="total-capacity" [value]="getTotalCapacity(config)" [disabled]="true" />
                                         </div>
                                     </div>
+                                    @if (last) {
+                                        <div class="add-wtg-btn">
+                                            <button pButton pRipple type="button" icon="pi pi-plus"
+                                                (click)="addMoreWtgConfig(i)" [outlined]="true" severity="secondary">
+                                                Add More WTG Configuration
+                                            </button>
+                                        </div>
+                                    }
                                     <div class="submit-btn">
                                         <button pButton pRipple type="button"
                                             (click)="updateConfiguration(i, j)">Update Configuration</button>

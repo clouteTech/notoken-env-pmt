@@ -63,10 +63,25 @@
             <div class="form-field">
                 <label for="user-group">User Group</label>
                 <input type="text" pInputText formControlName="groupName" class="w-full" id="user-group" />
+
+                @if (groupName?.invalid && (groupName?.dirty || groupName?.touched)) {
+                    @if (groupName?.hasError('required')) {
+                        <small class="required-field">Group Name is required.</small>
+                    }
+                    @if (groupName?.hasError('maxlength')) {
+                        <small class="required-field">Group Name cannot exceed 100 characters.</small>
+                    }
+                }
             </div>
             <div class="form-field">
                 <label for="description">Description</label>
                 <textarea rows="4" cols="30" pTextarea formControlName="description"></textarea>
+
+                @if (description?.invalid && (description?.dirty || description?.touched)) {
+                    @if (description?.hasError('maxlength')) {
+                        <small class="required-field">Description cannot exceed 255 characters.</small>
+                    }
+                }
             </div>
         </div>
         @if(selectedUsergroup){

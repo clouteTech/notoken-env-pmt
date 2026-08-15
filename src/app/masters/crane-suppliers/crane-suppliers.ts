@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
@@ -25,12 +25,28 @@ export class CraneSuppliers {
 
   craneSupplierForm = this.fb.group({
     supplierId: [0],
-    supplierName: [''],
-    contactPerson: [''],
-    mobileNo: [''],
-    email: [''],
+    supplierName: ['', [Validators.required, Validators.maxLength(150)]],
+    contactPerson: ['', Validators.maxLength(100)],
+    mobileNo: ['', Validators.maxLength(15)],
+    email: ['', [Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$/), Validators.maxLength(100)]],
     status: [false]
   })
+
+  get supplierName(){
+    return this.craneSupplierForm.get('supplierName');
+  }
+
+  get contactPerson(){
+    return this.craneSupplierForm.get('contactPerson');
+  }
+
+  get mobileNo(){
+    return this.craneSupplierForm.get('mobileNo');
+  }
+
+  get email(){
+    return this.craneSupplierForm.get('email');
+  }
 
   constructor(private apiService: Apiservice, private messageService: MessageService,
     private confirmationService: ConfirmationService
@@ -64,44 +80,48 @@ export class CraneSuppliers {
 
   submitCraneSupplierForm(){
     try {
-      if (!this.selectedCraneSupplier) {
-        const data = this.craneSupplierForm.value;
-        console.log(data);
-  
-        this.apiService.createCraneSupplier(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Crane Supplier' });
-            this.showSupplierModal = false;
-            this.fetchAllCraneSuppliers();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+      if (this.craneSupplierForm.valid) {
+        if (!this.selectedCraneSupplier) {
+          const data = this.craneSupplierForm.value;
+          console.log(data);
+    
+          this.apiService.createCraneSupplier(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Crane Supplier' });
+              this.showSupplierModal = false;
+              this.fetchAllCraneSuppliers();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
             }
-          }
-        })     
+          })     
+        } else {
+          const data = this.craneSupplierForm.value;
+          console.log(data);
+  
+          this.apiService.updateCraneSupplier(data).subscribe({
+            next: val => {
+              console.log(val);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Crane Supplier' });
+              this.showSupplierModal = false;
+              this.fetchAllCraneSuppliers();
+            },
+            error: err => {
+              console.log(err);
+    
+              if (err.status === 400) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              }
+            }
+          })
+        }       
       } else {
-        const data = this.craneSupplierForm.value;
-        console.log(data);
-
-        this.apiService.updateCraneSupplier(data).subscribe({
-          next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Crane Supplier' });
-            this.showSupplierModal = false;
-            this.fetchAllCraneSuppliers();
-          },
-          error: err => {
-            console.log(err);
-  
-            if (err.status === 400) {
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-            }
-          }
-        })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);

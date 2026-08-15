@@ -429,3 +429,8 @@
     border-color: var(--red) !important;
     color: #fff !important;
 }
+
+.validation-field {
+    display: block;
+    width: 100%;
+}

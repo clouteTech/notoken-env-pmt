@@ -95,3 +95,8 @@
 .status-label.inactive {
     color: #dc2626;
 }
+
+.validation-field {
+    display: block;
+    width: 100%;
+}
