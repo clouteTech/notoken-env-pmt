@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Form, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DataService, ProjectEntry, WtgRow, CUSTOMERS, YEARS } from '../data.service';
 
 // PrimeNG v20
@@ -57,18 +57,15 @@ export class DemandPlanComponent implements OnInit {
   summaryVisible = false;
 
   private fb = inject(FormBuilder);
+  messageService: any;
 
   constructor(private ds: DataService, private msgSvc: MessageService, private apiService: Apiservice) {}
 
   yearlyDemandPlanForm = this.fb.group({
     planYear: [],
     customerId: [],
-    projects: this.fb.array([])
+    projects: this.fb.array([this.createProjectForm()])
   })
-
-  get projectsArray(): FormArray{
-    return this.yearlyDemandPlanForm.get('projects') as FormArray;
-  }
 
   createProjectForm(project?: any): FormGroup{
     const spvs = this.fb.array(
@@ -119,8 +116,19 @@ export class DemandPlanComponent implements OnInit {
     })
   }
 
-  getWtgsArray(spv: FormGroup): FormArray {
-    return spv.get('wtgs') as FormArray;
+  get projectsArray(): FormArray{
+    return this.yearlyDemandPlanForm.get('projects') as FormArray;
+  }
+
+  getSpvArray(projectIndex: number): FormArray{
+    return this.projectsArray.at(projectIndex).get('spvs') as FormArray;
+  }
+
+  getWtgsArray(projectIndex: number, spvIndex: number): FormArray {
+    const spvArray = this.getSpvArray(projectIndex);
+    const spvGroup = spvArray.at(spvIndex) as FormGroup;
+
+    return spvGroup.get('wtgs') as FormArray;
   } 
 
   ngOnInit() {
@@ -198,7 +206,22 @@ export class DemandPlanComponent implements OnInit {
     }
   }
 
-  fetchWtgDetailsByProjectSPV(spvId: any){
+  populateWtgConfigDetails(projectIndex: number, spvIndex: number){
+    const project = this.projectsArray.at(projectIndex) as FormGroup;
+    const spvArray = this.getSpvArray(projectIndex);
+
+    const wtgArray = spvArray.at(spvIndex) as FormGroup;
+    const wtgs = this.getWtgsArray(projectIndex, spvIndex);
+
+    wtgs.clear();
+
+    this.projectSpvWtgDetailList.forEach((wtg: any) => {
+      wtgs.push(this.createWtgForm(wtg));
+    })
+
+  }
+
+  fetchWtgDetailsByProjectSPV(spvId: any, projectIndex: number, spvIndex: number){
     try {
       const data = {
         projectId: this.selectedProjectId,
@@ -211,6 +234,8 @@ export class DemandPlanComponent implements OnInit {
         next: val => {
           console.log(val);
           this.projectSpvWtgDetailList = val.data;
+
+          this.populateWtgConfigDetails(projectIndex, spvIndex);
         },
         error: err => {
           console.log(err);
@@ -284,8 +309,7 @@ export class DemandPlanComponent implements OnInit {
   }
 
   addProject() {
-    if (!this.filtersReady) return;
-    this.projects = [...this.projects, { uid: ++this.uidSeed, projectCode: '', spv: '', rows: [] }];
+    this.projectsArray.push(this.createProjectForm());
   }
 
   removeProject(uid: number) {
@@ -303,18 +327,79 @@ export class DemandPlanComponent implements OnInit {
     this.fetchSPVsByProject();
   }
 
-  selectedProject(projectId: number){
+  isProjectSelected(projectIndex: number): boolean{
+    const project = this.projectsArray.at(projectIndex) as FormGroup;
+    return !!project.get('projectId')?.value;
+  }
+
+  selectedProject(projectId: number, projectIndex: number){
     try {
       this.selectedProjectId = Number(projectId);
+
+      const project = this.projectsArray.at(projectIndex) as FormGroup;
+      const spvs = this.getSpvArray(projectIndex);
+
+      spvs.clear();
+
+      spvs.push(this.createSpvForm());
 
       this.fetchSPVsByProject();
     } catch(error) {
       console.log(error);
+
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
-  selectedSpv(spvId: number){
-    this.fetchWtgDetailsByProjectSPV(spvId);
+  selectedSpv(spvId: number, projectIndex: number, spvIndex: number){
+    this.fetchWtgDetailsByProjectSPV(spvId, projectIndex, spvIndex);
+  }
+
+  getMonthLabel(month: {key: string; label: string}): string{
+    const year = this.yearlyDemandPlanForm.get('planYear')?.value;
+
+    return year ? `${month.label} ${year}` : month.label;
+  }
+
+  monthFields = [
+    { key: 'janQty', label: 'Jan' },
+    { key: 'febQty', label: 'Feb' },
+    { key: 'marQty', label: 'Mar' },
+    { key: 'aprQty', label: 'Apr' },
+    { key: 'mayQty', label: 'May' },
+    { key: 'junQty', label: 'Jun' },
+    { key: 'julQty', label: 'Jul' },
+    { key: 'augQty', label: 'Aug' },
+    { key: 'sepQty', label: 'Sep' },
+    { key: 'octQty', label: 'Oct' },
+    { key: 'novQty', label: 'Nov' },
+    { key: 'decQty', label: 'Dec' }
+  ];
+
+  rowTotal(wtg: FormGroup): number{
+    return this.monthFields.reduce((total, month) => {
+      return total + Number(wtg?.get(month.key)?.value ?? 0);
+    }, 0);
+  }
+
+  qtyTotal(wtgs: FormArray){
+    return wtgs.controls.reduce((total, wtg) => {
+      return total + Number(wtg.get('totalQty')?.value)
+    }, 0)
+  }
+
+  colTotal(wtgs: FormArray, monthKey: string): number{
+    return wtgs.controls.reduce((total, wtg) => {
+      return total + Number(wtg.get(monthKey)?.value ?? 0)
+    }, 0)
+  }
+
+  getGrandTotal(projectIndex: number, spvIndex: number){
+    const wtgs = this.getWtgsArray(projectIndex, spvIndex);
+
+    return wtgs.controls.reduce((total, wtg) => {
+      return total + this.rowTotal(wtg as FormGroup);
+    }, 0);
   }
 
   onSPVChange(uid: number, spv: string) {
@@ -324,7 +409,7 @@ export class DemandPlanComponent implements OnInit {
     p.spv = spv;
     p.rows = this.ds.getDefaultRows(spv);
 
-    this.fetchWtgDetailsByProjectSPV(spv);
+    // this.fetchWtgDetailsByProjectSPV(spv);
   }
 
   addRow(uid: number) {
@@ -348,29 +433,30 @@ export class DemandPlanComponent implements OnInit {
     if (p && p.rows[ri]) p.rows[ri].mon[mi] = isNaN(val) ? 0 : val;
   }
 
-  rowTotal(row: WtgRow): number   { return (row.mon ?? []).reduce((a, b) => a + b, 0); }
-  colTotal(rows: WtgRow[], mi: number): number { return rows.reduce((s, r) => s + (r.mon[mi] ?? 0), 0); }
-  qtyTotal(rows: WtgRow[]): number  { return rows.reduce((s, r) => s + (r.qty ?? 0), 0); }
-  grandTotal(rows: WtgRow[]): number { return rows.reduce((s, r) => s + this.rowTotal(r), 0); }
+  // rowTotal(row: WtgRow): number   { return (row.mon ?? []).reduce((a, b) => a + b, 0); }
+  // colTotal(rows: WtgRow[], mi: number): number { return rows.reduce((s, r) => s + (r.mon[mi] ?? 0), 0); }
+  // qtyTotal(rows: WtgRow[]): number  { return rows.reduce((s, r) => s + (r.qty ?? 0), 0); }
+  // grandTotal(rows: WtgRow[]): number { return rows.reduce((s, r) => s + this.rowTotal(r), 0); }
 
   get summaryProjects(): ProjectEntry[] { return this.projects.filter(p => p.spv && p.rows.length > 0); }
-  get summaryTotalQty():   number { return this.summaryProjects.reduce((s, p) => s + this.qtyTotal(p.rows), 0); }
-  get summaryTotalUnits(): number { return this.summaryProjects.reduce((s, p) => s + this.grandTotal(p.rows), 0); }
+  // get summaryTotalQty():   number { return this.summaryProjects.reduce((s, p) => s + this.qtyTotal(p.rows), 0); }
+  // get summaryTotalUnits(): number { return this.summaryProjects.reduce((s, p) => s + this.grandTotal(p.rows), 0); }
   getTotalRows():    number { return this.summaryProjects.reduce((s, p) => s + p.rows.length, 0); }
-  summaryColTotal(mi: number): number { return this.summaryProjects.reduce((s, p) => s + this.colTotal(p.rows, mi), 0); }
+  // summaryColTotal(mi: number): number { return this.summaryProjects.reduce((s, p) => s + this.colTotal(p.rows, mi), 0); }
 
   openSummary() {
-    if (!this.hasData) {
-      this.msgSvc.add({ severity: 'warn', summary: 'No Data', detail: 'No data entered yet.', life: 3000 });
-      return;
-    }
+    // if (!this.hasData) {
+    //   this.msgSvc.add({ severity: 'warn', summary: 'No Data', detail: 'No data entered yet.', life: 3000 });
+    //   return;
+    // }
     this.summaryVisible = true;
   }
   closeSummary() { this.summaryVisible = false; }
 
   submitPlan() {
-    this.closeSummary();
-    this.msgSvc.add({ severity: 'success', summary: 'Submitted', detail: 'Demand plan submitted successfully!', life: 3000 });
+    console.log(this.yearlyDemandPlanForm.value);
+    // this.closeSummary();
+    // this.msgSvc.add({ severity: 'success', summary: 'Submitted', detail: 'Demand plan submitted successfully!', life: 3000 });
   }
 
   // summary flat rows for p-table
@@ -378,7 +464,7 @@ export class DemandPlanComponent implements OnInit {
     const rows: any[] = [];
     this.summaryProjects.forEach(p => {
       p.rows.forEach(row => {
-        rows.push({ customer: this.customer, project: p.projectCode, spv: p.spv, ...row, total: this.rowTotal(row) });
+        // rows.push({ customer: this.customer, project: p.projectCode, spv: p.spv, ...row, total: this.rowTotal(row) });
       });
     });
     return rows;

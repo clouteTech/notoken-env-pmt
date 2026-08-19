@@ -183,10 +183,10 @@
         <ng-template #footer>
           <tr class="total-row">
             <td colspan="4" class="total-label">TOTAL</td>
-            <td class="tv" style="text-align:center">{{ qtyTotal(proj.rows) }}</td>
-            <td *ngFor="let v of proj.rows[0]?.mon; let mi = index; trackBy: trackByIdx"
-                class="tv" style="text-align:center">{{ colTotal(proj.rows, mi) }}</td>
-            <td class="tv rt-cell">{{ grandTotal(proj.rows) }}</td>
+            <!-- <td class="tv" style="text-align:center">{{ qtyTotal(proj.rows) }}</td> -->
+            <!-- <td *ngFor="let v of proj.rows[0]?.mon; let mi = index; trackBy: trackByIdx"
+                class="tv" style="text-align:center">{{ colTotal(proj.rows, mi) }}</td> -->
+            <!-- <td class="tv rt-cell">{{ grandTotal(proj.rows) }}</td> -->
           </tr>
         </ng-template>
       </p-table>
@@ -227,44 +227,119 @@
         
         <p-button label="Add More Project" icon="pi pi-plus" severity="secondary" size="small" [outlined]="true"
           (onClick)="addProject()" />
-        <p-button label="View Summary" icon="pi pi-table" size="small" [disabled]="!hasData" (onClick)="openSummary()" />
+        <p-button label="View Summary" icon="pi pi-table" size="small" (onClick)="openSummary()" />
       </div>
-    </div>
+    </div>  
 
-    <div class="flex flex-column gap-4">
-      <div class="project-card">
-        <div class="card-head">
-          <div class="card-head-left">
-            <!-- <div class="idx-badge">{{ displayIndex(proj.uid) }}</div> -->
-            <!-- <div class="card-head-title">Project Entry #{{ displayIndex(proj.uid) }}</div> -->
-          </div>
-          <div class="card-head-right">
-        
-            <!-- Project Code -->
-            <div class="sel-grp">
-              <label>Project Code</label>
-              <p-select appendTo="body" [options]="customerProjectList"
-                optionLabel="projectCode" optionValue="projectId"
-                (onChange)="selectedProject($event.value)"
-                placeholder="-- Select --" [style]="{'min-width':'148px','font-size':'12px'}" />
+    <ng-container formArrayName="projects">
+      @for (prj of projectsArray.controls; track $index; let i = $index) {
+        <div class="flex flex-column gap-4" [formGroupName]="i">
+          <div class="project-card">
+            <div class="card-head">
+              <div class="card-head-left">
+                <!-- <div class="idx-badge">{{ displayIndex(proj.uid) }}</div> -->
+                <!-- <div class="card-head-title">Project Entry #{{ displayIndex(proj.uid) }}</div> -->
+              </div>
+              <div class="card-head-right">
+            
+                <!-- Project Code -->
+                <div class="sel-grp">
+                  <label>Project Code</label>
+                  <p-select appendTo="body" [options]="customerProjectList" formControlName="projectId"
+                    optionLabel="projectCode" optionValue="projectId"
+                    (onChange)="selectedProject($event.value, i)"
+                    placeholder="-- Select --" [style]="{'min-width':'148px','font-size':'12px'}" />
+                </div>
+            
+                @if (isProjectSelected(i)) {
+                  <ng-container formArrayName="spvs">
+                    @for (spv of getSpvArray(i).controls; track $index; let j = $index) {
+                        <ng-container [formGroupName]="j">
+                          <!-- SPV -->
+                          <div class="sel-grp">
+                            <label>SPV</label>
+                            <p-select appendTo="body" [options]="projectSpvList"
+                              (onChange)="selectedSpv($event.value, i, j)" formControlName="spvId"
+                              optionLabel="spvName" optionValue="customerSpvId"
+                              placeholder="-- Select --" [style]="{'min-width':'148px','font-size':'12px'}" />
+                          </div>
+                      
+                          <!-- Remove -->
+                          <p-button *ngIf="projects.length > 1" icon="pi pi-times" label="Remove" severity="danger" 
+                              size="small" [text]="true"
+                          />
+
+                          <ng-container formArrayName="wtgs">
+                            <div class="table-wrap">
+                              <p-table [value]="getWtgsArray(i, j).controls" [tableStyle]="{'min-width':'900px'}"
+                                styleClass="p-datatable-sm p-datatable-gridlines demand-table" [rowHover]="true">
+                                <ng-template #header>
+                                  <tr>
+                                    <th class="th-left">WTG Type</th>
+                                    <th class="th-left">Cap (MW)</th>
+                                    <th class="th-left">Tower Type</th>
+                                    <th class="th-left">Blade Type</th>
+                                    <th class="th-center">Total Qty</th>
+                                    @for (month of monthFields; track $index) {
+                                      <th class="th-month">{{ getMonthLabel(month) }}</th>
+                                    }
+                                    <th class="th-total">Row Total</th>
+                                  </tr>
+                                </ng-template>
+                            
+                                <ng-template #body let-wtg let-ri="rowIndex">
+                                  <tr [formGroupName]="ri">
+                                    <td>
+                                      <input pInputText formControlName="wtgType" class="n-inp" style="width:78px;text-align:left" />
+                                    </td>
+                                    <td>
+                                      <input pInputText formControlName="capMw" class="n-inp" style="width:78px;text-align:left" />
+                                    </td>
+                                    <td>
+                                      <input pInputText formControlName="towerType" [value]="wtg.towerType" class="n-inp" style="width:78px;text-align:left" />
+                                    </td>
+                                    <td>
+                                      <input pInputText formControlName="bladeType" class="n-inp" style="width:78px;text-align:left" />
+                                    </td>
+                                    <td>
+                                      <input pInputText formControlName="totalQty" class="n-inp" style="width:78px;text-align:left" />
+                                    </td>
+                                    @for (month of monthFields; track $index) {
+                                      <td class="n-inp">
+                                        <input pInputText [formControlName]="month.key" class="n-inp" style="width:78px;text-align:left" />
+                                      </td>
+                                    }
+                                    <td class="rt-cell">{{ rowTotal(wtg) }}</td>
+                            
+                                  </tr>
+                                </ng-template>
+                            
+                                <ng-template #footer>
+                                  <tr class="total-row">
+                                    <td colspan="4" class="total-label">TOTAL</td>
+                                    <td class="tv" style="text-align:center">{{ qtyTotal(getWtgsArray(i, j)) }}</td>
+                                    @for (month of monthFields; track $index) {
+                                      <td class="tv" style="text-align:center">
+                                        {{ colTotal(getWtgsArray(i, j), month.key) }}</td>
+                                    }
+                                    <td class="tv rt-cell">{{ getGrandTotal(i, j) }}</td>
+                                  </tr>
+                                </ng-template>
+                              </p-table>
+                            </div>
+                          </ng-container>
+                        </ng-container>
+                      
+                    }
+                  </ng-container>
+
+                }
+              </div>
             </div>
-        
-            <!-- SPV -->
-            <div class="sel-grp">
-              <label>SPV</label>
-              <p-select appendTo="body" [options]="projectSpvList"
-                (onChange)="selectedSpv($event.value)"
-                optionLabel="spvName" optionValue="customerSpvId"
-                placeholder="-- Select --" [style]="{'min-width':'148px','font-size':'12px'}" />
-            </div>
-        
-            <!-- Remove -->
-            <p-button *ngIf="projects.length > 1" icon="pi pi-times" label="Remove" severity="danger" size="small" [text]="true"
-            />
           </div>
         </div>
-      </div>
-    </div>
+      }
+    </ng-container>
 </form>
 
 
@@ -282,8 +357,8 @@
   <div class="sum-tiles mb-4">
     <div class="s-tile"><div class="s-tile-lbl">Projects</div><div class="s-tile-val">{{ summaryProjects.length }}</div></div>
     <div class="s-tile"><div class="s-tile-lbl">WTG Rows</div><div class="s-tile-val">{{ getTotalRows() }}</div></div>
-    <div class="s-tile"><div class="s-tile-lbl">Total Qty</div><div class="s-tile-val">{{ summaryTotalQty }}</div></div>
-    <div class="s-tile"><div class="s-tile-lbl">Units Planned</div><div class="s-tile-val" style="color:var(--blue)">{{ summaryTotalUnits }}</div></div>
+    <!-- <div class="s-tile"><div class="s-tile-lbl">Total Qty</div><div class="s-tile-val">{{ summaryTotalQty }}</div></div> -->
+    <!-- <div class="s-tile"><div class="s-tile-lbl">Units Planned</div><div class="s-tile-val" style="color:var(--blue)">{{ summaryTotalUnits }}</div></div> -->
   </div>
 
   <div class="modal-section-label">Detailed Breakdown</div>
@@ -322,11 +397,11 @@
       <ng-template #footer>
         <tr class="total-row">
           <td colspan="7" class="total-label">GRAND TOTAL</td>
-          <td class="tv">{{ summaryTotalQty }}</td>
-          <td *ngFor="let m of getMonthLabels(); let mi = index; trackBy: trackByIdx" class="tv">
+          <!-- <td class="tv">{{ summaryTotalQty }}</td> -->
+          <!-- <td *ngFor="let m of getMonthLabels(); let mi = index; trackBy: trackByIdx" class="tv">
             {{ summaryColTotal(mi) }}
-          </td>
-          <td class="tv">{{ summaryTotalUnits }}</td>
+          </td> -->
+          <!-- <td class="tv">{{ summaryTotalUnits }}</td> -->
         </tr>
       </ng-template>
     </p-table>
