@@ -4,6 +4,46 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_DEPARTMENTS: any[] = [
+  { departmentId: 1, departmentName: 'Blade Manufacturing', departmentHead: { userId: 101, userName: 'Rajesh Kumar' }, clusters: [{ clusterId: 1 }, { clusterId: 2 }], status: true },
+  { departmentId: 2, departmentName: 'Nacelle Assembly', departmentHead: { userId: 102, userName: 'Priya Sharma' }, clusters: [{ clusterId: 3 }], status: true },
+  { departmentId: 3, departmentName: 'Tower Fabrication', departmentHead: { userId: 103, userName: 'Anil Menon' }, clusters: [{ clusterId: 1 }], status: true },
+  { departmentId: 4, departmentName: 'Quality Assurance', departmentHead: { userId: 104, userName: 'Sunita Rao' }, clusters: [], status: true },
+  { departmentId: 5, departmentName: 'Logistics & Transport', departmentHead: { userId: 105, userName: 'Vikram Singh' }, clusters: [{ clusterId: 4 }, { clusterId: 5 }], status: false },
+  { departmentId: 6, departmentName: 'Site Erection', departmentHead: { userId: 106, userName: 'Kiran Patel' }, clusters: [{ clusterId: 2 }], status: true },
+  { departmentId: 7, departmentName: 'Grid Connectivity', departmentHead: { userId: 107, userName: 'Deepa Nair' }, clusters: [], status: true },
+  { departmentId: 8, departmentName: 'Procurement', departmentHead: { userId: 108, userName: 'Manoj Verma' }, clusters: [{ clusterId: 3 }], status: false },
+  { departmentId: 9, departmentName: 'Project Planning', departmentHead: { userId: 109, userName: 'Ritu Agarwal' }, clusters: [{ clusterId: 1 }, { clusterId: 5 }], status: true },
+  { departmentId: 10, departmentName: 'HSE (Health, Safety & Environment)', departmentHead: { userId: 110, userName: 'Arjun Reddy' }, clusters: [], status: true },
+];
+
+const MOCK_USERS: any[] = [
+  { user: { userId: 101, userName: 'Rajesh Kumar' } },
+  { user: { userId: 102, userName: 'Priya Sharma' } },
+  { user: { userId: 103, userName: 'Anil Menon' } },
+  { user: { userId: 104, userName: 'Sunita Rao' } },
+  { user: { userId: 105, userName: 'Vikram Singh' } },
+  { user: { userId: 106, userName: 'Kiran Patel' } },
+  { user: { userId: 107, userName: 'Deepa Nair' } },
+  { user: { userId: 108, userName: 'Manoj Verma' } },
+  { user: { userId: 109, userName: 'Ritu Agarwal' } },
+  { user: { userId: 110, userName: 'Arjun Reddy' } },
+];
+
+const MOCK_CLUSTER_INFO: any[] = [
+  { clusterId: 1, clusterCode: 'GJ', clusterName: 'Gujarat Cluster' },
+  { clusterId: 2, clusterCode: 'TN', clusterName: 'Tamil Nadu Cluster' },
+  { clusterId: 3, clusterCode: 'RJ', clusterName: 'Rajasthan Cluster' },
+  { clusterId: 4, clusterCode: 'KA', clusterName: 'Karnataka Cluster' },
+  { clusterId: 5, clusterCode: 'MH', clusterName: 'Maharashtra Cluster' },
+  { clusterId: 6, clusterCode: 'AP', clusterName: 'Andhra Pradesh Cluster' },
+  { clusterId: 7, clusterCode: 'MP', clusterName: 'Madhya Pradesh Cluster' },
+  { clusterId: 8, clusterCode: 'TS', clusterName: 'Telangana Cluster' },
+  { clusterId: 9, clusterCode: 'OD', clusterName: 'Odisha Cluster' },
+  { clusterId: 10, clusterCode: 'UP', clusterName: 'Uttar Pradesh Cluster' },
+];
+
 @Component({
   selector: 'app-departments',
   imports: [Shared],
@@ -58,10 +98,17 @@ export class Departments implements OnInit {
         },
         error: err => {
           console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.departmentList = MOCK_DEPARTMENTS;
+          }
         }
       })
     } catch (error) {
       console.log(error);
+      this.departmentList = MOCK_DEPARTMENTS;
     }
   }
 
@@ -77,11 +124,14 @@ export class Departments implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.userList = MOCK_USERS;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.userList = MOCK_USERS;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -237,12 +287,15 @@ export class Departments implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.clusterInfoList = MOCK_CLUSTER_INFO;
           }
         }
       })
     } catch (error) {
       console.log(error);
       this.deptClusterModalLoading = false;
+      this.clusterInfoList = MOCK_CLUSTER_INFO;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

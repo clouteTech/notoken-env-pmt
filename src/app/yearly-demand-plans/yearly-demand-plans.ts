@@ -3,6 +3,20 @@ import { Shared } from '../shared/services/shared';
 import { Apiservice } from '../service/apiservice';
 import { MessageService } from 'primeng/api';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_YEARLY_DEMAND_PLAN: any[] = [
+  { yearlyDemandPlanId: 1, planYear: 2026, customer: { customerId: 1, customerName: 'ReNew Power' } },
+  { yearlyDemandPlanId: 2, planYear: 2026, customer: { customerId: 2, customerName: 'Adani Green Energy' } },
+  { yearlyDemandPlanId: 3, planYear: 2027, customer: { customerId: 3, customerName: 'Suzlon Energy' } },
+  { yearlyDemandPlanId: 4, planYear: 2026, customer: { customerId: 4, customerName: 'Greenko' } },
+  { yearlyDemandPlanId: 5, planYear: 2027, customer: { customerId: 5, customerName: 'Tata Power Renewable' } },
+  { yearlyDemandPlanId: 6, planYear: 2026, customer: { customerId: 1, customerName: 'ReNew Power' } },
+  { yearlyDemandPlanId: 7, planYear: 2025, customer: { customerId: 2, customerName: 'Adani Green Energy' } },
+  { yearlyDemandPlanId: 8, planYear: 2027, customer: { customerId: 3, customerName: 'Suzlon Energy' } },
+  { yearlyDemandPlanId: 9, planYear: 2026, customer: { customerId: 4, customerName: 'Greenko' } },
+  { yearlyDemandPlanId: 10, planYear: 2027, customer: { customerId: 5, customerName: 'Tata Power Renewable' } },
+];
+
 @Component({
   selector: 'app-yearly-demand-plans',
   imports: [Shared],
@@ -53,11 +67,17 @@ export class YearlyDemandPlans implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.yearlyDemandPlanList = MOCK_YEARLY_DEMAND_PLAN;
+            this.totalRecords = MOCK_YEARLY_DEMAND_PLAN.length;
           }
         }
       })
     } catch (error) {
       console.log(error);
+
+      this.yearlyDemandPlanList = MOCK_YEARLY_DEMAND_PLAN;
+      this.totalRecords = MOCK_YEARLY_DEMAND_PLAN.length;
 
       this.messageService.add({
         severity: 'error',

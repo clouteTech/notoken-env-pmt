@@ -4,6 +4,85 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_COMPANY_USERS: any[] = [
+  { userId: 1, userName: 'Sanjay Kumar', email: 'sanjay.kumar@windtechindia.com', userGroups: [{ userGroupId: 1, groupName: 'Super Admin Group' }], status: true },
+  { userId: 2, userName: 'Ananya Iyer', email: 'ananya.iyer@windtechindia.com', userGroups: [{ userGroupId: 2, groupName: 'Plant Operations Group' }], status: true },
+  { userId: 3, userName: 'Sivakumar R', email: 'sivakumar.r@windtechindia.com', userGroups: [{ userGroupId: 3, groupName: 'Project Management Group' }], status: false },
+  { userId: 4, userName: 'Kayalvizhi M', email: 'kayalvizhi.m@windtechindia.com', userGroups: [{ userGroupId: 4, groupName: 'Quality Control Group' }], status: true },
+  { userId: 5, userName: 'Rakesh Patel', email: 'rakesh.patel@windtechindia.com', userGroups: [{ userGroupId: 5, groupName: 'Logistics Group' }], status: true },
+  { userId: 6, userName: 'Meera Shah', email: 'meera.shah@windtechindia.com', userGroups: [{ userGroupId: 6, groupName: 'Finance Group' }], status: true },
+  { userId: 7, userName: 'Vikram Singh', email: 'vikram.singh@windtechindia.com', userGroups: [{ userGroupId: 7, groupName: 'HR Group' }], status: false },
+  { userId: 8, userName: 'Deepa Nair', email: 'deepa.nair@windtechindia.com', userGroups: [{ userGroupId: 8, groupName: 'Site Engineering Group' }], status: true },
+  { userId: 9, userName: 'Suresh Reddy', email: 'suresh.reddy@windtechindia.com', userGroups: [{ userGroupId: 9, groupName: 'Store & Inventory Group' }], status: true },
+  { userId: 10, userName: 'Arjun Mehta', email: 'arjun.mehta@windtechindia.com', userGroups: [], status: true },
+];
+
+const MOCK_USER_GROUP_INFO: any[] = [
+  { userGroupId: 1, groupName: 'Super Admin Group' },
+  { userGroupId: 2, groupName: 'Plant Operations Group' },
+  { userGroupId: 3, groupName: 'Project Management Group' },
+  { userGroupId: 4, groupName: 'Quality Control Group' },
+  { userGroupId: 5, groupName: 'Logistics Group' },
+  { userGroupId: 6, groupName: 'Finance Group' },
+  { userGroupId: 7, groupName: 'HR Group' },
+  { userGroupId: 8, groupName: 'Site Engineering Group' },
+  { userGroupId: 9, groupName: 'Store & Inventory Group' },
+  { userGroupId: 10, groupName: 'Read Only Viewers' },
+];
+
+const MOCK_PLANT_INFO: any[] = [
+  { id: 1, plant: 'Plant Chennai', location: 'Chennai, Tamil Nadu', plantManager: 'Sanjay Kumar' },
+  { id: 2, plant: 'Plant Pune', location: 'Pune, Maharashtra', plantManager: 'Ananya Iyer' },
+  { id: 3, plant: 'Plant Trichy', location: 'Tiruchirappalli, Tamil Nadu', plantManager: 'Sivakumar R' },
+  { id: 4, plant: 'Plant Tuticorin', location: 'Thoothukudi, Tamil Nadu', plantManager: 'Kayalvizhi M' },
+  { id: 5, plant: 'Plant Vadodara', location: 'Vadodara, Gujarat', plantManager: 'Rakesh Patel' },
+  { id: 6, plant: 'Plant Kutch', location: 'Bhuj, Gujarat', plantManager: 'Meera Shah' },
+  { id: 7, plant: 'Plant Jaisalmer', location: 'Jaisalmer, Rajasthan', plantManager: 'Vikram Singh' },
+  { id: 8, plant: 'Plant Bengaluru', location: 'Bengaluru, Karnataka', plantManager: 'Deepa Nair' },
+  { id: 9, plant: 'Plant Hyderabad', location: 'Hyderabad, Telangana', plantManager: 'Suresh Reddy' },
+  { id: 10, plant: 'Plant Kutch Warehouse', location: 'Bhuj, Gujarat', plantManager: 'Arjun Mehta' },
+];
+
+const MOCK_CLUSTER_INFO: any[] = [
+  { clusterId: 1, clusterName: 'Kutch Cluster', clusterCode: 'KCH01' },
+  { clusterId: 2, clusterName: 'Jaisalmer Cluster', clusterCode: 'JSM01' },
+  { clusterId: 3, clusterName: 'Chitradurga Cluster', clusterCode: 'CTD01' },
+  { clusterId: 4, clusterName: 'Tuticorin Cluster', clusterCode: 'TUT01' },
+  { clusterId: 5, clusterName: 'Kayathar Cluster', clusterCode: 'KYT01' },
+  { clusterId: 6, clusterName: 'Coimbatore Cluster', clusterCode: 'CBE01' },
+  { clusterId: 7, clusterName: 'Bhuj Cluster', clusterCode: 'BHJ01' },
+  { clusterId: 8, clusterName: 'Kayamkulam Cluster', clusterCode: 'KYM01' },
+  { clusterId: 9, clusterName: 'Anantapur Cluster', clusterCode: 'ATP01' },
+  { clusterId: 10, clusterName: 'Devgadh Baria Cluster', clusterCode: 'DGB01' },
+];
+
+const MOCK_DEPARTMENT_INFO: any[] = [
+  { departmentId: 1, departmentName: 'Manufacturing' },
+  { departmentId: 2, departmentName: 'Quality Assurance' },
+  { departmentId: 3, departmentName: 'Logistics & Supply Chain' },
+  { departmentId: 4, departmentName: 'Project Management' },
+  { departmentId: 5, departmentName: 'Site Installation' },
+  { departmentId: 6, departmentName: 'Finance & Accounts' },
+  { departmentId: 7, departmentName: 'Human Resources' },
+  { departmentId: 8, departmentName: 'Procurement' },
+  { departmentId: 9, departmentName: 'Engineering & Design' },
+  { departmentId: 10, departmentName: 'Maintenance & Service' },
+];
+
+const MOCK_COMPONENT_INFO: any[] = [
+  { componentId: 1, componentName: 'Topflange' },
+  { componentId: 2, componentName: 'Bottomflange' },
+  { componentId: 3, componentName: 'Blade' },
+  { componentId: 4, componentName: 'Nacelle' },
+  { componentId: 5, componentName: 'Hub' },
+  { componentId: 6, componentName: 'Tower' },
+  { componentId: 7, componentName: 'Converter Panel' },
+  { componentId: 8, componentName: 'Site Accessories' },
+  { componentId: 9, componentName: 'SCADA' },
+  { componentId: 10, componentName: 'Generator' },
+];
+
 @Component({
   selector: 'app-company-users',
   imports: [Shared],
@@ -101,11 +180,16 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.companyUserList = MOCK_COMPANY_USERS;
+            this.totalRecords = MOCK_COMPANY_USERS.length;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.companyUserList = MOCK_COMPANY_USERS;
+      this.totalRecords = MOCK_COMPANY_USERS.length;
     }
   }
 
@@ -604,12 +688,15 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.userGroupList = MOCK_USER_GROUP_INFO;
           }
         }
       })
     } catch (error) {
       console.log(error);
       this.userGroupModalLoading = false;
+      this.userGroupList = MOCK_USER_GROUP_INFO;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -655,12 +742,15 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.plantInfoList = MOCK_PLANT_INFO;
           }
         }
       })
     } catch (error) {
       console.log(error);
       this.plantModalLoading = false;
+      this.plantInfoList = MOCK_PLANT_INFO;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -890,12 +980,15 @@ export class CompanyUsers implements OnInit {
           this.clusterModalLoading = false;
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.clusterInfoList = MOCK_CLUSTER_INFO;
           }
         }
       })
     } catch (error) {
       console.log(error);
       this.clusterModalLoading = false;
+      this.clusterInfoList = MOCK_CLUSTER_INFO;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -913,12 +1006,15 @@ export class CompanyUsers implements OnInit {
           this.departmentModalLoading = false;
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.departmentInfoList = MOCK_DEPARTMENT_INFO;
           }
         }
       })
     } catch (error) {
       console.log(error);
       this.departmentModalLoading = false;
+      this.departmentInfoList = MOCK_DEPARTMENT_INFO;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -938,12 +1034,15 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.componentList = MOCK_COMPONENT_INFO;
           }
         }
       })
     } catch (error) {
       console.log(error);
       this.componentModalLoading = false;
+      this.componentList = MOCK_COMPONENT_INFO;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

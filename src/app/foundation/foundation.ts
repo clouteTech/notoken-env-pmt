@@ -42,7 +42,32 @@ export interface ViewColumn {
   stepIdx: number;
 }
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_FOUNDATION_PROJECTS: any[] = [
+  { projectId: 1, projectCode: 'ENV-P101', projectName: 'Kutch Wind Farm Phase 1', totalWtgs: 12, customer: { customerId: 1, customerName: 'Adani Green Energy Ltd' } },
+  { projectId: 2, projectCode: 'ENV-P102', projectName: 'Jaisalmer Cluster Phase 2', totalWtgs: 8, customer: { customerId: 2, customerName: 'ReNew Power Pvt Ltd' } },
+  { projectId: 3, projectCode: 'ENV-P103', projectName: 'Bhuj Coastal Wind Project', totalWtgs: 15, customer: { customerId: 3, customerName: 'Tata Power Renewable Energy' } },
+  { projectId: 4, projectCode: 'ENV-P104', projectName: 'Kayathar Wind Farm', totalWtgs: 6, customer: { customerId: 4, customerName: 'Suzlon Energy Ltd' } },
+  { projectId: 5, projectCode: 'ENV-P105', projectName: 'Chitradurga Wind Corridor', totalWtgs: 10, customer: { customerId: 5, customerName: 'Greenko Energies Pvt Ltd' } },
+  { projectId: 6, projectCode: 'ENV-P106', projectName: 'Kutch Bhuj Extension Phase 3', totalWtgs: 9, customer: { customerId: 6, customerName: 'CleanMax Enviro Energy' } },
+  { projectId: 7, projectCode: 'ENV-P107', projectName: 'Rajkot Wind Energy Park', totalWtgs: 7, customer: { customerId: 7, customerName: 'Sembcorp Green Infra' } },
+  { projectId: 8, projectCode: 'ENV-P108', projectName: 'Tuticorin Coastal Cluster', totalWtgs: 11, customer: { customerId: 8, customerName: 'Vestas Wind Technology India' } },
+  { projectId: 9, projectCode: 'ENV-P109', projectName: 'Anantapur Wind Complex', totalWtgs: 14, customer: { customerId: 9, customerName: 'Torrent Power Ltd' } },
+  { projectId: 10, projectCode: 'ENV-P110', projectName: 'Dhule Wind Energy Farm', totalWtgs: 5, customer: { customerId: 10, customerName: 'Continuum Green Energy' } },
+];
 
+const MOCK_FOUNDATION_VIEWALL: any[] = [
+  { wtgCode: 'WTG-01', locationNo: 'LOC-01', maximoId: 'MAX-001' },
+  { wtgCode: 'WTG-02', locationNo: 'LOC-02', maximoId: 'MAX-002' },
+  { wtgCode: 'WTG-03', locationNo: 'LOC-03', maximoId: 'MAX-003' },
+  { wtgCode: 'WTG-04', locationNo: 'LOC-04', maximoId: 'MAX-004' },
+  { wtgCode: 'WTG-05', locationNo: 'LOC-05', maximoId: 'MAX-005' },
+  { wtgCode: 'WTG-06', locationNo: 'LOC-06', maximoId: 'MAX-006' },
+  { wtgCode: 'WTG-07', locationNo: 'LOC-07', maximoId: 'MAX-007' },
+  { wtgCode: 'WTG-08', locationNo: 'LOC-08', maximoId: 'MAX-008' },
+  { wtgCode: 'WTG-09', locationNo: 'LOC-09', maximoId: 'MAX-009' },
+  { wtgCode: 'WTG-10', locationNo: 'LOC-10', maximoId: 'MAX-010' },
+];
 
 @Component({
   selector: 'app-foundation',
@@ -289,11 +314,16 @@ export class Foundation {
          next:(res)=>{
            this.summaryRows = res.data.content
          },error:(err)=>{
-         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+         if (err.status === 400) {
+           this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+         } else {
+           this.summaryRows = MOCK_FOUNDATION_PROJECTS;
+         }
          }
        })
- 
+
      }catch(e){
+       this.summaryRows = MOCK_FOUNDATION_PROJECTS;
        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
      }
    }
@@ -428,9 +458,13 @@ export class Foundation {
        next:(res)=>{
          console.log(res);
          this.viewAllData = res.data
-         
+
        },error:(err)=>{
-         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+         if (err.status === 400) {
+           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+         } else {
+           this.viewAllData = MOCK_FOUNDATION_VIEWALL;
+         }
        }
      })
    }

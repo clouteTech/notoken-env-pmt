@@ -43,6 +43,41 @@ export class WtgReceivingProjectSummary {
       projectCode: 'P-8005',
       projectName: 'India_AzurePower_Pune_Maharashtra_Phase1_150MW',
       wtgCount: 4
+    },
+    {
+      slNo: 6,
+      openWtg: 'WTG-006',
+      projectCode: 'P-8006',
+      projectName: 'India_Suzlon_Jaisalmer_Rajasthan_Phase2_200MW',
+      wtgCount: 3
+    },
+    {
+      slNo: 7,
+      openWtg: 'WTG-007',
+      projectCode: 'P-8007',
+      projectName: 'India_HeroFuture_Bhuj_Gujarat_Phase1_275MW',
+      wtgCount: 5
+    },
+    {
+      slNo: 8,
+      openWtg: 'WTG-008',
+      projectCode: 'P-8008',
+      projectName: 'India_Continuum_Sangareddy_Telangana_Phase1_120MW',
+      wtgCount: 2
+    },
+    {
+      slNo: 9,
+      openWtg: 'WTG-009',
+      projectCode: 'P-8009',
+      projectName: 'India_JSWEnergy_Devgadh_Rajasthan_Phase2_300MW',
+      wtgCount: 6
+    },
+    {
+      slNo: 10,
+      openWtg: 'WTG-010',
+      projectCode: 'P-8010',
+      projectName: 'India_Torrent_Chitradurga_Karnataka_Phase1_180MW',
+      wtgCount: 4
     }
   ];
 }

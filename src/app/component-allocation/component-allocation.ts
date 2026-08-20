@@ -72,6 +72,46 @@ export class ComponentAllocation {
     plantManager: 'Arjun Naik',
     projectCode: 'P-8005',
     allocatedQuantity: 20
+  },
+  {
+    slNo: 6,
+    component: 'Blade',
+    plantName: 'Plant B',
+    plantManager: 'Suresh Reddy',
+    projectCode: 'P-8006',
+    allocatedQuantity: 18
+  },
+  {
+    slNo: 7,
+    component: 'Nacelle',
+    plantName: 'Plant C',
+    plantManager: 'Manjunath H',
+    projectCode: 'P-8007',
+    allocatedQuantity: 12
+  },
+  {
+    slNo: 8,
+    component: 'Hub',
+    plantName: 'Plant A',
+    plantManager: 'Ravi Kumar',
+    projectCode: 'P-8008',
+    allocatedQuantity: 22
+  },
+  {
+    slNo: 9,
+    component: 'Tower',
+    plantName: 'Plant D',
+    plantManager: 'Lakshmi Devi',
+    projectCode: 'P-8009',
+    allocatedQuantity: 16
+  },
+  {
+    slNo: 10,
+    component: 'Converter Panel',
+    plantName: 'Plant E',
+    plantManager: 'Arjun Naik',
+    projectCode: 'P-8010',
+    allocatedQuantity: 24
   }
 ];
 }

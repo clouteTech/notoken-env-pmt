@@ -63,6 +63,72 @@ export class WtgQuality implements OnInit {
       customerInspectionActual: null,
       mdccPlan: '2026-04-11',
       mdccActual: null
+    },
+    {
+      slNo: 5,
+      component: 'Converter Panel',
+      serialNumber: 'CNV-CHN-005',
+      finalQcDate: '2026-04-06',
+      projectCode: 'P-8005',
+      inspectionCallPlan: '2026-04-09',
+      customerInspectionActual: '2026-04-10',
+      mdccPlan: '2026-04-12',
+      mdccActual: '2026-04-13'
+    },
+    {
+      slNo: 6,
+      component: 'Nacelle',
+      serialNumber: 'NAC-PUN-006',
+      finalQcDate: '2026-04-07',
+      projectCode: 'P-8006',
+      inspectionCallPlan: '2026-04-10',
+      customerInspectionActual: null,
+      mdccPlan: '2026-04-13',
+      mdccActual: null
+    },
+    {
+      slNo: 7,
+      component: 'Hub',
+      serialNumber: 'HUB-TRY-007',
+      finalQcDate: '2026-04-08',
+      projectCode: 'P-8007',
+      inspectionCallPlan: '2026-04-11',
+      customerInspectionActual: '2026-04-12',
+      mdccPlan: '2026-04-14',
+      mdccActual: '2026-04-15'
+    },
+    {
+      slNo: 8,
+      component: 'Blade',
+      serialNumber: 'BLD-CHN-008',
+      finalQcDate: '2026-04-09',
+      projectCode: 'P-8008',
+      inspectionCallPlan: '2026-04-12',
+      customerInspectionActual: '2026-04-13',
+      mdccPlan: '2026-04-15',
+      mdccActual: null
+    },
+    {
+      slNo: 9,
+      component: 'Tower',
+      serialNumber: 'TWR-BLG-009',
+      finalQcDate: '2026-04-10',
+      projectCode: 'P-8009',
+      inspectionCallPlan: '2026-04-13',
+      customerInspectionActual: '2026-04-14',
+      mdccPlan: '2026-04-16',
+      mdccActual: '2026-04-17'
+    },
+    {
+      slNo: 10,
+      component: 'Converter Panel',
+      serialNumber: 'CNV-KTC-010',
+      finalQcDate: '2026-04-11',
+      projectCode: 'P-8010',
+      inspectionCallPlan: '2026-04-14',
+      customerInspectionActual: null,
+      mdccPlan: '2026-04-17',
+      mdccActual: null
     }
   ]
 

@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_TOWER_TYPES: any[] = [
+  { towerTypeId: 1, towerType: '120HH-474T', sectionCount: 5, status: true },
+  { towerTypeId: 2, towerType: '140HH-520T', sectionCount: 6, status: true },
+  { towerTypeId: 3, towerType: '100HH-380T', sectionCount: 4, status: false },
+  { towerTypeId: 4, towerType: '160HH-560T', sectionCount: 7, status: true },
+  { towerTypeId: 5, towerType: '130HH-490T', sectionCount: 5, status: true },
+  { towerTypeId: 6, towerType: '150HH-540T', sectionCount: 6, status: true },
+  { towerTypeId: 7, towerType: '110HH-410T', sectionCount: 4, status: false },
+  { towerTypeId: 8, towerType: '145HH-510T', sectionCount: 6, status: true },
+  { towerTypeId: 9, towerType: '135HH-500T', sectionCount: 5, status: true },
+  { towerTypeId: 10, towerType: '125HH-480T', sectionCount: 5, status: true },
+];
+
 @Component({
   selector: 'app-tower-types',
   imports: [Shared],
@@ -56,11 +70,14 @@ export class TowerTypes implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.towerTypeList = MOCK_TOWER_TYPES;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.towerTypeList = MOCK_TOWER_TYPES;
     }
   }
 

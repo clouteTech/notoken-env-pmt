@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_GRID_CONNECTIVITIES: any[] = [
+  { gridConnectivityId: 1, gridConnectivity: 'STU', status: true },
+  { gridConnectivityId: 2, gridConnectivity: 'CTU', status: true },
+  { gridConnectivityId: 3, gridConnectivity: 'ISTS', status: true },
+  { gridConnectivityId: 4, gridConnectivity: 'Intra-State', status: true },
+  { gridConnectivityId: 5, gridConnectivity: 'Inter-State', status: false },
+  { gridConnectivityId: 6, gridConnectivity: 'DISCOM Direct', status: true },
+  { gridConnectivityId: 7, gridConnectivity: '33kV Feeder', status: true },
+  { gridConnectivityId: 8, gridConnectivity: '66kV Substation', status: false },
+  { gridConnectivityId: 9, gridConnectivity: '132kV Substation', status: true },
+  { gridConnectivityId: 10, gridConnectivity: '220kV Substation', status: true },
+];
+
 @Component({
   selector: 'app-grid-connectivities',
   imports: [Shared],
@@ -50,11 +64,14 @@ export class GridConnectivities {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.gridConnectivityList = MOCK_GRID_CONNECTIVITIES;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.gridConnectivityList = MOCK_GRID_CONNECTIVITIES;
     }
   }
 

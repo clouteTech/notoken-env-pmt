@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_WTG_CAPACITIES: any[] = [
+  { capacityId: 1, capacity: 2.1, unit: 'MW', status: true },
+  { capacityId: 2, capacity: 2.5, unit: 'MW', status: true },
+  { capacityId: 3, capacity: 3.0, unit: 'MW', status: true },
+  { capacityId: 4, capacity: 3.3, unit: 'MW', status: false },
+  { capacityId: 5, capacity: 3.6, unit: 'MW', status: true },
+  { capacityId: 6, capacity: 4.2, unit: 'MW', status: true },
+  { capacityId: 7, capacity: 1.5, unit: 'MW', status: false },
+  { capacityId: 8, capacity: 2.0, unit: 'MW', status: true },
+  { capacityId: 9, capacity: 2.8, unit: 'MW', status: true },
+  { capacityId: 10, capacity: 3.8, unit: 'MW', status: true },
+];
+
 @Component({
   selector: 'app-wtg-capacities',
   imports: [Shared],
@@ -56,11 +70,14 @@ export class WtgCapacities implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.wtgCapacityList = MOCK_WTG_CAPACITIES;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.wtgCapacityList = MOCK_WTG_CAPACITIES;
     }
   }
 

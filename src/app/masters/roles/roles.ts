@@ -3,6 +3,20 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_ROLES: any[] = [
+  { roleId: 1, roleKey: 'SUPER_ADMIN', action: 'ALL', resource: 'ALL', description: 'Full system access' },
+  { roleId: 2, roleKey: 'PLANT_ADMIN', action: 'WRITE', resource: 'PLANT', description: 'Manage plant operations' },
+  { roleId: 3, roleKey: 'PROJECT_MANAGER', action: 'WRITE', resource: 'PROJECT', description: 'Manage project lifecycle' },
+  { roleId: 4, roleKey: 'QUALITY_INSPECTOR', action: 'READ', resource: 'QC', description: 'Quality inspection access' },
+  { roleId: 5, roleKey: 'LOGISTICS_COORDINATOR', action: 'WRITE', resource: 'LOGISTICS', description: 'Coordinate crane and transport logistics' },
+  { roleId: 6, roleKey: 'FINANCE_MANAGER', action: 'READ', resource: 'FINANCE', description: 'View financial reports' },
+  { roleId: 7, roleKey: 'STORE_KEEPER', action: 'WRITE', resource: 'INVENTORY', description: 'Manage inventory records' },
+  { roleId: 8, roleKey: 'HR_MANAGER', action: 'WRITE', resource: 'HR', description: 'Manage employee records' },
+  { roleId: 9, roleKey: 'SITE_ENGINEER', action: 'WRITE', resource: 'INSTALLATION', description: 'Manage installation activities' },
+  { roleId: 10, roleKey: 'VIEWER', action: 'READ', resource: 'ALL', description: 'Read only access across modules' },
+];
+
 @Component({
   selector: 'app-roles',
   imports: [Shared],
@@ -48,11 +62,14 @@ export class Roles implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.roleList = MOCK_ROLES;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.roleList = MOCK_ROLES;
     }
   }
 

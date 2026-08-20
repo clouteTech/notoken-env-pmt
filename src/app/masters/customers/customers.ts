@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_CUSTOMERS: any[] = [
+  { customerId: 1, customerCode: 'CUST001', customerName: 'ReNew Power Pvt Ltd' },
+  { customerId: 2, customerCode: 'CUST002', customerName: 'Adani Green Energy Ltd' },
+  { customerId: 3, customerCode: 'CUST003', customerName: 'Suzlon Energy Ltd' },
+  { customerId: 4, customerCode: 'CUST004', customerName: 'Greenko Energies Pvt Ltd' },
+  { customerId: 5, customerCode: 'CUST005', customerName: 'Tata Power Renewable Energy Ltd' },
+  { customerId: 6, customerCode: 'CUST006', customerName: 'CleanMax Enviro Energy Solutions' },
+  { customerId: 7, customerCode: 'CUST007', customerName: 'Continuum Green Energy Ltd' },
+  { customerId: 8, customerCode: 'CUST008', customerName: 'Hero Future Energies Pvt Ltd' },
+  { customerId: 9, customerCode: 'CUST009', customerName: 'Ayana Renewable Power Pvt Ltd' },
+  { customerId: 10, customerCode: 'CUST010', customerName: 'JSW Energy Ltd' },
+];
+
 @Component({
   selector: 'app-customers',
   imports: [Shared],
@@ -52,15 +66,20 @@ export class Customers {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.customerList = MOCK_CUSTOMERS;
+            this.totalRecords = MOCK_CUSTOMERS.length;
           }
         }
       })
 
     }catch(e){
+      this.customerList = MOCK_CUSTOMERS;
+      this.totalRecords = MOCK_CUSTOMERS.length;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
-  
+
   getMenuItems(row: any){
     return [
       {

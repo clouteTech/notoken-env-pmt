@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_PPA_TYPES: any[] = [
+  { ppaTypeId: 1, ppaType: 'Fixed Tariff PPA', status: true },
+  { ppaTypeId: 2, ppaType: 'Group Captive PPA', status: true },
+  { ppaTypeId: 3, ppaType: 'Merchant PPA', status: false },
+  { ppaTypeId: 4, ppaType: 'Wheeling PPA', status: true },
+  { ppaTypeId: 5, ppaType: 'Third Party Sale PPA', status: true },
+  { ppaTypeId: 6, ppaType: 'Open Access PPA', status: true },
+  { ppaTypeId: 7, ppaType: 'Hybrid PPA', status: false },
+  { ppaTypeId: 8, ppaType: 'Banking PPA', status: true },
+  { ppaTypeId: 9, ppaType: 'Feed-in Tariff PPA', status: true },
+  { ppaTypeId: 10, ppaType: 'Corporate PPA', status: true },
+];
+
 @Component({
   selector: 'app-ppa-types',
   imports: [Shared],
@@ -52,11 +66,14 @@ export class PpaTypes implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.ppaTypeList = MOCK_PPA_TYPES;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.ppaTypeList = MOCK_PPA_TYPES;
     }
   }
 

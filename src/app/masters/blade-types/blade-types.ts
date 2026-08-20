@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_BLADE_TYPES: any[] = [
+  { bladeTypeId: 1, bladeType: 'EN-141 Blade', countPerWtg: 3, status: true },
+  { bladeTypeId: 2, bladeType: 'EN-156 Blade', countPerWtg: 3, status: true },
+  { bladeTypeId: 3, bladeType: 'EN-165 Blade', countPerWtg: 3, status: true },
+  { bladeTypeId: 4, bladeType: 'S128 Blade', countPerWtg: 3, status: false },
+  { bladeTypeId: 5, bladeType: 'S120 Blade', countPerWtg: 3, status: true },
+  { bladeTypeId: 6, bladeType: 'V150 Blade', countPerWtg: 3, status: true },
+  { bladeTypeId: 7, bladeType: 'GE 2.7-132 Blade', countPerWtg: 3, status: false },
+  { bladeTypeId: 8, bladeType: 'N149 Blade', countPerWtg: 3, status: true },
+  { bladeTypeId: 9, bladeType: 'AW3000 Blade', countPerWtg: 3, status: true },
+  { bladeTypeId: 10, bladeType: 'MP2.5 Blade', countPerWtg: 3, status: true },
+];
+
 @Component({
   selector: 'app-blade-types',
   imports: [Shared],
@@ -58,11 +72,14 @@ export class BladeTypes implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.bladeTypeList = MOCK_BLADE_TYPES;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.bladeTypeList = MOCK_BLADE_TYPES;
     }
   }
 

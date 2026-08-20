@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_CLUSTERS: any[] = [
+  { clusterId: 1, clusterCode: 'GJ', clusterName: 'Gujarat Cluster', status: true },
+  { clusterId: 2, clusterCode: 'TN', clusterName: 'Tamil Nadu Cluster', status: true },
+  { clusterId: 3, clusterCode: 'RJ', clusterName: 'Rajasthan Cluster', status: true },
+  { clusterId: 4, clusterCode: 'KA', clusterName: 'Karnataka Cluster', status: false },
+  { clusterId: 5, clusterCode: 'MH', clusterName: 'Maharashtra Cluster', status: true },
+  { clusterId: 6, clusterCode: 'AP', clusterName: 'Andhra Pradesh Cluster', status: true },
+  { clusterId: 7, clusterCode: 'MP', clusterName: 'Madhya Pradesh Cluster', status: false },
+  { clusterId: 8, clusterCode: 'TS', clusterName: 'Telangana Cluster', status: true },
+  { clusterId: 9, clusterCode: 'OD', clusterName: 'Odisha Cluster', status: true },
+  { clusterId: 10, clusterCode: 'UP', clusterName: 'Uttar Pradesh Cluster', status: true },
+];
+
 @Component({
   selector: 'app-clusters',
   imports: [Shared],
@@ -56,11 +70,14 @@ export class Clusters implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.clusterList = MOCK_CLUSTERS;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.clusterList = MOCK_CLUSTERS;
     }
   }
 

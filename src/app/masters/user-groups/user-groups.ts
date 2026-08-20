@@ -4,6 +4,33 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_USER_GROUPS: any[] = [
+  { userGroupId: 1, groupName: 'Super Admin Group', description: 'Full administrative access to all modules', totalRoles: 1, totalUsers: 2, status: true },
+  { userGroupId: 2, groupName: 'Plant Operations Group', description: 'Manages plant-wise production and configuration', totalRoles: 2, totalUsers: 8, status: true },
+  { userGroupId: 3, groupName: 'Project Management Group', description: 'Handles project, SPV and WTG planning', totalRoles: 3, totalUsers: 6, status: true },
+  { userGroupId: 4, groupName: 'Quality Control Group', description: 'Quality inspection and compliance checks', totalRoles: 1, totalUsers: 5, status: false },
+  { userGroupId: 5, groupName: 'Logistics Group', description: 'Crane, transport and supplier coordination', totalRoles: 2, totalUsers: 4, status: true },
+  { userGroupId: 6, groupName: 'Finance Group', description: 'Budgeting and financial reporting', totalRoles: 1, totalUsers: 3, status: true },
+  { userGroupId: 7, groupName: 'HR Group', description: 'Employee and department management', totalRoles: 1, totalUsers: 3, status: true },
+  { userGroupId: 8, groupName: 'Site Engineering Group', description: 'Installation activity tracking at site', totalRoles: 2, totalUsers: 7, status: true },
+  { userGroupId: 9, groupName: 'Store & Inventory Group', description: 'Component and inventory tracking', totalRoles: 1, totalUsers: 4, status: false },
+  { userGroupId: 10, groupName: 'Read Only Viewers', description: 'View only access across all masters', totalRoles: 1, totalUsers: 10, status: true },
+];
+
+const MOCK_ROLE_INFO: any[] = [
+  { roleId: 1, roleKey: 'SUPER_ADMIN', description: 'Full system access' },
+  { roleId: 2, roleKey: 'PLANT_ADMIN', description: 'Manage plant operations' },
+  { roleId: 3, roleKey: 'PROJECT_MANAGER', description: 'Manage project lifecycle' },
+  { roleId: 4, roleKey: 'QUALITY_INSPECTOR', description: 'Quality inspection access' },
+  { roleId: 5, roleKey: 'LOGISTICS_COORDINATOR', description: 'Coordinate crane and transport logistics' },
+  { roleId: 6, roleKey: 'FINANCE_MANAGER', description: 'View financial reports' },
+  { roleId: 7, roleKey: 'STORE_KEEPER', description: 'Manage inventory records' },
+  { roleId: 8, roleKey: 'HR_MANAGER', description: 'Manage employee records' },
+  { roleId: 9, roleKey: 'SITE_ENGINEER', description: 'Manage installation activities' },
+  { roleId: 10, roleKey: 'VIEWER', description: 'Read only access across modules' },
+];
+
 @Component({
   selector: 'app-user-groups',
   imports: [Shared],
@@ -82,11 +109,16 @@ export class UserGroups implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.userGroupList = MOCK_USER_GROUPS;
+            this.totalRecords = MOCK_USER_GROUPS.length;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.userGroupList = MOCK_USER_GROUPS;
+      this.totalRecords = MOCK_USER_GROUPS.length;
     }
   }
 
@@ -301,12 +333,15 @@ export class UserGroups implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.roleInfoList = MOCK_ROLE_INFO;
           }
         }
       })
     } catch (error) {
       console.log(error);
       this.roleModalLoading = false;
+      this.roleInfoList = MOCK_ROLE_INFO;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

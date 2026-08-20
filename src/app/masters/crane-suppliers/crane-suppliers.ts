@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_CRANE_SUPPLIERS: any[] = [
+  { supplierId: 1, supplierName: 'Sarens Heavy Lift India', contactPerson: 'Arvind Menon', mobileNo: '9840011223', email: 'arvind.menon@sarens.in', status: true },
+  { supplierId: 2, supplierName: 'ALE Heavylift', contactPerson: 'Suresh Iyer', mobileNo: '9845123456', email: 'suresh.iyer@ale-heavylift.com', status: true },
+  { supplierId: 3, supplierName: 'Mammoet India', contactPerson: 'Neha Kapoor', mobileNo: '9880045612', email: 'neha.kapoor@mammoet.com', status: true },
+  { supplierId: 4, supplierName: 'Sanghvi Movers Ltd', contactPerson: 'Rakesh Sanghvi', mobileNo: '9822067890', email: 'rakesh.sanghvi@sanghvimovers.com', status: false },
+  { supplierId: 5, supplierName: 'Tiger Crane Services', contactPerson: 'Manoj Pillai', mobileNo: '9894412378', email: 'manoj.pillai@tigercranes.in', status: true },
+  { supplierId: 6, supplierName: 'Bothra Shipping & Logistics', contactPerson: 'Deepak Bothra', mobileNo: '9811234567', email: 'deepak.bothra@bothra.co.in', status: true },
+  { supplierId: 7, supplierName: 'ACME Crane Rentals', contactPerson: 'Farhan Sheikh', mobileNo: '9900112233', email: 'farhan.sheikh@acmecranes.com', status: false },
+  { supplierId: 8, supplierName: 'GMMCO Cranes', contactPerson: 'Vikram Rathi', mobileNo: '9840098765', email: 'vikram.rathi@gmmco.co.in', status: true },
+  { supplierId: 9, supplierName: 'Perfect Lifting Solutions', contactPerson: 'Anita Desai', mobileNo: '9820054321', email: 'anita.desai@perfectlifting.in', status: true },
+  { supplierId: 10, supplierName: 'National Crane Corporation', contactPerson: 'Ramesh Chandran', mobileNo: '9944778899', email: 'ramesh.chandran@nationalcrane.in', status: true },
+];
+
 @Component({
   selector: 'app-crane-suppliers',
   imports: [Shared],
@@ -69,11 +83,14 @@ export class CraneSuppliers {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.craneSupplierList = MOCK_CRANE_SUPPLIERS;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.craneSupplierList = MOCK_CRANE_SUPPLIERS;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

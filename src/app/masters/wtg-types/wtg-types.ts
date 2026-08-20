@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_WTG_TYPES: any[] = [
+  { wtgTypeId: 1, wtgType: 'EN-141', isNearShore: false, status: true },
+  { wtgTypeId: 2, wtgType: 'EN-156', isNearShore: true, status: true },
+  { wtgTypeId: 3, wtgType: 'EN-132', isNearShore: false, status: true },
+  { wtgTypeId: 4, wtgType: 'EN-158', isNearShore: true, status: false },
+  { wtgTypeId: 5, wtgType: 'EN-176', isNearShore: true, status: true },
+  { wtgTypeId: 6, wtgType: 'EN-120', isNearShore: false, status: true },
+  { wtgTypeId: 7, wtgType: 'EN-148', isNearShore: false, status: false },
+  { wtgTypeId: 8, wtgType: 'EN-165', isNearShore: true, status: true },
+  { wtgTypeId: 9, wtgType: 'EN-172', isNearShore: true, status: true },
+  { wtgTypeId: 10, wtgType: 'EN-184', isNearShore: true, status: true },
+];
+
 @Component({
   selector: 'app-wtg-types',
   imports: [Shared],
@@ -50,11 +64,14 @@ export class WtgTypes implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.wtgTypeList = MOCK_WTG_TYPES;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.wtgTypeList = MOCK_WTG_TYPES;
     }
   }
 

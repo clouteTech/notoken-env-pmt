@@ -13,6 +13,22 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Shared } from '../shared/services/shared';
 import { Apiservice } from '../service/apiservice';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_COMPONENT_SERIAL_LIST: any[] = [
+  { slNo: 1, componentName: 'Topflange', serialNumber: '-', status: 'CREATED', plantName: '-', productionManager: '-', planStart: '-', planFinish: '-' },
+  { slNo: 2, componentName: 'Bottomflange', serialNumber: '-', status: 'CREATED', plantName: '-', productionManager: '-', planStart: '-', planFinish: '-' },
+  { slNo: 3, componentName: 'Blade', serialNumber: 'B-001', status: 'ASSIGNED', plantName: 'Chennai', productionManager: 'PM-1', planStart: '2026-03-01', planFinish: '2026-03-02' },
+  { slNo: 4, componentName: 'Blade', serialNumber: 'B-002', status: 'ASSIGNED', plantName: 'Chennai', productionManager: 'PM-1', planStart: '2026-03-01', planFinish: '2026-03-02' },
+  { slNo: 5, componentName: 'Nacelle', serialNumber: 'N-001', status: 'IN_PROGRESS', plantName: 'Chennai', productionManager: 'PM-1', planStart: '2026-03-02', planFinish: '2026-03-05' },
+  { slNo: 6, componentName: 'Hub', serialNumber: '-', status: 'CREATED', plantName: '-', productionManager: '-', planStart: '-', planFinish: '-' },
+  { slNo: 7, componentName: 'Tower', serialNumber: 'T-001', status: 'COMPLETED', plantName: 'Trichy', productionManager: 'PM-2', planStart: '2026-02-20', planFinish: '2026-02-28' },
+  { slNo: 8, componentName: 'Converter Panel', serialNumber: '-', status: 'CREATED', plantName: '-', productionManager: '-', planStart: '-', planFinish: '-' },
+  { slNo: 9, componentName: 'Site Accessories', serialNumber: '-', status: 'CREATED', plantName: '-', productionManager: '-', planStart: '-', planFinish: '-' },
+  { slNo: 10, componentName: 'SCADA', serialNumber: 'S-001', status: 'IN_PROGRESS', plantName: 'Chennai', productionManager: 'PM-1', planStart: '2026-03-04', planFinish: '2026-03-06' },
+  { slNo: 11, componentName: 'Blade', serialNumber: 'B-003', status: 'ASSIGNED', plantName: 'Trichy', productionManager: 'PM-2', planStart: '2026-03-01', planFinish: '2026-03-02' },
+  { slNo: 12, componentName: 'Tower', serialNumber: 'T-002', status: 'COMPLETED', plantName: 'Trichy', productionManager: 'PM-2', planStart: '2026-02-21', planFinish: '2026-03-01' },
+];
+
 @Component({
   selector: 'app-component-serial',
   imports: [MenuModule, TableModule, SelectModule, TagModule, ButtonModule, DialogModule, FloatLabelModule, InputTextModule, Shared],
@@ -82,12 +98,15 @@ export class ComponentSerial {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.componentSerialList = MOCK_COMPONENT_SERIAL_LIST;
           }
         }
       })
     } catch (error) {
       console.log(error);
 
+      this.componentSerialList = MOCK_COMPONENT_SERIAL_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

@@ -71,6 +71,117 @@ function currentMonthLabel(): string {
 let _id = 0;
 function nextId() { return ++_id; }
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_PROJECT_LIST: any[] = [
+  { projectId: 1, projectCode: 'P-8001', customer: { customerId: 1, customerName: 'ReNew Power' }, probability: 'P90', totalWtgs: 24, totalCapacity: 79.2 },
+  { projectId: 2, projectCode: 'P-8002', customer: { customerId: 2, customerName: 'Adani Green Energy' }, probability: 'P50', totalWtgs: 18, totalCapacity: 59.4 },
+  { projectId: 3, projectCode: 'P-8003', customer: { customerId: 3, customerName: 'Suzlon Energy' }, probability: 'P100', totalWtgs: 30, totalCapacity: 99.0 },
+  { projectId: 4, projectCode: 'P-8004', customer: { customerId: 4, customerName: 'Greenko' }, probability: 'P90', totalWtgs: 12, totalCapacity: 39.6 },
+  { projectId: 5, projectCode: 'P-8005', customer: { customerId: 5, customerName: 'Tata Power Renewable' }, probability: 'P75', totalWtgs: 20, totalCapacity: 66.0 },
+  { projectId: 6, projectCode: 'P-8006', customer: { customerId: 6, customerName: 'JSW Energy' }, probability: 'P50', totalWtgs: 15, totalCapacity: 49.5 },
+  { projectId: 7, projectCode: 'P-8007', customer: { customerId: 1, customerName: 'ReNew Power' }, probability: 'P90', totalWtgs: 28, totalCapacity: 92.4 },
+  { projectId: 8, projectCode: 'P-8008', customer: { customerId: 3, customerName: 'Suzlon Energy' }, probability: 'P100', totalWtgs: 10, totalCapacity: 33.0 },
+  { projectId: 9, projectCode: 'P-8009', customer: { customerId: 2, customerName: 'Adani Green Energy' }, probability: 'P75', totalWtgs: 22, totalCapacity: 72.6 },
+  { projectId: 10, projectCode: 'P-8010', customer: { customerId: 4, customerName: 'Greenko' }, probability: 'P90', totalWtgs: 16, totalCapacity: 52.8 },
+];
+
+const MOCK_ZONE_LIST: any[] = [
+  { zoneId: 1, zone: 'North' },
+  { zoneId: 2, zone: 'South' },
+  { zoneId: 3, zone: 'East' },
+  { zoneId: 4, zone: 'West' },
+];
+
+const MOCK_WTG_TYPE_LIST: any[] = [
+  { wtgTypeId: 1, wtgType: 'EN132' },
+  { wtgTypeId: 2, wtgType: 'EN156' },
+  { wtgTypeId: 3, wtgType: 'EN182' },
+  { wtgTypeId: 4, wtgType: 'EN156(NS)' },
+  { wtgTypeId: 5, wtgType: 'EN182(NS)' },
+];
+
+const MOCK_CAPACITY_LIST: any[] = [
+  { capacityId: 1, capacity: 2.1 },
+  { capacityId: 2, capacity: 2.4 },
+  { capacityId: 3, capacity: 2.5 },
+  { capacityId: 4, capacity: 3.0 },
+  { capacityId: 5, capacity: 3.3 },
+  { capacityId: 6, capacity: 3.5 },
+  { capacityId: 7, capacity: 5.0 },
+  { capacityId: 8, capacity: 5.5 },
+];
+
+const MOCK_TOWER_TYPE_LIST: any[] = [
+  { towerTypeId: 1, towerType: '120HH-304T' },
+  { towerTypeId: 2, towerType: '130HH-420T' },
+  { towerTypeId: 3, towerType: '140HH-474T' },
+  { towerTypeId: 4, towerType: '140HH-353T' },
+];
+
+const MOCK_BLADE_TYPE_LIST: any[] = [
+  { bladeTypeId: 1, bladeType: 'Small' },
+  { bladeTypeId: 2, bladeType: 'Big' },
+];
+
+const MOCK_GRID_LIST: any[] = [
+  { gridConnectivityId: 1, gridConnectivity: 'STU' },
+  { gridConnectivityId: 2, gridConnectivity: 'CTU' },
+];
+
+const MOCK_PPA_LIST: any[] = [
+  { ppaTypeId: 1, ppaType: 'Auction' },
+  { ppaTypeId: 2, ppaType: 'C&I' },
+];
+
+const MOCK_CUSTOMER_LIST: any[] = [
+  { customerId: 1, customerName: 'ReNew Power', status: true },
+  { customerId: 2, customerName: 'Adani Green Energy', status: true },
+  { customerId: 3, customerName: 'Suzlon Energy', status: true },
+  { customerId: 4, customerName: 'Greenko', status: true },
+  { customerId: 5, customerName: 'Tata Power Renewable', status: true },
+  { customerId: 6, customerName: 'JSW Energy', status: true },
+  { customerId: 7, customerName: 'NTPC Renewable Energy', status: true },
+  { customerId: 8, customerName: 'Torrent Power', status: false },
+  { customerId: 9, customerName: 'Hero Future Energies', status: true },
+  { customerId: 10, customerName: 'Continuum Green Energy', status: true },
+];
+
+const MOCK_CLUSTER_LIST: any[] = [
+  { clusterId: 1, clusterName: 'Gujarat', status: true },
+  { clusterId: 2, clusterName: 'Tamil Nadu', status: true },
+  { clusterId: 3, clusterName: 'Rajasthan', status: true },
+  { clusterId: 4, clusterName: 'Karnataka', status: true },
+  { clusterId: 5, clusterName: 'Andhra Pradesh', status: true },
+  { clusterId: 6, clusterName: 'Maharashtra', status: true },
+  { clusterId: 7, clusterName: 'Madhya Pradesh', status: true },
+  { clusterId: 8, clusterName: 'Telangana', status: true },
+];
+
+const MOCK_MANAGER_LIST: any[] = [
+  { userId: 1, userName: 'Ravi Kumar', status: true },
+  { userId: 2, userName: 'Sunita Sharma', status: true },
+  { userId: 3, userName: 'Ajay Patel', status: true },
+  { userId: 4, userName: 'Meena Joshi', status: true },
+  { userId: 5, userName: 'Vikram Singh', status: true },
+  { userId: 6, userName: 'Oxford Rebello', status: true },
+  { userId: 7, userName: 'Srikanth Shanmugam', status: true },
+  { userId: 8, userName: 'Surendra Panwar', status: true },
+];
+
+const MOCK_SPV_OPTIONS: { label: string; value: any }[] = [
+  { label: 'ReNew Wind SPV 1', value: 101 },
+  { label: 'ReNew Wind SPV 2', value: 102 },
+  { label: 'ReNew Wind SPV 3', value: 103 },
+  { label: 'ReNew Wind SPV 4', value: 104 },
+];
+
+const MOCK_CUSTOMER_SPV_LIST: any[] = [
+  { customerSpvId: 101, spvName: 'ReNew Wind SPV 1', status: true },
+  { customerSpvId: 102, spvName: 'ReNew Wind SPV 2', status: true },
+  { customerSpvId: 103, spvName: 'ReNew Wind SPV 3', status: true },
+  { customerSpvId: 104, spvName: 'ReNew Wind SPV 4', status: true },
+];
+
 @Component({
   selector: 'app-create-project',
   standalone: true,
@@ -171,7 +282,7 @@ export class CreateProjectComponent implements OnInit {
   customerSPVList: any[] = [];
 
   // ── Step 1 dropdown options ───────────────────────────────────────────────
-  states = [];
+  states: any[] = [];
 
   cityStateMap: { [key: string]: string } = {
     chennai: 'Tamil Nadu', coimbatore: 'Tamil Nadu', salem: 'Tamil Nadu',
@@ -181,8 +292,8 @@ export class CreateProjectComponent implements OnInit {
     lucknow: 'Uttar Pradesh'
   };
 
-  zoneOptions       = [/* [{ label: 'North', value: '1' }, { label: 'South', value: '2' } */];
-  PMOptions         = [/* { label: 'PM 1', value: '1' }, { label: 'PM 2', value: '2' }, { label: 'PM 3', value: '3' }, { label: 'PM 4', value: '4' } */];
+  zoneOptions: any[]       = [/* [{ label: 'North', value: '1' }, { label: 'South', value: '2' } */];
+  PMOptions: any[]         = [/* { label: 'PM 1', value: '1' }, { label: 'PM 2', value: '2' }, { label: 'PM 3', value: '3' }, { label: 'PM 4', value: '4' } */];
   BDOptions         = [{ label: 'BD 1', value: '1' }, { label: 'BD 2', value: '2' }, { label: 'BD 3', value: '3' }, { label: 'BD 4', value: '4' }];
   solutionOptions   = [{ label: 'Solution Manager 1', value: '1' }, { label: 'Solution Manager 2', value: '2' }, { label: 'Solution Manager 3', value: '3' }];
   stateHeadOptions  = [{ label: 'State Head 1', value: '1' }, { label: 'State Head 2', value: '2' }];
@@ -190,24 +301,24 @@ export class CreateProjectComponent implements OnInit {
   multipleSPVOptions= [{ label: 'Yes', value: '1' }, { label: 'No', value: '2' }];
   projectProbality= [{ label: 'P-50', value: 'P50' }, { label: 'P-75', value: 'P75' }, { label: 'P-90', value: 'P90' }, { label: 'P-100', value: 'P100' }];
   projectTerm= [{ label: 'DAP', value: 'DAP' }, { label: 'DAP + Tower', value: 'DAP_TOWER' }, { label: 'EXW', value: 'EXW' }, { label: 'EXW + Tower', value: 'EXW_TOWER' }];
-  CustomerNameList= [/* { label: 'Customer 1', value: '1' }, { label: 'Customer 2', value: '2' }, { label: 'Customer 3', value: '3' }, { label: 'Customer 4', value: '4' } */];
+  CustomerNameList: any[]= [/* { label: 'Customer 1', value: '1' }, { label: 'Customer 2', value: '2' }, { label: 'Customer 3', value: '3' }, { label: 'Customer 4', value: '4' } */];
 
   // ── Step 2: SPV/WTG options ───────────────────────────────────────────────
-  WTGOptions     = [
+  WTGOptions: any[]     = [
     /* { label: 'EN132', value: '132' }, { label: 'EN156', value: '156' },
     { label: 'EN182', value: '182' }, { label: 'EN156(NS)', value: '156' },
     { label: 'EN182(NS)', value: '182' } */
   ];
    getCapacityOpts: any[] = [];
-  towerOptions   = [
+  towerOptions: any[]   = [
     /* { label: '120HH-304T', value: '1' }, { label: '140HH-474T', value: '2' },
     { label: '130HH-420T', value: '3' }, { label: '140HH-353T', value: '4' }*/
-  ]; 
-  bladeOptions   = [
+  ];
+  bladeOptions: any[]   = [
     /* { label: 'Blade 1', value: '1' }, { label: 'Blade 2', value: '2' }, */
   ];
-  gridOptions    = [/* { label: 'STU', value: '1' }, { label: 'CTU', value: '2' } */];
-  ppaOptions     = [/* { label: 'Auction', value: '1' }, { label: 'C&I', value: '2' } */];
+  gridOptions: any[]    = [/* { label: 'STU', value: '1' }, { label: 'CTU', value: '2' } */];
+  ppaOptions: any[]     = [/* { label: 'Auction', value: '1' }, { label: 'C&I', value: '2' } */];
 
   // Capacity options driven by WTG type (same mapping as sale-demand)
   private wtgCapacityMap: Record<string, { label: string; value: string }[]> = {
@@ -325,11 +436,16 @@ export class CreateProjectComponent implements OnInit {
           console.log(res);
           this.projectList = res.data.content
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.projectList = MOCK_PROJECT_LIST;
+        }
         }
       })
 
     }catch(e){
+      this.projectList = MOCK_PROJECT_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -343,11 +459,16 @@ export class CreateProjectComponent implements OnInit {
           console.log(res);
           this.zoneOptions = res.data
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.zoneOptions = MOCK_ZONE_LIST;
+        }
         }
       })
 
     }catch(e){
+      this.zoneOptions = MOCK_ZONE_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -361,11 +482,16 @@ export class CreateProjectComponent implements OnInit {
           console.log(res);
           this.WTGOptions = res.data
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.WTGOptions = MOCK_WTG_TYPE_LIST;
+        }
         }
       })
 
     }catch(e){
+      this.WTGOptions = MOCK_WTG_TYPE_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -379,11 +505,16 @@ export class CreateProjectComponent implements OnInit {
           console.log(res);
           this.getCapacityOpts = res.data
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.getCapacityOpts = MOCK_CAPACITY_LIST;
+        }
         }
       })
 
     }catch(e){
+      this.getCapacityOpts = MOCK_CAPACITY_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -397,11 +528,16 @@ export class CreateProjectComponent implements OnInit {
           console.log(res);
           this.towerOptions = res.data
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.towerOptions = MOCK_TOWER_TYPE_LIST;
+        }
         }
       })
 
     }catch(e){
+      this.towerOptions = MOCK_TOWER_TYPE_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -415,11 +551,16 @@ export class CreateProjectComponent implements OnInit {
           console.log(res);
           this.bladeOptions = res.data
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.bladeOptions = MOCK_BLADE_TYPE_LIST;
+        }
         }
       })
 
     }catch(e){
+      this.bladeOptions = MOCK_BLADE_TYPE_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -433,11 +574,16 @@ export class CreateProjectComponent implements OnInit {
           console.log(res);
           this.gridOptions = res.data
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.gridOptions = MOCK_GRID_LIST;
+        }
         }
       })
 
     }catch(e){
+      this.gridOptions = MOCK_GRID_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -451,11 +597,16 @@ export class CreateProjectComponent implements OnInit {
           console.log(res);
           this.ppaOptions = res.data
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.ppaOptions = MOCK_PPA_LIST;
+        }
         }
       })
 
     }catch(e){
+      this.ppaOptions = MOCK_PPA_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -472,11 +623,16 @@ export class CreateProjectComponent implements OnInit {
           })
           this.CustomerNameList = filt
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.CustomerNameList = MOCK_CUSTOMER_LIST.filter((itm:any) => itm.status == true);
+        }
         }
       })
 
     }catch(e){
+      this.CustomerNameList = MOCK_CUSTOMER_LIST.filter((itm:any) => itm.status == true);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -493,11 +649,16 @@ export class CreateProjectComponent implements OnInit {
           })
           this.states = filt
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.states = MOCK_CLUSTER_LIST.filter((itm:any) => itm.status == true);
+        }
         }
       })
 
     }catch(e){
+      this.states = MOCK_CLUSTER_LIST.filter((itm:any) => itm.status == true);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -514,11 +675,16 @@ export class CreateProjectComponent implements OnInit {
           })
           this.PMOptions = filt
         },error:(err)=>{
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+        } else {
+          this.PMOptions = MOCK_MANAGER_LIST.filter((itm:any) => itm.status == true);
+        }
         }
       })
 
     }catch(e){
+      this.PMOptions = MOCK_MANAGER_LIST.filter((itm:any) => itm.status == true);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -538,12 +704,18 @@ getSPVList(addFirst = false): void {
         if (addFirst) this.addSpvEntry(); else this.buildOptsList();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.detail || 'Error loading SPV list' });
-        if (addFirst) this.addSpvEntry();
+        if (err.status === 400) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.detail || 'Error loading SPV list' });
+        } else {
+          this.spvOptions = MOCK_SPV_OPTIONS;
+        }
+        if (addFirst) this.addSpvEntry(); else this.buildOptsList();
       }
     });
   } catch (e) {
+    this.spvOptions = MOCK_SPV_OPTIONS;
     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    if (addFirst) this.addSpvEntry(); else this.buildOptsList();
   }
 }
 
@@ -1076,11 +1248,14 @@ buildOptsList(): void {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.customerSPVList = MOCK_CUSTOMER_SPV_LIST;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.customerSPVList = MOCK_CUSTOMER_SPV_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

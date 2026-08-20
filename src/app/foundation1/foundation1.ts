@@ -40,6 +40,205 @@ export interface ViewColumn {
   stepIdx: number;
 }
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_FOUNDATION1_PROJECTS: any[] = [
+  { projectId: 1, projectCode: 'ENV-P201', projectName: 'Kutch Wind Farm Phase 1', totalWtgs: 12, customer: { customerId: 1, customerName: 'Adani Green Energy Ltd' } },
+  { projectId: 2, projectCode: 'ENV-P202', projectName: 'Jaisalmer Cluster Phase 2', totalWtgs: 8, customer: { customerId: 2, customerName: 'ReNew Power Pvt Ltd' } },
+  { projectId: 3, projectCode: 'ENV-P203', projectName: 'Bhuj Coastal Wind Project', totalWtgs: 15, customer: { customerId: 3, customerName: 'Tata Power Renewable Energy' } },
+  { projectId: 4, projectCode: 'ENV-P204', projectName: 'Kayathar Wind Farm', totalWtgs: 6, customer: { customerId: 4, customerName: 'Suzlon Energy Ltd' } },
+  { projectId: 5, projectCode: 'ENV-P205', projectName: 'Chitradurga Wind Corridor', totalWtgs: 10, customer: { customerId: 5, customerName: 'Greenko Energies Pvt Ltd' } },
+  { projectId: 6, projectCode: 'ENV-P206', projectName: 'Kutch Bhuj Extension Phase 3', totalWtgs: 9, customer: { customerId: 6, customerName: 'CleanMax Enviro Energy' } },
+  { projectId: 7, projectCode: 'ENV-P207', projectName: 'Rajkot Wind Energy Park', totalWtgs: 7, customer: { customerId: 7, customerName: 'Sembcorp Green Infra' } },
+  { projectId: 8, projectCode: 'ENV-P208', projectName: 'Tuticorin Coastal Cluster', totalWtgs: 11, customer: { customerId: 8, customerName: 'Vestas Wind Technology India' } },
+  { projectId: 9, projectCode: 'ENV-P209', projectName: 'Anantapur Wind Complex', totalWtgs: 14, customer: { customerId: 9, customerName: 'Torrent Power Ltd' } },
+  { projectId: 10, projectCode: 'ENV-P210', projectName: 'Dhule Wind Energy Farm', totalWtgs: 5, customer: { customerId: 10, customerName: 'Continuum Green Energy' } },
+];
+
+const MOCK_FOUNDATION1_WTG_DETAILS: any[] = [
+  { location: { locationId: 1, locationCode: 'LOC-01', maximoId: 'MAX-001' }, projectWtg: { wtgCode: 'WTG-01' } },
+  { location: { locationId: 2, locationCode: 'LOC-02', maximoId: 'MAX-002' }, projectWtg: { wtgCode: 'WTG-02' } },
+  { location: { locationId: 3, locationCode: 'LOC-03', maximoId: 'MAX-003' }, projectWtg: { wtgCode: 'WTG-03' } },
+  { location: { locationId: 4, locationCode: 'LOC-04', maximoId: 'MAX-004' }, projectWtg: { wtgCode: 'WTG-04' } },
+  { location: { locationId: 5, locationCode: 'LOC-05', maximoId: 'MAX-005' }, projectWtg: { wtgCode: 'WTG-05' } },
+  { location: { locationId: 6, locationCode: 'LOC-06', maximoId: 'MAX-006' }, projectWtg: { wtgCode: 'WTG-06' } },
+  { location: { locationId: 7, locationCode: 'LOC-07', maximoId: 'MAX-007' }, projectWtg: { wtgCode: 'WTG-07' } },
+  { location: { locationId: 8, locationCode: 'LOC-08', maximoId: 'MAX-008' }, projectWtg: { wtgCode: 'WTG-08' } },
+  { location: { locationId: 9, locationCode: 'LOC-09', maximoId: 'MAX-009' }, projectWtg: { wtgCode: 'WTG-09' } },
+  { location: { locationId: 10, locationCode: 'LOC-10', maximoId: 'MAX-010' }, projectWtg: { wtgCode: 'WTG-10' } },
+];
+
+const MOCK_FOUNDATION1_ACTIVITIES: any[] = [
+  { wtgCode: 'WTG-01', locationCode: 'LOC-01', maximoId: 'MAX-001',
+    soilTest: { soilTest: { soilTestActualStart: '2026-05-02', soilTestActualFinish: '2026-05-06', actualSbc: 18.5 } },
+    excavation: { excavation: { excavationActualStart: '2026-05-08', excavationActualFinish: '2026-05-14' } },
+    pcc: { pcc: { pccActual: '2026-05-16' } },
+    flange: { flange: { bottomFlangeActual: '2026-05-18', topFlangeActual: '2026-05-19' } },
+    reinforcement: { reinforcement: { reinforcementActualStart: '2026-05-20', reinforcementActualFinish: '2026-05-25' } },
+    earthing: { earthing: { earthingStripActual: '2026-05-26' } },
+    shuttering: { shuttering: { shutteringActual: '2026-05-28' } },
+    raftCasting: { raftCasting: { raftCastingPlan: '2026-05-30', raftCastingActual: '2026-05-31', raftCastingForecast: '2026-05-30', raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: '2026-06-02', pedestalCastingActual: '2026-06-03', pedestalCastingForecast: '2026-06-02', pedestalCastingDelayReason: '' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: '2026-06-10', foundationCubeTest21Days: '2026-06-24', foundationCubeTest28Days: '2026-07-01' } },
+    grouting: { grouting: { groutingActual: '2026-07-03' } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: '2026-07-10', groutingCubeTest28Days: '2026-07-31' } },
+    backfilling: { backfilling: { backfillingActual: '2026-08-02' } },
+    approachRoad: { approachRoad: { approachRoadActual: '2026-08-04' } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: '2026-08-06' } },
+    locationClearance: { locationClearance: { locationClearanceActual: '2026-08-08' } } },
+  { wtgCode: 'WTG-02', locationCode: 'LOC-02', maximoId: 'MAX-002',
+    soilTest: { soilTest: { soilTestActualStart: '2026-05-03', soilTestActualFinish: '2026-05-07', actualSbc: 19.2 } },
+    excavation: { excavation: { excavationActualStart: '2026-05-09', excavationActualFinish: '2026-05-15' } },
+    pcc: { pcc: { pccActual: '2026-05-17' } },
+    flange: { flange: { bottomFlangeActual: '2026-05-19', topFlangeActual: '2026-05-20' } },
+    reinforcement: { reinforcement: { reinforcementActualStart: '2026-05-21', reinforcementActualFinish: '2026-05-26' } },
+    earthing: { earthing: { earthingStripActual: '2026-05-27' } },
+    shuttering: { shuttering: { shutteringActual: '2026-05-29' } },
+    raftCasting: { raftCasting: { raftCastingPlan: '2026-05-31', raftCastingActual: '2026-06-01', raftCastingForecast: '2026-05-31', raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: null, pedestalCastingActual: null, pedestalCastingForecast: '2026-06-05', pedestalCastingDelayReason: 'Rebar delivery delay' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: null, foundationCubeTest21Days: null, foundationCubeTest28Days: null } },
+    grouting: { grouting: { groutingActual: null } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: null, groutingCubeTest28Days: null } },
+    backfilling: { backfilling: { backfillingActual: null } },
+    approachRoad: { approachRoad: { approachRoadActual: null } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: null } },
+    locationClearance: { locationClearance: { locationClearanceActual: null } } },
+  { wtgCode: 'WTG-03', locationCode: 'LOC-03', maximoId: 'MAX-003',
+    soilTest: { soilTest: { soilTestActualStart: '2026-05-04', soilTestActualFinish: '2026-05-08', actualSbc: 17.8 } },
+    excavation: { excavation: { excavationActualStart: '2026-05-10', excavationActualFinish: '2026-05-16' } },
+    pcc: { pcc: { pccActual: '2026-05-18' } },
+    flange: { flange: { bottomFlangeActual: '2026-05-20', topFlangeActual: '2026-05-21' } },
+    reinforcement: { reinforcement: { reinforcementActualStart: null, reinforcementActualFinish: null } },
+    earthing: { earthing: { earthingStripActual: null } },
+    shuttering: { shuttering: { shutteringActual: null } },
+    raftCasting: { raftCasting: { raftCastingPlan: null, raftCastingActual: null, raftCastingForecast: '2026-06-01', raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: null, pedestalCastingActual: null, pedestalCastingForecast: null, pedestalCastingDelayReason: '' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: null, foundationCubeTest21Days: null, foundationCubeTest28Days: null } },
+    grouting: { grouting: { groutingActual: null } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: null, groutingCubeTest28Days: null } },
+    backfilling: { backfilling: { backfillingActual: null } },
+    approachRoad: { approachRoad: { approachRoadActual: null } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: null } },
+    locationClearance: { locationClearance: { locationClearanceActual: null } } },
+  { wtgCode: 'WTG-04', locationCode: 'LOC-04', maximoId: 'MAX-004',
+    soilTest: { soilTest: { soilTestActualStart: '2026-05-05', soilTestActualFinish: '2026-05-09', actualSbc: 20.1 } },
+    excavation: { excavation: { excavationActualStart: '2026-05-11', excavationActualFinish: '2026-05-17' } },
+    pcc: { pcc: { pccActual: '2026-05-19' } },
+    flange: { flange: { bottomFlangeActual: null, topFlangeActual: null } },
+    reinforcement: { reinforcement: { reinforcementActualStart: null, reinforcementActualFinish: null } },
+    earthing: { earthing: { earthingStripActual: null } },
+    shuttering: { shuttering: { shutteringActual: null } },
+    raftCasting: { raftCasting: { raftCastingPlan: null, raftCastingActual: null, raftCastingForecast: null, raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: null, pedestalCastingActual: null, pedestalCastingForecast: null, pedestalCastingDelayReason: '' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: null, foundationCubeTest21Days: null, foundationCubeTest28Days: null } },
+    grouting: { grouting: { groutingActual: null } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: null, groutingCubeTest28Days: null } },
+    backfilling: { backfilling: { backfillingActual: null } },
+    approachRoad: { approachRoad: { approachRoadActual: null } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: null } },
+    locationClearance: { locationClearance: { locationClearanceActual: null } } },
+  { wtgCode: 'WTG-05', locationCode: 'LOC-05', maximoId: 'MAX-005',
+    soilTest: { soilTest: { soilTestActualStart: '2026-05-06', soilTestActualFinish: '2026-05-10', actualSbc: 18.9 } },
+    excavation: { excavation: { excavationActualStart: null, excavationActualFinish: null } },
+    pcc: { pcc: { pccActual: null } },
+    flange: { flange: { bottomFlangeActual: null, topFlangeActual: null } },
+    reinforcement: { reinforcement: { reinforcementActualStart: null, reinforcementActualFinish: null } },
+    earthing: { earthing: { earthingStripActual: null } },
+    shuttering: { shuttering: { shutteringActual: null } },
+    raftCasting: { raftCasting: { raftCastingPlan: null, raftCastingActual: null, raftCastingForecast: null, raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: null, pedestalCastingActual: null, pedestalCastingForecast: null, pedestalCastingDelayReason: '' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: null, foundationCubeTest21Days: null, foundationCubeTest28Days: null } },
+    grouting: { grouting: { groutingActual: null } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: null, groutingCubeTest28Days: null } },
+    backfilling: { backfilling: { backfillingActual: null } },
+    approachRoad: { approachRoad: { approachRoadActual: null } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: null } },
+    locationClearance: { locationClearance: { locationClearanceActual: null } } },
+  { wtgCode: 'WTG-06', locationCode: 'LOC-06', maximoId: 'MAX-006',
+    soilTest: { soilTest: { soilTestActualStart: '2026-05-07', soilTestActualFinish: '2026-05-11', actualSbc: 19.6 } },
+    excavation: { excavation: { excavationActualStart: '2026-05-13', excavationActualFinish: '2026-05-19' } },
+    pcc: { pcc: { pccActual: '2026-05-21' } },
+    flange: { flange: { bottomFlangeActual: '2026-05-23', topFlangeActual: '2026-05-24' } },
+    reinforcement: { reinforcement: { reinforcementActualStart: '2026-05-25', reinforcementActualFinish: '2026-05-30' } },
+    earthing: { earthing: { earthingStripActual: '2026-05-31' } },
+    shuttering: { shuttering: { shutteringActual: '2026-06-02' } },
+    raftCasting: { raftCasting: { raftCastingPlan: '2026-06-04', raftCastingActual: '2026-06-05', raftCastingForecast: '2026-06-04', raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: '2026-06-07', pedestalCastingActual: '2026-06-08', pedestalCastingForecast: '2026-06-07', pedestalCastingDelayReason: '' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: '2026-06-15', foundationCubeTest21Days: '2026-06-29', foundationCubeTest28Days: '2026-07-06' } },
+    grouting: { grouting: { groutingActual: '2026-07-08' } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: '2026-07-15', groutingCubeTest28Days: '2026-08-05' } },
+    backfilling: { backfilling: { backfillingActual: '2026-08-07' } },
+    approachRoad: { approachRoad: { approachRoadActual: '2026-08-09' } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: '2026-08-11' } },
+    locationClearance: { locationClearance: { locationClearanceActual: '2026-08-13' } } },
+  { wtgCode: 'WTG-07', locationCode: 'LOC-07', maximoId: 'MAX-007',
+    soilTest: { soilTest: { soilTestActualStart: '2026-05-08', soilTestActualFinish: '2026-05-12', actualSbc: 21.3 } },
+    excavation: { excavation: { excavationActualStart: '2026-05-14', excavationActualFinish: '2026-05-20' } },
+    pcc: { pcc: { pccActual: '2026-05-22' } },
+    flange: { flange: { bottomFlangeActual: null, topFlangeActual: null } },
+    reinforcement: { reinforcement: { reinforcementActualStart: null, reinforcementActualFinish: null } },
+    earthing: { earthing: { earthingStripActual: null } },
+    shuttering: { shuttering: { shutteringActual: null } },
+    raftCasting: { raftCasting: { raftCastingPlan: null, raftCastingActual: null, raftCastingForecast: null, raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: null, pedestalCastingActual: null, pedestalCastingForecast: null, pedestalCastingDelayReason: '' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: null, foundationCubeTest21Days: null, foundationCubeTest28Days: null } },
+    grouting: { grouting: { groutingActual: null } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: null, groutingCubeTest28Days: null } },
+    backfilling: { backfilling: { backfillingActual: null } },
+    approachRoad: { approachRoad: { approachRoadActual: null } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: null } },
+    locationClearance: { locationClearance: { locationClearanceActual: null } } },
+  { wtgCode: 'WTG-08', locationCode: 'LOC-08', maximoId: 'MAX-008',
+    soilTest: { soilTest: { soilTestActualStart: '2026-05-09', soilTestActualFinish: '2026-05-13', actualSbc: 18.2 } },
+    excavation: { excavation: { excavationActualStart: null, excavationActualFinish: null } },
+    pcc: { pcc: { pccActual: null } },
+    flange: { flange: { bottomFlangeActual: null, topFlangeActual: null } },
+    reinforcement: { reinforcement: { reinforcementActualStart: null, reinforcementActualFinish: null } },
+    earthing: { earthing: { earthingStripActual: null } },
+    shuttering: { shuttering: { shutteringActual: null } },
+    raftCasting: { raftCasting: { raftCastingPlan: null, raftCastingActual: null, raftCastingForecast: null, raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: null, pedestalCastingActual: null, pedestalCastingForecast: null, pedestalCastingDelayReason: '' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: null, foundationCubeTest21Days: null, foundationCubeTest28Days: null } },
+    grouting: { grouting: { groutingActual: null } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: null, groutingCubeTest28Days: null } },
+    backfilling: { backfilling: { backfillingActual: null } },
+    approachRoad: { approachRoad: { approachRoadActual: null } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: null } },
+    locationClearance: { locationClearance: { locationClearanceActual: null } } },
+  { wtgCode: 'WTG-09', locationCode: 'LOC-09', maximoId: 'MAX-009',
+    soilTest: { soilTest: { soilTestActualStart: '2026-05-10', soilTestActualFinish: '2026-05-14', actualSbc: 19.9 } },
+    excavation: { excavation: { excavationActualStart: '2026-05-16', excavationActualFinish: '2026-05-22' } },
+    pcc: { pcc: { pccActual: '2026-05-24' } },
+    flange: { flange: { bottomFlangeActual: '2026-05-26', topFlangeActual: '2026-05-27' } },
+    reinforcement: { reinforcement: { reinforcementActualStart: '2026-05-28', reinforcementActualFinish: '2026-06-02' } },
+    earthing: { earthing: { earthingStripActual: '2026-06-03' } },
+    shuttering: { shuttering: { shutteringActual: '2026-06-05' } },
+    raftCasting: { raftCasting: { raftCastingPlan: '2026-06-07', raftCastingActual: '2026-06-08', raftCastingForecast: '2026-06-07', raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: '2026-06-10', pedestalCastingActual: '2026-06-11', pedestalCastingForecast: '2026-06-10', pedestalCastingDelayReason: '' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: '2026-06-18', foundationCubeTest21Days: '2026-07-02', foundationCubeTest28Days: '2026-07-09' } },
+    grouting: { grouting: { groutingActual: null } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: null, groutingCubeTest28Days: null } },
+    backfilling: { backfilling: { backfillingActual: null } },
+    approachRoad: { approachRoad: { approachRoadActual: null } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: null } },
+    locationClearance: { locationClearance: { locationClearanceActual: null } } },
+  { wtgCode: 'WTG-10', locationCode: 'LOC-10', maximoId: 'MAX-010',
+    soilTest: { soilTest: { soilTestActualStart: null, soilTestActualFinish: null, actualSbc: null } },
+    excavation: { excavation: { excavationActualStart: null, excavationActualFinish: null } },
+    pcc: { pcc: { pccActual: null } },
+    flange: { flange: { bottomFlangeActual: null, topFlangeActual: null } },
+    reinforcement: { reinforcement: { reinforcementActualStart: null, reinforcementActualFinish: null } },
+    earthing: { earthing: { earthingStripActual: null } },
+    shuttering: { shuttering: { shutteringActual: null } },
+    raftCasting: { raftCasting: { raftCastingPlan: null, raftCastingActual: null, raftCastingForecast: null, raftCastingDelayReason: '' } },
+    pedestalCasting: { pedestalCasting: { pedestalCastingPlan: null, pedestalCastingActual: null, pedestalCastingForecast: null, pedestalCastingDelayReason: '' } },
+    foundationCubeTest: { foundationCubeTest: { foundationCubeTest7Days: null, foundationCubeTest21Days: null, foundationCubeTest28Days: null } },
+    grouting: { grouting: { groutingActual: null } },
+    groutingCubeTest: { groutingCubeTest: { groutingCubeTest7Days: null, groutingCubeTest28Days: null } },
+    backfilling: { backfilling: { backfillingActual: null } },
+    approachRoad: { approachRoad: { approachRoadActual: null } },
+    cranePlatform: { cranePlatform: { cranePlatformActual: null } },
+    locationClearance: { locationClearance: { locationClearanceActual: null } } },
+];
 
 @Component({
   selector: 'app-foundation1',
@@ -531,16 +730,25 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
           // this.summaryRows = res.data.content
           this.projectList = res.data.content;
         },error:(err)=>{
-
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.projectList = MOCK_FOUNDATION1_PROJECTS;
+          }
         }
       })
     }catch(e){
+      this.projectList = MOCK_FOUNDATION1_PROJECTS;
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
         detail: 'Please Try Again.'
       });
     }
+  }
+
+  getTotalWtgCount(): number {
+    return this.projectList.reduce((sum, p) => sum + (p?.totalWtgs ?? 0), 0);
   }
   // ─── ROW-LEVEL UNLOCK LOGIC ───────────────────────────────────────────────
   /**
@@ -878,9 +1086,16 @@ rebuildWtgRowsAndForms(totalWtgs: number) {
           // this.bindApiDataToStepForms(res.data);
         },error:(err)=>{
           console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.foundationActivitiesDetails = MOCK_FOUNDATION1_ACTIVITIES;
+          }
         }
       })
     }catch(e){
+      this.foundationActivitiesDetails = MOCK_FOUNDATION1_ACTIVITIES;
       this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -1034,11 +1249,26 @@ bindApiDataToStepForms(data: any[]) {
         },
         error: err => {
           console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.prjWTGDetails = MOCK_FOUNDATION1_WTG_DETAILS;
+            this.createForms();
+
+            if (this.foundationActivitiesDetails.length) {
+              this.patchFoundationData(
+                this.foundationActivitiesDetails
+              );
+            }
+          }
         }
       })
     } catch (error){
       console.log(error);
 
+      this.prjWTGDetails = MOCK_FOUNDATION1_WTG_DETAILS;
+      this.createForms();
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

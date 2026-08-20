@@ -5,6 +5,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_PRJ_WTG_DETAILS: any[] = [
+  { projectWtg: { projectWtgId: 1, wtgCode: 'WTG-001', wtgType: { wtgType: 'EN132' }, towerType: { towerType: '120HH-304T' } }, executionStatus: 'FDN_COMPLETED', location: { locationId: 1, locationCode: 'LOC-001', maximoId: 'MX-1001', village: 'Bhachau', latitude: 23.28, longitude: 70.35, status: true } },
+  { projectWtg: { projectWtgId: 2, wtgCode: 'WTG-002', wtgType: { wtgType: 'EN132' }, towerType: { towerType: '120HH-304T' } }, executionStatus: 'INS_IN_PROGRESS', location: { locationId: 2, locationCode: 'LOC-002', maximoId: 'MX-1002', village: 'Bhachau', latitude: 23.29, longitude: 70.36, status: true } },
+  { projectWtg: { projectWtgId: 3, wtgCode: 'WTG-003', wtgType: { wtgType: 'EN156' }, towerType: { towerType: '140HH-474T' } }, executionStatus: 'NOT_STARTED', location: null },
+  { projectWtg: { projectWtgId: 4, wtgCode: 'WTG-004', wtgType: { wtgType: 'EN156' }, towerType: { towerType: '140HH-474T' } }, executionStatus: 'COMM_COMPLETED', location: { locationId: 4, locationCode: 'LOC-004', maximoId: 'MX-1004', village: 'Jaisalmer', latitude: 26.91, longitude: 70.92, status: true } },
+  { projectWtg: { projectWtgId: 5, wtgCode: 'WTG-005', wtgType: { wtgType: 'EN182' }, towerType: { towerType: '130HH-420T' } }, executionStatus: 'FDN_IN_PROGRESS', location: { locationId: 5, locationCode: 'LOC-005', maximoId: 'MX-1005', village: 'Jaisalmer', latitude: 26.92, longitude: 70.93, status: true } },
+  { projectWtg: { projectWtgId: 6, wtgCode: 'WTG-006', wtgType: { wtgType: 'EN182' }, towerType: { towerType: '130HH-420T' } }, executionStatus: 'HOLD', location: { locationId: 6, locationCode: 'LOC-006', maximoId: 'MX-1006', village: 'Jaisalmer', latitude: 26.93, longitude: 70.94, status: false } },
+  { projectWtg: { projectWtgId: 7, wtgCode: 'WTG-007', wtgType: { wtgType: 'EN132' }, towerType: { towerType: '140HH-353T' } }, executionStatus: 'INS_COMPLETED', location: { locationId: 7, locationCode: 'LOC-007', maximoId: 'MX-1007', village: 'Tuticorin', latitude: 8.76, longitude: 78.13, status: true } },
+  { projectWtg: { projectWtgId: 8, wtgCode: 'WTG-008', wtgType: { wtgType: 'EN156' }, towerType: { towerType: '140HH-353T' } }, executionStatus: 'COMM_IN_PROGRESS', location: { locationId: 8, locationCode: 'LOC-008', maximoId: 'MX-1008', village: 'Tuticorin', latitude: 8.77, longitude: 78.14, status: true } },
+  { projectWtg: { projectWtgId: 9, wtgCode: 'WTG-009', wtgType: { wtgType: 'EN132' }, towerType: { towerType: '120HH-304T' } }, executionStatus: 'CANCELLED', location: null },
+  { projectWtg: { projectWtgId: 10, wtgCode: 'WTG-010', wtgType: { wtgType: 'EN182' }, towerType: { towerType: '130HH-420T' } }, executionStatus: 'NOT_STARTED', location: null },
+];
+
 @Component({
   selector: 'app-project-wtg-location-details',
   imports: [Shared],
@@ -89,12 +103,15 @@ export class ProjectWtgLocationDetails implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.prjWTGDetails = MOCK_PRJ_WTG_DETAILS;
           }
         }
       })
     } catch (error) {
       console.log(error);
 
+      this.prjWTGDetails = MOCK_PRJ_WTG_DETAILS;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

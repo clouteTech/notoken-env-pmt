@@ -19,6 +19,59 @@ import { ConfirmationService } from 'primeng/api';
 import { DividerModule }     from 'primeng/divider';
 import { Apiservice } from '../service/apiservice';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_CUSTOMERS: any[] = [
+  { customerId: 1, customerName: 'ReNew Power Ltd' },
+  { customerId: 2, customerName: 'Adani Green Energy' },
+  { customerId: 3, customerName: 'Suzlon Energy' },
+  { customerId: 4, customerName: 'Greenko Group' },
+  { customerId: 5, customerName: 'Tata Power Renewable Energy' },
+  { customerId: 6, customerName: 'Continuum Green Energy' },
+  { customerId: 7, customerName: 'Hero Future Energies' },
+  { customerId: 8, customerName: 'JSW Energy' },
+  { customerId: 9, customerName: 'Sembcorp Green Infra' },
+  { customerId: 10, customerName: 'Torrent Power Ltd' },
+];
+
+const MOCK_PROJECTS: any[] = [
+  { projectId: 1, projectCode: 'BWF-P2-2026' },
+  { projectId: 2, projectCode: 'JSLM-CL4-2026' },
+  { projectId: 3, projectCode: 'KNL-WP1-2026' },
+  { projectId: 4, projectCode: 'DVGD-WP3-2026' },
+  { projectId: 5, projectCode: 'CHTP-WP2-2026' },
+  { projectId: 6, projectCode: 'RJKT-WP5-2026' },
+  { projectId: 7, projectCode: 'PATN-WP1-2026' },
+  { projectId: 8, projectCode: 'TUTC-WP4-2026' },
+  { projectId: 9, projectCode: 'BLGM-WP2-2026' },
+  { projectId: 10, projectCode: 'SNGR-WP6-2026' },
+];
+
+const MOCK_SPVS: any[] = [
+  { customerSpvId: 1, spvName: 'Bhuj Renewable Energy SPV 1' },
+  { customerSpvId: 2, spvName: 'Jaisalmer Wind Power SPV 2' },
+  { customerSpvId: 3, spvName: 'Kutch Green Energy SPV 3' },
+  { customerSpvId: 4, spvName: 'Devgadh Wind Projects SPV 4' },
+  { customerSpvId: 5, spvName: 'Chitradurga Wind SPV 5' },
+  { customerSpvId: 6, spvName: 'Rajkot Renewable SPV 6' },
+  { customerSpvId: 7, spvName: 'Patan Wind Energy SPV 7' },
+  { customerSpvId: 8, spvName: 'Tuticorin Wind SPV 8' },
+  { customerSpvId: 9, spvName: 'Belgaum Green Power SPV 9' },
+  { customerSpvId: 10, spvName: 'Sangareddy Wind SPV 10' },
+];
+
+const MOCK_WTG_DETAILS: any[] = [
+  { wtgConfigId: 1, wtgType: 'EN-141', capMw: 3.0, towerType: '120HH-355T', bladeType: 'B68.5', totalQty: 12, janQty: 1, febQty: 1, marQty: 1, aprQty: 1, mayQty: 1, junQty: 1, julQty: 1, augQty: 1, sepQty: 1, octQty: 1, novQty: 1, decQty: 1 },
+  { wtgConfigId: 2, wtgType: 'EN-156', capMw: 3.3, towerType: '140HH-474T', bladeType: 'B76.0', totalQty: 8, janQty: 0, febQty: 1, marQty: 1, aprQty: 1, mayQty: 0, junQty: 1, julQty: 1, augQty: 1, sepQty: 0, octQty: 1, novQty: 1, decQty: 0 },
+  { wtgConfigId: 3, wtgType: 'EN-171', capMw: 3.6, towerType: '135HH-500T', bladeType: 'B83.5', totalQty: 6, janQty: 1, febQty: 0, marQty: 1, aprQty: 0, mayQty: 1, junQty: 0, julQty: 1, augQty: 0, sepQty: 1, octQty: 0, novQty: 1, decQty: 0 },
+  { wtgConfigId: 4, wtgType: 'EN-131', capMw: 2.1, towerType: '105HH-330T', bladeType: 'B64.0', totalQty: 10, janQty: 1, febQty: 1, marQty: 0, aprQty: 1, mayQty: 1, junQty: 0, julQty: 1, augQty: 1, sepQty: 0, octQty: 1, novQty: 1, decQty: 1 },
+  { wtgConfigId: 5, wtgType: 'EN-141', capMw: 3.0, towerType: '120HH-355T', bladeType: 'B68.5', totalQty: 9, janQty: 0, febQty: 1, marQty: 1, aprQty: 0, mayQty: 1, junQty: 1, julQty: 0, augQty: 1, sepQty: 1, octQty: 0, novQty: 1, decQty: 1 },
+  { wtgConfigId: 6, wtgType: 'EN-156', capMw: 3.3, towerType: '140HH-474T', bladeType: 'B76.0', totalQty: 7, janQty: 1, febQty: 0, marQty: 0, aprQty: 1, mayQty: 1, junQty: 0, julQty: 1, augQty: 0, sepQty: 1, octQty: 1, novQty: 0, decQty: 1 },
+  { wtgConfigId: 7, wtgType: 'EN-171', capMw: 3.6, towerType: '135HH-500T', bladeType: 'B83.5', totalQty: 11, janQty: 1, febQty: 1, marQty: 1, aprQty: 1, mayQty: 0, junQty: 1, julQty: 1, augQty: 1, sepQty: 1, octQty: 0, novQty: 1, decQty: 1 },
+  { wtgConfigId: 8, wtgType: 'EN-131', capMw: 2.1, towerType: '105HH-330T', bladeType: 'B64.0', totalQty: 5, janQty: 0, febQty: 0, marQty: 1, aprQty: 0, mayQty: 1, junQty: 0, julQty: 1, augQty: 0, sepQty: 1, octQty: 0, novQty: 0, decQty: 1 },
+  { wtgConfigId: 9, wtgType: 'EN-156', capMw: 3.3, towerType: '140HH-474T', bladeType: 'B76.0', totalQty: 13, janQty: 1, febQty: 1, marQty: 1, aprQty: 1, mayQty: 1, junQty: 1, julQty: 1, augQty: 1, sepQty: 1, octQty: 1, novQty: 1, decQty: 1 },
+  { wtgConfigId: 10, wtgType: 'EN-141', capMw: 3.0, towerType: '120HH-355T', bladeType: 'B68.5', totalQty: 4, janQty: 0, febQty: 1, marQty: 0, aprQty: 0, mayQty: 1, junQty: 0, julQty: 0, augQty: 1, sepQty: 0, octQty: 0, novQty: 1, decQty: 0 },
+];
+
 @Component({
   selector: 'app-demand-plan',
   standalone: true,
@@ -145,11 +198,14 @@ export class DemandPlanComponent implements OnInit {
         error: err => {
           if (err.status === 400) {
             this.msgSvc.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.customerInfoList = MOCK_CUSTOMERS;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.customerInfoList = MOCK_CUSTOMERS;
       this.msgSvc.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -169,12 +225,15 @@ export class DemandPlanComponent implements OnInit {
 
           if (err.status === 400) {
             this.msgSvc.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.customerProjectList = MOCK_PROJECTS;
           }
         }
       })
     } catch (error) {
       console.log(error);
 
+      this.customerProjectList = MOCK_PROJECTS;
       this.msgSvc.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -196,12 +255,15 @@ export class DemandPlanComponent implements OnInit {
 
           if (err.status === 400) {
             this.msgSvc.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.projectSpvList = MOCK_SPVS;
           }
         }
       })
     } catch (error) {
       console.log(error);
 
+      this.projectSpvList = MOCK_SPVS;
       this.msgSvc.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -242,12 +304,17 @@ export class DemandPlanComponent implements OnInit {
 
           if (err.status === 400) {
             this.msgSvc.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.projectSpvWtgDetailList = MOCK_WTG_DETAILS;
+            this.populateWtgConfigDetails(projectIndex, spvIndex);
           }
         }
       })
     } catch (error) {
       console.log(error);
 
+      this.projectSpvWtgDetailList = MOCK_WTG_DETAILS;
+      this.populateWtgConfigDetails(projectIndex, spvIndex);
       this.msgSvc.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

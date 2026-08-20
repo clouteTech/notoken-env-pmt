@@ -29,6 +29,20 @@ export interface SummaryRow {
   wtgCount: number;
 }
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_COMMISSIONING1_PROJECTS: any[] = [
+  { projectId: 1, projectCode: 'ENV-P301', projectName: 'Kutch Wind Farm Phase 1', totalWtgs: 12, wtgCount: 12, customer: { customerId: 1, customerName: 'Adani Green Energy Ltd' } },
+  { projectId: 2, projectCode: 'ENV-P302', projectName: 'Jaisalmer Cluster Phase 2', totalWtgs: 8, wtgCount: 8, customer: { customerId: 2, customerName: 'ReNew Power Pvt Ltd' } },
+  { projectId: 3, projectCode: 'ENV-P303', projectName: 'Bhuj Coastal Wind Project', totalWtgs: 15, wtgCount: 15, customer: { customerId: 3, customerName: 'Tata Power Renewable Energy' } },
+  { projectId: 4, projectCode: 'ENV-P304', projectName: 'Kayathar Wind Farm', totalWtgs: 6, wtgCount: 6, customer: { customerId: 4, customerName: 'Suzlon Energy Ltd' } },
+  { projectId: 5, projectCode: 'ENV-P305', projectName: 'Chitradurga Wind Corridor', totalWtgs: 10, wtgCount: 10, customer: { customerId: 5, customerName: 'Greenko Energies Pvt Ltd' } },
+  { projectId: 6, projectCode: 'ENV-P306', projectName: 'Kutch Bhuj Extension Phase 3', totalWtgs: 9, wtgCount: 9, customer: { customerId: 6, customerName: 'CleanMax Enviro Energy' } },
+  { projectId: 7, projectCode: 'ENV-P307', projectName: 'Rajkot Wind Energy Park', totalWtgs: 7, wtgCount: 7, customer: { customerId: 7, customerName: 'Sembcorp Green Infra' } },
+  { projectId: 8, projectCode: 'ENV-P308', projectName: 'Tuticorin Coastal Cluster', totalWtgs: 11, wtgCount: 11, customer: { customerId: 8, customerName: 'Vestas Wind Technology India' } },
+  { projectId: 9, projectCode: 'ENV-P309', projectName: 'Anantapur Wind Complex', totalWtgs: 14, wtgCount: 14, customer: { customerId: 9, customerName: 'Torrent Power Ltd' } },
+  { projectId: 10, projectCode: 'ENV-P310', projectName: 'Dhule Wind Energy Farm', totalWtgs: 5, wtgCount: 5, customer: { customerId: 10, customerName: 'Continuum Green Energy' } },
+];
+
 @Component({
   selector: 'app-commisioning1',
  imports: [
@@ -196,17 +210,24 @@ export class Commisioning1 {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.projectList = MOCK_COMMISSIONING1_PROJECTS;
           }
         }
       })
     } catch (error){
       console.log(error);
+      this.projectList = MOCK_COMMISSIONING1_PROJECTS;
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
         detail: 'Please Try Again.'
       });
     }
+  }
+
+  getTotalWtgCount(): number {
+    return this.projectList.reduce((sum, p) => sum + (p?.totalWtgs ?? 0), 0);
   }
 
   // ── Step-level enable ──

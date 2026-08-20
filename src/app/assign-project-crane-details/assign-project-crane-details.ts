@@ -12,6 +12,41 @@ export const craneRequiredValidator: ValidatorFn = (control: AbstractControl): V
   return craneId && craneId !== 0 ? null : { craneRequired: true };
 };
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_PROJECT_CRANE_LIST: any[] = [
+  { projectCraneDetailId: 1, crane: { craneId: 1, craneType: 'Crawler Crane', craneModel: 'LR 1750/2', craneMake: 'Liebherr' }, supplier: { supplierId: 1, supplierName: 'Sarens Heavy Lift India' }, registrationNumber: 'GJ-05-AB-1234', status: true },
+  { projectCraneDetailId: 2, crane: { craneId: 2, craneType: 'Crawler Crane', craneModel: 'CC 2800-1', craneMake: 'Terex' }, supplier: { supplierId: 2, supplierName: 'ALE Heavylift' }, registrationNumber: 'RJ-14-CD-5678', status: true },
+  { projectCraneDetailId: 3, crane: { craneId: 3, craneType: 'Mobile Crane', craneModel: 'GMK 6400', craneMake: 'Grove' }, supplier: { supplierId: 3, supplierName: 'Mammoet India' }, registrationNumber: 'TN-09-EF-4321', status: false },
+  { projectCraneDetailId: 4, crane: { craneId: 5, craneType: 'Crawler Crane', craneModel: 'SCC8300', craneMake: 'Sany' }, supplier: { supplierId: 4, supplierName: 'Sanghvi Movers Ltd' }, registrationNumber: 'KA-03-GH-8765', status: true },
+  { projectCraneDetailId: 5, crane: { craneId: 6, craneType: 'Mobile Crane', craneModel: 'AC 500-2', craneMake: 'Demag' }, supplier: { supplierId: 5, supplierName: 'Tiger Crane Services' }, registrationNumber: 'GJ-05-IJ-3456', status: true },
+  { projectCraneDetailId: 6, crane: { craneId: 8, craneType: 'Mobile Crane', craneModel: 'LTM 1750-9.1', craneMake: 'Liebherr' }, supplier: { supplierId: 8, supplierName: 'GMMCO Cranes' }, registrationNumber: 'RJ-14-KL-6543', status: true },
+  { projectCraneDetailId: 7, crane: { craneId: 9, craneType: 'Crawler Crane', craneModel: 'CKE2500', craneMake: 'Kobelco' }, supplier: { supplierId: 9, supplierName: 'Perfect Lifting Solutions' }, registrationNumber: 'TN-09-MN-7890', status: false },
+  { projectCraneDetailId: 8, crane: { craneId: 10, craneType: 'Mobile Crane', craneModel: 'RT9130E-4', craneMake: 'Terex' }, supplier: { supplierId: 10, supplierName: 'National Crane Corporation' }, registrationNumber: 'KA-03-OP-2109', status: true },
+  { projectCraneDetailId: 9, crane: { craneId: 4, craneType: 'Tower Crane', craneModel: 'MD 485', craneMake: 'Potain' }, supplier: { supplierId: 6, supplierName: 'Bothra Shipping & Logistics' }, registrationNumber: 'GJ-05-QR-5432', status: true },
+  { projectCraneDetailId: 10, crane: { craneId: 7, craneType: 'Crawler Crane', craneModel: 'QUY260', craneMake: 'XCMG' }, supplier: { supplierId: 7, supplierName: 'ACME Crane Rentals' }, registrationNumber: 'RJ-14-ST-9876', status: true },
+];
+
+const MOCK_CRANE_INFO_LIST: any[] = [
+  { craneId: 1, craneType: 'Crawler Crane', craneModel: 'LR 1750/2', craneMake: 'Liebherr' },
+  { craneId: 2, craneType: 'Crawler Crane', craneModel: 'CC 2800-1', craneMake: 'Terex' },
+  { craneId: 3, craneType: 'Mobile Crane', craneModel: 'GMK 6400', craneMake: 'Grove' },
+  { craneId: 4, craneType: 'Tower Crane', craneModel: 'MD 485', craneMake: 'Potain' },
+  { craneId: 5, craneType: 'Crawler Crane', craneModel: 'SCC8300', craneMake: 'Sany' },
+  { craneId: 6, craneType: 'Mobile Crane', craneModel: 'AC 500-2', craneMake: 'Demag' },
+  { craneId: 7, craneType: 'Crawler Crane', craneModel: 'QUY260', craneMake: 'XCMG' },
+  { craneId: 8, craneType: 'Mobile Crane', craneModel: 'LTM 1750-9.1', craneMake: 'Liebherr' },
+  { craneId: 9, craneType: 'Crawler Crane', craneModel: 'CKE2500', craneMake: 'Kobelco' },
+  { craneId: 10, craneType: 'Mobile Crane', craneModel: 'RT9130E-4', craneMake: 'Terex' },
+];
+
+const MOCK_CRANE_SUPPLIER_LIST: any[] = [
+  { supplierId: 1, supplierName: 'Sarens Heavy Lift India' },
+  { supplierId: 2, supplierName: 'ALE Heavylift' },
+  { supplierId: 3, supplierName: 'Mammoet India' },
+  { supplierId: 4, supplierName: 'Sanghvi Movers Ltd' },
+  { supplierId: 5, supplierName: 'Tiger Crane Services' },
+];
+
 @Component({
   selector: 'app-assign-project-crane-details',
   imports: [Shared],
@@ -97,15 +132,18 @@ export class AssignProjectCraneDetails implements OnInit {
         },
         error: err => {
           console.log(err);
-    
+
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.projectCraneList = MOCK_PROJECT_CRANE_LIST;
           }
         }
       })
     } catch (error) {
       console.log(error);
 
+      this.projectCraneList = MOCK_PROJECT_CRANE_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -119,15 +157,18 @@ export class AssignProjectCraneDetails implements OnInit {
         },
         error: err => {
           console.log(err);
-    
+
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.craneInfoList = MOCK_CRANE_INFO_LIST;
           }
         }
       })
     } catch (error) {
       console.log(error);
 
+      this.craneInfoList = MOCK_CRANE_INFO_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -167,15 +208,18 @@ export class AssignProjectCraneDetails implements OnInit {
         },
         error: err => {
           console.log(err);
-    
+
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.supplierList = MOCK_CRANE_SUPPLIER_LIST;
           }
         }
       })
     } catch (error) {
       console.log(error);
 
+      this.supplierList = MOCK_CRANE_SUPPLIER_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

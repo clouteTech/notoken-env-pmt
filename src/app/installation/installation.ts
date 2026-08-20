@@ -44,6 +44,109 @@ export interface ViewColumn {
   stepIdx: number;
 }
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_INSTALLATION_PROJECTS: any[] = [
+  { projectId: 1, projectCode: 'ENV-P401', projectName: 'Kutch Wind Farm Phase 1', totalWtgs: 12, wtgCount: 12, customer: { customerId: 1, customerName: 'Adani Green Energy Ltd' } },
+  { projectId: 2, projectCode: 'ENV-P402', projectName: 'Jaisalmer Cluster Phase 2', totalWtgs: 8, wtgCount: 8, customer: { customerId: 2, customerName: 'ReNew Power Pvt Ltd' } },
+  { projectId: 3, projectCode: 'ENV-P403', projectName: 'Bhuj Coastal Wind Project', totalWtgs: 15, wtgCount: 15, customer: { customerId: 3, customerName: 'Tata Power Renewable Energy' } },
+  { projectId: 4, projectCode: 'ENV-P404', projectName: 'Kayathar Wind Farm', totalWtgs: 6, wtgCount: 6, customer: { customerId: 4, customerName: 'Suzlon Energy Ltd' } },
+  { projectId: 5, projectCode: 'ENV-P405', projectName: 'Chitradurga Wind Corridor', totalWtgs: 10, wtgCount: 10, customer: { customerId: 5, customerName: 'Greenko Energies Pvt Ltd' } },
+  { projectId: 6, projectCode: 'ENV-P406', projectName: 'Kutch Bhuj Extension Phase 3', totalWtgs: 9, wtgCount: 9, customer: { customerId: 6, customerName: 'CleanMax Enviro Energy' } },
+  { projectId: 7, projectCode: 'ENV-P407', projectName: 'Rajkot Wind Energy Park', totalWtgs: 7, wtgCount: 7, customer: { customerId: 7, customerName: 'Sembcorp Green Infra' } },
+  { projectId: 8, projectCode: 'ENV-P408', projectName: 'Tuticorin Coastal Cluster', totalWtgs: 11, wtgCount: 11, customer: { customerId: 8, customerName: 'Vestas Wind Technology India' } },
+  { projectId: 9, projectCode: 'ENV-P409', projectName: 'Anantapur Wind Complex', totalWtgs: 14, wtgCount: 14, customer: { customerId: 9, customerName: 'Torrent Power Ltd' } },
+  { projectId: 10, projectCode: 'ENV-P410', projectName: 'Dhule Wind Energy Farm', totalWtgs: 5, wtgCount: 5, customer: { customerId: 10, customerName: 'Continuum Green Energy' } },
+];
+
+const MOCK_INSTALLATION_CRANE_DETAILS: any[] = [
+  { projectCraneDetailId: 1, supplier: { supplierId: 1, supplierName: 'Sarens Heavy Lift India' }, crane: { craneId: 1, craneModel: 'LR 1750/2' } },
+  { projectCraneDetailId: 2, supplier: { supplierId: 2, supplierName: 'ALE Heavylift' }, crane: { craneId: 2, craneModel: 'CC 2800-1' } },
+  { projectCraneDetailId: 3, supplier: { supplierId: 3, supplierName: 'Mammoet India' }, crane: { craneId: 3, craneModel: 'GMK 6400' } },
+  { projectCraneDetailId: 4, supplier: { supplierId: 4, supplierName: 'Sanghvi Movers Ltd' }, crane: { craneId: 4, craneModel: 'MD 485' } },
+];
+
+const MOCK_INSTALLATION_WTG_DETAILS: any[] = Array.from({ length: 10 }, (_, i) => {
+  const n = i + 1;
+  return {
+    location: { locationId: n, locationCode: `LOC-${String(n).padStart(2, '0')}`, maximoId: `MAX-${String(n).padStart(3, '0')}` },
+    projectWtg: {
+      wtgCode: `WTG-${String(n).padStart(2, '0')}`,
+      wtgType: { wtgType: n % 2 === 0 ? 'EN-141' : 'EN-156' },
+      towerType: { towerType: n % 2 === 0 ? '120HH-474T' : '140HH-520T', sectionCount: n % 2 === 0 ? 5 : 6 }
+    }
+  };
+});
+
+const MOCK_INSTALLATION_ACTIVITIES: any[] = Array.from({ length: 10 }, (_, i) => {
+  const n = i + 1;
+  const sectionCount = n % 2 === 0 ? 5 : 6;
+  const complete = n <= 6; // first 6 WTGs fully installed, rest in progress/pending
+  const base = new Date(2026, 6, n); // Jul-2026 onward
+  const fmt = (d: Date) => d.toISOString().slice(0, 10);
+  const plus = (days: number) => fmt(new Date(base.getTime() + days * 86400000));
+
+  return {
+    projectWtgs: [{
+      wtgCode: `WTG-${String(n).padStart(2, '0')}`,
+      wtgType: { wtgType: n % 2 === 0 ? 'EN-141' : 'EN-156' },
+      towerType: { towerType: n % 2 === 0 ? '120HH-474T' : '140HH-520T', sectionCount }
+    }],
+    projectLocation: { locationCode: `LOC-${String(n).padStart(2, '0')}`, maximoId: `MAX-${String(n).padStart(3, '0')}` },
+    projectCraneDetail: {
+      supplier: { supplierId: (n % 4) + 1, supplierName: MOCK_INSTALLATION_CRANE_DETAILS[n % 4].supplier.supplierName },
+      crane: { craneId: (n % 4) + 1, craneModel: MOCK_INSTALLATION_CRANE_DETAILS[n % 4].crane.craneModel }
+    },
+    craneMobilization: plus(0),
+    craneAssemblyStart: plus(1),
+    craneAssemblyFinish: plus(2),
+    bottomPlatformAssembly: plus(3),
+    craneBoomUp: plus(4),
+    converterPanelInstallation: plus(5),
+    installationPlanStart: plus(0),
+    installationActualStart: plus(1),
+    installationForeCastStart: plus(1),
+    installationStartDelayReason: complete ? '' : 'Awaiting crane mobilization',
+    towerInstallations: Array.from({ length: sectionCount }, (_, s) => ({
+      towerInstallationId: s + 1,
+      section: s + 1,
+      installationDate: complete || s < 2 ? plus(6 + s) : null,
+      torqueCheckDate: complete ? plus(6 + s + 1) : null
+    })),
+    nacelleInstallation: complete ? plus(14) : null,
+    assemblyMethod: n % 2 === 0 ? 'HUB' : 'ROTOR',
+    rotorAssemblyDate: n % 2 !== 0 && complete ? plus(15) : null,
+    hubAssemblyDate: n % 2 === 0 && complete ? plus(15) : null,
+    rotorInstallationDate: n % 2 !== 0 && complete ? plus(16) : null,
+    installationPlanFinish: plus(20),
+    installationActualFinish: complete ? plus(21) : null,
+    installationForeCastFinish: complete ? plus(21) : plus(25),
+    installationFinishDelayReason: complete ? '' : 'Blade delivery delayed',
+    craneBoomDown: complete ? plus(22) : null,
+    anchorBolt10PercentTorqueCheck: complete ? plus(7) : null,
+    towerNacelle10PercentTorqueCheck: complete ? plus(17) : null,
+    nacelleHub10PercentTorqueCheck: complete ? plus(18) : null,
+    bladeInstallations: Array.from({ length: 3 }, (_, b) => ({
+      bladeInstallationId: b + 1,
+      bladeNo: b + 1,
+      installationDate: complete ? plus(17 + b) : null,
+      torqueCheckDate: complete ? plus(18 + b) : null
+    })),
+    rotorBolt10PercentTorqueCheck: n % 2 !== 0 && complete ? plus(19) : null,
+    final10PercentTorqueCheck: complete ? plus(23) : null,
+    generatorAlignment: complete ? plus(24) : null,
+    cableLaying: complete ? plus(25) : null,
+    mechanicalCompletion: complete ? plus(26) : null,
+    electricalCompletion: complete ? plus(27) : null,
+    liftInstallation: complete ? plus(28) : null,
+    qaInspectionFinish: complete ? plus(29) : null,
+    mccPlan: plus(30),
+    mccActual: complete ? plus(30) : null,
+    mccForecast: complete ? plus(30) : plus(34),
+    mccDelayReason: complete ? '' : 'Grid connectivity pending',
+    mccSignOff: complete ? plus(31) : null,
+  };
+});
+
 @Component({
   selector: 'app-installation',
   imports: [
@@ -411,16 +514,27 @@ export class Installation implements OnInit {
         },
         error: err => {
           console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.projectList = MOCK_INSTALLATION_PROJECTS;
+          }
         }
       })
     } catch (error) {
       console.log(error);
+      this.projectList = MOCK_INSTALLATION_PROJECTS;
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
         detail: 'Please Try Again.'
       });
     }
+  }
+
+  getTotalWtgCount(): number {
+    return this.projectList.reduce((sum, p) => sum + (p?.totalWtgs ?? 0), 0);
   }
 
   // ─── ROW-LEVEL UNLOCK LOGIC ───────────────────────────────────────────────
@@ -944,7 +1058,7 @@ export class Installation implements OnInit {
             this.createEditInstallationForm();
           }
 
-          
+
           this.patchInstallationActivities();
 
 
@@ -958,11 +1072,22 @@ export class Installation implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.installationActivityDetails = MOCK_INSTALLATION_ACTIVITIES;
+
+            if (this.showEditInstallationModal) {
+              this.createEditInstallationForm();
+            }
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.installationActivityDetails = MOCK_INSTALLATION_ACTIVITIES;
+
+      if (this.showEditInstallationModal) {
+        this.createEditInstallationForm();
+      }
     }
   }
 
@@ -1034,10 +1159,20 @@ export class Installation implements OnInit {
         },
         error: err => {
           console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.prjWTGDetails = MOCK_INSTALLATION_WTG_DETAILS;
+            this.createForms();
+            this.fetchInstallationActivities();
+          }
         }
       })
     } catch (error) {
       console.log(error);
+      this.prjWTGDetails = MOCK_INSTALLATION_WTG_DETAILS;
+      this.createForms();
     }
   }
 
@@ -1056,11 +1191,18 @@ export class Installation implements OnInit {
         },
         error: err => {
           console.log(err);
+
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.prjCraneDetails = MOCK_INSTALLATION_CRANE_DETAILS;
+          }
         }
       })
-      
+
     } catch (error) {
       console.log(error);
+      this.prjCraneDetails = MOCK_INSTALLATION_CRANE_DETAILS;
     }
   }
 

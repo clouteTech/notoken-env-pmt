@@ -4,6 +4,20 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_ZONES: any[] = [
+  { zoneId: 1, zone: 'North', status: true },
+  { zoneId: 2, zone: 'South', status: true },
+  { zoneId: 3, zone: 'East', status: true },
+  { zoneId: 4, zone: 'West', status: false },
+  { zoneId: 5, zone: 'Central', status: true },
+  { zoneId: 6, zone: 'Gujarat', status: true },
+  { zoneId: 7, zone: 'Tamil Nadu', status: true },
+  { zoneId: 8, zone: 'Rajasthan', status: false },
+  { zoneId: 9, zone: 'Karnataka', status: true },
+  { zoneId: 10, zone: 'Andhra', status: true },
+];
+
 @Component({
   selector: 'app-zones',
   imports: [Shared],
@@ -53,11 +67,14 @@ export class Zones implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.zoneList = MOCK_ZONES;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.zoneList = MOCK_ZONES;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

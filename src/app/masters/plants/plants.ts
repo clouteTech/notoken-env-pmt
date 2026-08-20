@@ -5,6 +5,33 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_PLANTS: any[] = [
+  { id: 1, plant: 'Plant Chennai', location: 'Chennai, Tamil Nadu', plantManager: 'Sanjay Kumar', status: true },
+  { id: 2, plant: 'Plant Pune', location: 'Pune, Maharashtra', plantManager: 'Ananya Iyer', status: true },
+  { id: 3, plant: 'Plant Trichy', location: 'Tiruchirappalli, Tamil Nadu', plantManager: 'Sivakumar R', status: false },
+  { id: 4, plant: 'Plant Tuticorin', location: 'Thoothukudi, Tamil Nadu', plantManager: 'Kayalvizhi M', status: true },
+  { id: 5, plant: 'Plant Vadodara', location: 'Vadodara, Gujarat', plantManager: 'Rakesh Patel', status: true },
+  { id: 6, plant: 'Plant Kutch', location: 'Bhuj, Gujarat', plantManager: 'Meera Shah', status: true },
+  { id: 7, plant: 'Plant Jaisalmer', location: 'Jaisalmer, Rajasthan', plantManager: 'Vikram Singh', status: false },
+  { id: 8, plant: 'Plant Bengaluru', location: 'Bengaluru, Karnataka', plantManager: 'Deepa Nair', status: true },
+  { id: 9, plant: 'Plant Hyderabad', location: 'Hyderabad, Telangana', plantManager: 'Suresh Reddy', status: true },
+  { id: 10, plant: 'Plant Kutch Warehouse', location: 'Bhuj, Gujarat', plantManager: 'Arjun Mehta', status: true },
+];
+
+const MOCK_PLANT_MANAGER_USERS: any[] = [
+  { user: { userName: 'Sanjay Kumar' } },
+  { user: { userName: 'Ananya Iyer' } },
+  { user: { userName: 'Sivakumar R' } },
+  { user: { userName: 'Kayalvizhi M' } },
+  { user: { userName: 'Rakesh Patel' } },
+  { user: { userName: 'Meera Shah' } },
+  { user: { userName: 'Vikram Singh' } },
+  { user: { userName: 'Deepa Nair' } },
+  { user: { userName: 'Suresh Reddy' } },
+  { user: { userName: 'Arjun Mehta' } },
+];
+
 @Component({
   selector: 'app-plants',
   imports: [Shared],
@@ -74,11 +101,14 @@ export class Plants implements OnInit {
           console.log(err);
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.plantList = MOCK_PLANTS;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.plantList = MOCK_PLANTS;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -175,11 +205,14 @@ export class Plants implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.userList = MOCK_PLANT_MANAGER_USERS;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.userList = MOCK_PLANT_MANAGER_USERS;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

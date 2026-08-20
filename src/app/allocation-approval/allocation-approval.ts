@@ -75,6 +75,52 @@ export class AllocationApproval {
       plantName: 'Pune',
       plantManager: 'Anitha Rao',
       status: 'Created'
+    },
+    {
+      initiatedBy: 'Divya Menon',
+      initiatedOn: '2026-03-15',
+      planMonth: 'May 2026',
+      plantName: 'Chennai',
+      plantManager: 'Suresh Reddy',
+      status: 'Reviewed',
+      reviewedBy: 'Mohan',
+      reviewedOn: '2026-03-16'
+    },
+    {
+      initiatedBy: 'Ravi Kumar',
+      initiatedOn: '2026-03-27',
+      planMonth: 'May 2026',
+      plantName: 'Trichy',
+      plantManager: 'Manjunath H',
+      status: 'Created'
+    },
+    {
+      initiatedBy: 'Suresh Reddy',
+      initiatedOn: '2026-03-12',
+      planMonth: 'Mar 2026',
+      plantName: 'Pune',
+      plantManager: 'Anitha Rao',
+      status: 'Reviewed',
+      reviewedBy: 'Ajith Kumar',
+      reviewedOn: '2026-03-13'
+    },
+    {
+      initiatedBy: 'Meena Iyer',
+      initiatedOn: '2026-03-28',
+      planMonth: 'Jun 2026',
+      plantName: 'Chennai',
+      plantManager: 'Lakshmi Devi',
+      status: 'Created'
+    },
+    {
+      initiatedBy: 'Arjun Naik',
+      initiatedOn: '2026-03-08',
+      planMonth: 'Mar 2026',
+      plantName: 'Trichy',
+      plantManager: 'Manjunath H',
+      status: 'Reviewed',
+      reviewedBy: 'Mohan',
+      reviewedOn: '2026-03-09'
     }
   ];
 

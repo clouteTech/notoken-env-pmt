@@ -4,6 +4,22 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_CUSTOMER_DETAIL: any = { customerId: 1, customerCode: 'CUST001', customerName: 'ReNew Power Pvt Ltd' };
+
+const MOCK_SPV_LIST: any[] = [
+  { customerSpvId: 1, spvName: 'Chennai Wind Farm Pvt Ltd', spvGstNumber: '33ABCDE1234F1Z5', address1: 'No. 12, Industrial Estate, Guindy', address2: '', city: 'Chennai', state: 'Tamil Nadu', pinCode: '600032', country: 'India' },
+  { customerSpvId: 2, spvName: 'Pune Renewable Energy Pvt Ltd', spvGstNumber: '27ABCDE5678G1Z2', address1: 'Plot 45, MIDC Area, Hinjewadi', address2: '', city: 'Pune', state: 'Maharashtra', pinCode: '411057', country: 'India' },
+  { customerSpvId: 3, spvName: 'Gujarat Wind Power Ltd', spvGstNumber: '24ABCDE9101H1Z8', address1: 'Survey No. 89, Industrial Zone, Kutch', address2: '', city: 'Bhuj', state: 'Gujarat', pinCode: '370001', country: 'India' },
+  { customerSpvId: 4, spvName: 'Rajasthan Green Energy Pvt Ltd', spvGstNumber: '08ABCDE1122J1Z3', address1: 'Sector 5, RIICO Industrial Area', address2: '', city: 'Jodhpur', state: 'Rajasthan', pinCode: '342005', country: 'India' },
+  { customerSpvId: 5, spvName: 'Karnataka Wind Solutions Pvt Ltd', spvGstNumber: '29ABCDE3344K1Z6', address1: 'Plot 21, Peenya Industrial Area', address2: '', city: 'Bengaluru', state: 'Karnataka', pinCode: '560058', country: 'India' },
+  { customerSpvId: 6, spvName: 'Kutch Wind Energy Pvt Ltd', spvGstNumber: '24ABCDE5566L1Z1', address1: 'Village Jangi, Lakhpat Taluka', address2: '', city: 'Kutch', state: 'Gujarat', pinCode: '370645', country: 'India' },
+  { customerSpvId: 7, spvName: 'Anantapur Renewables Pvt Ltd', spvGstNumber: '37ABCDE7788M1Z4', address1: 'Solar Park Road, Tadipatri', address2: '', city: 'Anantapur', state: 'Andhra Pradesh', pinCode: '515401', country: 'India' },
+  { customerSpvId: 8, spvName: 'Jaisalmer Wind Power Ltd', spvGstNumber: '08ABCDE9900N1Z9', address1: 'Sam Road Industrial Area', address2: '', city: 'Jaisalmer', state: 'Rajasthan', pinCode: '345001', country: 'India' },
+  { customerSpvId: 9, spvName: 'Kayathar Energy Pvt Ltd', spvGstNumber: '33ABCDE1212O1Z7', address1: 'Kayathar Industrial Estate', address2: '', city: 'Thoothukudi', state: 'Tamil Nadu', pinCode: '628102', country: 'India' },
+  { customerSpvId: 10, spvName: 'Kutch Mundra Wind Ltd', spvGstNumber: '24ABCDE3434P1Z0', address1: 'Adani Green Complex, Mundra SEZ', address2: '', city: 'Mundra', state: 'Gujarat', pinCode: '370421', country: 'India' },
+];
+
 @Component({
   selector: 'app-customer-spv-list',
   imports: [Shared],
@@ -120,11 +136,16 @@ SubmitBtnName:any = 'Submit';
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.customerDetail = MOCK_CUSTOMER_DETAIL;
+            this.spvList = MOCK_SPV_LIST;
           }
         }
       })
 
     }catch(e){
+      this.customerDetail = MOCK_CUSTOMER_DETAIL;
+      this.spvList = MOCK_SPV_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
 
     }

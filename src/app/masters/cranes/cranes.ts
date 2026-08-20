@@ -4,6 +4,33 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
+// Demo fallback data — shown only when the backend API cannot be reached.
+const MOCK_CRANES: any[] = [
+  { craneId: 1, craneType: 'Crawler Crane', craneModel: 'LR 1750/2', craneMake: 'Liebherr', status: true },
+  { craneId: 2, craneType: 'Crawler Crane', craneModel: 'CC 2800-1', craneMake: 'Terex', status: true },
+  { craneId: 3, craneType: 'Mobile Crane', craneModel: 'GMK 6400', craneMake: 'Grove', status: true },
+  { craneId: 4, craneType: 'Tower Crane', craneModel: 'MD 485', craneMake: 'Potain', status: false },
+  { craneId: 5, craneType: 'Crawler Crane', craneModel: 'SCC8300', craneMake: 'Sany', status: true },
+  { craneId: 6, craneType: 'Mobile Crane', craneModel: 'AC 500-2', craneMake: 'Demag', status: true },
+  { craneId: 7, craneType: 'Crawler Crane', craneModel: 'QUY260', craneMake: 'XCMG', status: false },
+  { craneId: 8, craneType: 'Mobile Crane', craneModel: 'LTM 1750-9.1', craneMake: 'Liebherr', status: true },
+  { craneId: 9, craneType: 'Crawler Crane', craneModel: 'CKE2500', craneMake: 'Kobelco', status: true },
+  { craneId: 10, craneType: 'Mobile Crane', craneModel: 'RT9130E-4', craneMake: 'Terex', status: true },
+];
+
+const MOCK_SUPPLIERS: any[] = [
+  { supplierId: 1, supplierName: 'Sarens Heavy Lift India' },
+  { supplierId: 2, supplierName: 'ALE Heavylift' },
+  { supplierId: 3, supplierName: 'Mammoet India' },
+  { supplierId: 4, supplierName: 'Sanghvi Movers Ltd' },
+  { supplierId: 5, supplierName: 'Tiger Crane Services' },
+  { supplierId: 6, supplierName: 'Bothra Shipping & Logistics' },
+  { supplierId: 7, supplierName: 'ACME Crane Rentals' },
+  { supplierId: 8, supplierName: 'GMMCO Cranes' },
+  { supplierId: 9, supplierName: 'Perfect Lifting Solutions' },
+  { supplierId: 10, supplierName: 'National Crane Corporation' },
+];
+
 @Component({
   selector: 'app-cranes',
   imports: [Shared],
@@ -69,11 +96,14 @@ export class Cranes implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.craneList = MOCK_CRANES;
           }
         }
       })
     } catch (error) {
       console.log(error);
+      this.craneList = MOCK_CRANES;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -314,12 +344,15 @@ export class Cranes implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.supplierList = MOCK_SUPPLIERS;
           }
         }
       })
     } catch (error) {
       console.log(error);
       this.supplierModalLoading = false;
+      this.supplierList = MOCK_SUPPLIERS;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
