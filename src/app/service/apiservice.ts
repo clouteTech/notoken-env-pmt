@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 
 @Injectable({
@@ -12,6 +12,12 @@ export class Apiservice {
   constructor(private http: HttpClient){}
 
   postMethod(url: any, params: any, config?: any){
+    if (environment.useMockData) {
+      // Demo mode: skip the real network call entirely so callers hit their
+      // error/catch branch (and mock data fallback) immediately instead of
+      // waiting on a timeout against an unreachable backend.
+      return throwError(() => ({ status: 0, error: { detail: 'Demo mode: mock data' } }));
+    }
     return this.http.post(this.baseUrl + url, params, config);
   }
 
