@@ -126,16 +126,18 @@ export class ProjectWtgLocationDetails implements OnInit {
           this.apiService.updatePrjWTGLocation(data).subscribe({
             next: val => {
               console.log(val);
-              this.messageService.add({ severity: 'success', summary: 'Success', 
+              this.messageService.add({ severity: 'success', summary: 'Success',
                 detail: 'Successfully Updated Project WTG Location' });
               this.showLocationModal = false;
               this.fetchPrjWTGDetails();
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateLocationLocally(data);
               }
             }
           })
@@ -150,16 +152,18 @@ export class ProjectWtgLocationDetails implements OnInit {
           this.apiService.createPrjWTGLocation(data).subscribe({
             next: val => {
               console.log(val);
-              this.messageService.add({ severity: 'success', summary: 'Success', 
+              this.messageService.add({ severity: 'success', summary: 'Success',
                 detail: `Successfully Location Assigned to ${this.selectPrjWTG?.projectWtg?.wtgCode} Project WTG` });
               this.showLocationModal = false;
               this.fetchPrjWTGDetails();
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createLocationLocally(data);
               }
             }
           })
@@ -171,6 +175,38 @@ export class ProjectWtgLocationDetails implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createLocationLocally(data: any){
+    const newId = Math.max(0, ...this.prjWTGDetails.map(w => w.location?.locationId || 0)) + 1;
+    const newLocation = { ...data, locationId: newId };
+    this.prjWTGDetails = this.prjWTGDetails.map(w =>
+      w.projectWtg?.projectWtgId === data.projectWtgId ? { ...w, location: newLocation } : w
+    );
+
+    this.messageService.add({ severity: 'success', summary: 'Success',
+      detail: `Successfully Location Assigned to ${this.selectPrjWTG?.projectWtg?.wtgCode} Project WTG` });
+    this.showLocationModal = false;
+  }
+
+  private updateLocationLocally(data: any){
+    this.prjWTGDetails = this.prjWTGDetails.map(w =>
+      w.location?.locationId === data.locationId ? { ...w, location: { ...w.location, ...data } } : w
+    );
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Project WTG Location' });
+    this.showLocationModal = false;
+  }
+
+  private deleteLocationLocally(){
+    const locationId = this.selectPrjWTG?.location?.locationId;
+    this.prjWTGDetails = this.prjWTGDetails.map(w =>
+      w.location?.locationId === locationId ? { ...w, location: null } : w
+    );
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Project WTG Location' });
   }
 
   openLocationModal(){
@@ -230,6 +266,8 @@ export class ProjectWtgLocationDetails implements OnInit {
 
                 if (err.status === 400) {
                   this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+                } else {
+                  this.deleteLocationLocally();
                 }
               }
             })

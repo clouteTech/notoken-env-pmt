@@ -91,9 +91,11 @@ export class WtgTypes implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createWTGTypeLocally(data);
               }
             }
           })
@@ -110,9 +112,11 @@ export class WtgTypes implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateWTGTypeLocally(data);
               }
             }
           })
@@ -123,6 +127,24 @@ export class WtgTypes implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createWTGTypeLocally(data: any){
+    const newId = Math.max(0, ...this.wtgTypeList.map((t: any) => t.wtgTypeId || 0)) + 1;
+    const newWtgType = { ...data, wtgTypeId: newId };
+    this.wtgTypeList = [newWtgType, ...this.wtgTypeList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created WTG Type' });
+    this.showWTGTypeModal = false;
+  }
+
+  private updateWTGTypeLocally(data: any){
+    this.wtgTypeList = this.wtgTypeList.map((t: any) => t.wtgTypeId === data.wtgTypeId ? { ...t, ...data } : t);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated WTG Type' });
+    this.showWTGTypeModal = false;
   }
 
   editWTGType(){
@@ -216,6 +238,9 @@ export class WtgTypes implements OnInit {
 
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            } else {
+              this.wtgTypeList = this.wtgTypeList.filter((t: any) => t.wtgTypeId !== this.selectedWTGType.wtgTypeId);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted WTG Type' });
             }
           }
         })

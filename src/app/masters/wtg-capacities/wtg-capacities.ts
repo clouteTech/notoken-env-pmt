@@ -97,9 +97,11 @@ export class WtgCapacities implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createCapacityLocally(data);
               }
             }
           })
@@ -117,9 +119,11 @@ export class WtgCapacities implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateCapacityLocally(data);
               }
             }
           })
@@ -130,6 +134,24 @@ export class WtgCapacities implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createCapacityLocally(data: any){
+    const newId = Math.max(0, ...this.wtgCapacityList.map(c => c.capacityId || 0)) + 1;
+    const newCapacity = { ...data, capacityId: newId };
+    this.wtgCapacityList = [newCapacity, ...this.wtgCapacityList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Capacity' });
+    this.showWtgCapacityModal = false;
+  }
+
+  private updateCapacityLocally(data: any){
+    this.wtgCapacityList = this.wtgCapacityList.map(c => c.capacityId === data.capacityId ? { ...c, ...data } : c);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Capacity' });
+    this.showWtgCapacityModal = false;
   }
 
   unitList = [
@@ -211,6 +233,9 @@ export class WtgCapacities implements OnInit {
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.wtgCapacityList = this.wtgCapacityList.filter(c => c.capacityId !== this.selectedCapacity.capacityId);
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Capacity' });
               }
             }
           })

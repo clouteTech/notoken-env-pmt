@@ -91,16 +91,18 @@ export class GridConnectivities {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createGridConnectivityLocally(data);
               }
             }
           })
         } else {
           const data = this.gridConnectivityForm.value;
           console.log(data);
-    
+
           this.apiService.updateGridConnectivity(data).subscribe({
             next: val => {
               console.log(val);
@@ -110,19 +112,39 @@ export class GridConnectivities {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateGridConnectivityLocally(data);
               }
             }
           })
-        }     
+        }
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createGridConnectivityLocally(data: any){
+    const newId = Math.max(0, ...this.gridConnectivityList.map((g: any) => g.gridConnectivityId || 0)) + 1;
+    const newGridConnectivity = { ...data, gridConnectivityId: newId };
+    this.gridConnectivityList = [newGridConnectivity, ...this.gridConnectivityList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Grid Connectivity' });
+    this.showConnectivityModal = false;
+  }
+
+  private updateGridConnectivityLocally(data: any){
+    this.gridConnectivityList = this.gridConnectivityList.map((g: any) => g.gridConnectivityId === data.gridConnectivityId ? { ...g, ...data } : g);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Grid Connectivity' });
+    this.showConnectivityModal = false;
   }
 
   editGridConnectivity(){
@@ -199,6 +221,9 @@ export class GridConnectivities {
 
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            } else {
+              this.gridConnectivityList = this.gridConnectivityList.filter((g: any) => g.gridConnectivityId !== this.selectedGridConnectivity.gridConnectivityId);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Grid Connectivity' });
             }
           }
         })

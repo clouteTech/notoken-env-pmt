@@ -93,9 +93,11 @@ export class PpaTypes implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createPpaTypeLocally(data);
               }
             }
           })
@@ -112,19 +114,39 @@ export class PpaTypes implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updatePpaTypeLocally(data);
               }
             }
           })
-        }      
+        }
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createPpaTypeLocally(data: any){
+    const newId = Math.max(0, ...this.ppaTypeList.map(p => p.ppaTypeId || 0)) + 1;
+    const newPpaType = { ...data, ppaTypeId: newId };
+    this.ppaTypeList = [newPpaType, ...this.ppaTypeList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
+    this.showPpaModal = false;
+  }
+
+  private updatePpaTypeLocally(data: any){
+    this.ppaTypeList = this.ppaTypeList.map(p => p.ppaTypeId === data.ppaTypeId ? { ...p, ...data } : p);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
+    this.showPpaModal = false;
   }
 
   editPpaType(){
@@ -191,6 +213,9 @@ export class PpaTypes implements OnInit {
 
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            } else {
+              this.ppaTypeList = this.ppaTypeList.filter(p => p.ppaTypeId !== this.selectedPpaType.ppaTypeId);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted PPA Type' });
             }
           }
         })

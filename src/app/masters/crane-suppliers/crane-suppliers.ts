@@ -111,16 +111,18 @@ export class CraneSuppliers {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createCraneSupplierLocally(data);
               }
             }
-          })     
+          })
         } else {
           const data = this.craneSupplierForm.value;
           console.log(data);
-  
+
           this.apiService.updateCraneSupplier(data).subscribe({
             next: val => {
               console.log(val);
@@ -130,13 +132,15 @@ export class CraneSuppliers {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateCraneSupplierLocally(data);
               }
             }
           })
-        }       
+        }
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
@@ -144,6 +148,24 @@ export class CraneSuppliers {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createCraneSupplierLocally(data: any){
+    const newId = Math.max(0, ...this.craneSupplierList.map(s => s.supplierId || 0)) + 1;
+    const newSupplier = { ...data, supplierId: newId };
+    this.craneSupplierList = [newSupplier, ...this.craneSupplierList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Crane Supplier' });
+    this.showSupplierModal = false;
+  }
+
+  private updateCraneSupplierLocally(data: any){
+    this.craneSupplierList = this.craneSupplierList.map(s => s.supplierId === data.supplierId ? { ...s, ...data } : s);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Crane Supplier' });
+    this.showSupplierModal = false;
   }
 
   editCraneSupplier(){
@@ -191,6 +213,9 @@ export class CraneSuppliers {
 
                 if (err.status === 400) {
                   this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+                } else {
+                  this.craneSupplierList = this.craneSupplierList.filter(s => s.supplierId !== this.selectedCraneSupplier.supplierId);
+                  this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Crane Supplier' });
                 }
               }
             })

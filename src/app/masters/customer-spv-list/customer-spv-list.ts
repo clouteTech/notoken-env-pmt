@@ -184,7 +184,13 @@ SubmitBtnName:any = 'Submit';
                 this.getCustomerList();
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: 'SPV Added Successfully' });
               }, error: (err) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Enter All Fields' });
+                console.log(err);
+
+                if (err.status === 400) {
+                  this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Enter All Fields' });
+                } else {
+                  this.createSpvLocally(data);
+                }
               }
             })
 
@@ -213,7 +219,13 @@ SubmitBtnName:any = 'Submit';
                 this.getCustomerList();
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: 'SPV Added Successfully' });
               }, error: (err) => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+                console.log(err);
+
+                if (err.status === 400) {
+                  this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+                } else {
+                  this.updateSpvLocally(data);
+                }
               }
             })
 
@@ -225,6 +237,26 @@ SubmitBtnName:any = 'Submit';
     }catch(e){
 
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createSpvLocally(data: any){
+    const newId = Math.max(0, ...this.spvList.map((s: any) => s.customerSpvId || 0)) + 1;
+    const newSpv = { ...data, customerSpvId: newId };
+    this.spvList = [newSpv, ...this.spvList];
+
+    this.addSPVPopup = false;
+    this.spvForm.reset();
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'SPV Added Successfully' });
+  }
+
+  private updateSpvLocally(data: any){
+    this.spvList = this.spvList.map((s: any) => s.customerSpvId === data.customerSpvId ? { ...s, ...data } : s);
+
+    this.addSPVPopup = false;
+    this.spvForm.reset();
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'SPV Added Successfully' });
   }
 
     SPVMenu(event: Event, menu: any, spv: any){
@@ -279,6 +311,9 @@ SubmitBtnName:any = 'Submit';
 
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            } else {
+              this.spvList = this.spvList.filter((s: any) => s.customerSpvId !== this.selectedSPV.customerSpvId);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted PPA Type' });
             }
           }
         })

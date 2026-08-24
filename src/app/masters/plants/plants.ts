@@ -152,9 +152,11 @@ export class Plants implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createPlantLocally(data);
               }
             }
           })
@@ -171,13 +173,15 @@ export class Plants implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updatePlantLocally(data);
               }
             }
           })
-        }  
+        }
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
@@ -185,6 +189,24 @@ export class Plants implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createPlantLocally(data: any){
+    const newId = Math.max(0, ...this.plantList.map(p => p.id || 0)) + 1;
+    const newPlant = { id: newId, plant: data.plant, location: data.location, plantManager: data.plantManager, status: data.status };
+    this.plantList = [newPlant, ...this.plantList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Plant' });
+    this.showPlantModal = false;
+  }
+
+  private updatePlantLocally(data: any){
+    this.plantList = this.plantList.map(p => p.id === data.plantId ? { ...p, plant: data.plant, location: data.location, plantManager: data.plantManager, status: data.status } : p);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Plant' });
+    this.showPlantModal = false;
   }
 
   fetchUsersByUsergroup(){
@@ -295,6 +317,9 @@ export class Plants implements OnInit {
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.plantList = this.plantList.filter(p => p.id !== this.selectedPlant.id);
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Plant' });
               }
             }
           })

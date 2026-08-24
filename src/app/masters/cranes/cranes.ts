@@ -5,17 +5,18 @@ import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 // Demo fallback data — shown only when the backend API cannot be reached.
+// assignedSupplierIds drives the Assign/Remove Suppliers modal in demo mode.
 const MOCK_CRANES: any[] = [
-  { craneId: 1, craneType: 'Crawler Crane', craneModel: 'LR 1750/2', craneMake: 'Liebherr', status: true },
-  { craneId: 2, craneType: 'Crawler Crane', craneModel: 'CC 2800-1', craneMake: 'Terex', status: true },
-  { craneId: 3, craneType: 'Mobile Crane', craneModel: 'GMK 6400', craneMake: 'Grove', status: true },
-  { craneId: 4, craneType: 'Tower Crane', craneModel: 'MD 485', craneMake: 'Potain', status: false },
-  { craneId: 5, craneType: 'Crawler Crane', craneModel: 'SCC8300', craneMake: 'Sany', status: true },
-  { craneId: 6, craneType: 'Mobile Crane', craneModel: 'AC 500-2', craneMake: 'Demag', status: true },
-  { craneId: 7, craneType: 'Crawler Crane', craneModel: 'QUY260', craneMake: 'XCMG', status: false },
-  { craneId: 8, craneType: 'Mobile Crane', craneModel: 'LTM 1750-9.1', craneMake: 'Liebherr', status: true },
-  { craneId: 9, craneType: 'Crawler Crane', craneModel: 'CKE2500', craneMake: 'Kobelco', status: true },
-  { craneId: 10, craneType: 'Mobile Crane', craneModel: 'RT9130E-4', craneMake: 'Terex', status: true },
+  { craneId: 1, craneType: 'Crawler Crane', craneModel: 'LR 1750/2', craneMake: 'Liebherr', status: true, assignedSupplierIds: [1, 3] },
+  { craneId: 2, craneType: 'Crawler Crane', craneModel: 'CC 2800-1', craneMake: 'Terex', status: true, assignedSupplierIds: [2] },
+  { craneId: 3, craneType: 'Mobile Crane', craneModel: 'GMK 6400', craneMake: 'Grove', status: true, assignedSupplierIds: [] },
+  { craneId: 4, craneType: 'Tower Crane', craneModel: 'MD 485', craneMake: 'Potain', status: false, assignedSupplierIds: [4] },
+  { craneId: 5, craneType: 'Crawler Crane', craneModel: 'SCC8300', craneMake: 'Sany', status: true, assignedSupplierIds: [] },
+  { craneId: 6, craneType: 'Mobile Crane', craneModel: 'AC 500-2', craneMake: 'Demag', status: true, assignedSupplierIds: [5, 6] },
+  { craneId: 7, craneType: 'Crawler Crane', craneModel: 'QUY260', craneMake: 'XCMG', status: false, assignedSupplierIds: [] },
+  { craneId: 8, craneType: 'Mobile Crane', craneModel: 'LTM 1750-9.1', craneMake: 'Liebherr', status: true, assignedSupplierIds: [1] },
+  { craneId: 9, craneType: 'Crawler Crane', craneModel: 'CKE2500', craneMake: 'Kobelco', status: true, assignedSupplierIds: [] },
+  { craneId: 10, craneType: 'Mobile Crane', craneModel: 'RT9130E-4', craneMake: 'Terex', status: true, assignedSupplierIds: [7, 8] },
 ];
 
 const MOCK_SUPPLIERS: any[] = [
@@ -110,11 +111,11 @@ export class Cranes implements OnInit {
 
   submitCraneForm(){
     try {
-      if (this.craneForm.valid) {    
+      if (this.craneForm.valid) {
         if (!this.selectedCrane) {
           const data = this.craneForm.value;
           console.log(data);
-    
+
           this.apiService.createCrane(data).subscribe({
             next: val => {
               console.log(val);
@@ -124,16 +125,18 @@ export class Cranes implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createCraneLocally(data);
               }
             }
           })
         } else {
           const data = this.craneForm.value;
           console.log(data);
-  
+
           this.apiService.updateCrane(data).subscribe({
             next: val => {
               console.log(val);
@@ -143,9 +146,11 @@ export class Cranes implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateCraneLocally(data);
               }
             }
           })
@@ -157,6 +162,24 @@ export class Cranes implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createCraneLocally(data: any){
+    const newId = Math.max(0, ...this.craneList.map(c => c.craneId || 0)) + 1;
+    const newCrane = { ...data, craneId: newId, assignedSupplierIds: [] };
+    this.craneList = [newCrane, ...this.craneList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Crane' });
+    this.showCraneModal = false;
+  }
+
+  private updateCraneLocally(data: any){
+    this.craneList = this.craneList.map(c => c.craneId === data.craneId ? { ...c, ...data } : c);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Crane' });
+    this.showCraneModal = false;
   }
 
 
@@ -222,6 +245,8 @@ export class Cranes implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleSupplierLocally(supplier.supplierId, true);
           }
         }
       })
@@ -250,6 +275,8 @@ export class Cranes implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleSupplierLocally(supplier.supplierId, false);
           }
         }
       })
@@ -257,6 +284,21 @@ export class Cranes implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  private toggleSupplierLocally(supplierId: number, assign: boolean){
+    this.craneList = this.craneList.map(c => {
+      if (c.craneId !== this.selectedCrane.craneId) return c;
+      const ids: number[] = c.assignedSupplierIds ?? [];
+      const nextIds = assign
+        ? (ids.includes(supplierId) ? ids : [...ids, supplierId])
+        : ids.filter(id => id !== supplierId);
+      return { ...c, assignedSupplierIds: nextIds };
+    });
+    this.selectedCrane = this.craneList.find(c => c.craneId === this.selectedCrane.craneId);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: assign ? 'Supplier Assigned Successfully' : 'Supplier Removed Successfully' });
+    this.fetchCraneSuppliers();
   }
 
   fetchCraneSuppliers(){
@@ -276,6 +318,9 @@ export class Cranes implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            const ids: number[] = this.selectedCrane?.assignedSupplierIds ?? [];
+            this.assignedSuppliers = MOCK_SUPPLIERS.filter(s => ids.includes(s.supplierId));
           }
         }
       })
@@ -318,6 +363,9 @@ export class Cranes implements OnInit {
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.craneList = this.craneList.filter(c => c.craneId !== this.selectedCrane.craneId);
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Crane' });
               }
             }
           })

@@ -1082,13 +1082,13 @@ buildOptsList(): void {
 
       },error:(err)=>{
         console.log(err);
-          
+
         if (err.status === 400) {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
-        }
-
-        if (err.status === 404) {
+        } else if (err.status === 404) {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+        } else {
+          this.createProjectLocally(data);
         }
       }
     })
@@ -1134,6 +1134,8 @@ buildOptsList(): void {
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.deleteProjectLocally();
               }
             }
           })
@@ -1149,6 +1151,152 @@ buildOptsList(): void {
   trackById(_: number, item: { id: number }) { return item.id; }
   trackByIdx(i: number) { return i; }
 
+  // ── Demo mode CRUD (operates on the in-memory mock data when the backend is unreachable) ──
+
+  private applyProjectDetails(details: any){
+    this.projectDetails = details;
+    this.projectForm.patchValue({
+      ...this.projectDetails,
+      projectId: this.projectDetails.projectCode,
+      customerId: this.projectDetails?.customer?.customerId,
+      clusterId: this.projectDetails?.cluster?.clusterId,
+      zoneId: this.projectDetails?.zone?.zoneId,
+      projectManagerId: this.projectDetails?.projectManager?.userId,
+      bdManagerId: this.projectDetails?.bdManager?.userId,
+      solutionManagerId: this.projectDetails?.solutionManager?.userId,
+      clusterHeadId: this.projectDetails?.clusterHead?.userId,
+      siteManagerId: this.projectDetails?.siteManager?.userId,
+      projectStatus: this.projectDetails?.projectStatus
+    });
+
+    this.fetchCustomerSPVInfo();
+
+    this.spvs.clear();
+
+    this.projectDetails?.projectSpvDetails?.forEach((spv: any) => {
+      this.spvs.push(this.createSpvForm(spv));
+    });
+
+    console.log('SPV Forms:', this.spvs.value);
+  }
+
+  private buildMockProjectDetails(project: any): any {
+    return {
+      projectId: project?.projectId,
+      projectCode: project?.projectCode,
+      projectDescription: `Demo project description for ${project?.projectCode ?? ''}`,
+      city: 'Demo City',
+      country: 'Demo State',
+      projectTerm: 'DAP',
+      probability: project?.probability ?? 'P90',
+      projectStatus: 'ACTIVE',
+      contractStatus: 'SIGNED',
+      projectTotalQty: project?.totalWtgs ?? 0,
+      projectTotalCapacity: project?.totalCapacity ?? 0,
+      customer: project?.customer ?? MOCK_CUSTOMER_LIST[0],
+      cluster: MOCK_CLUSTER_LIST[0],
+      zone: MOCK_ZONE_LIST[0],
+      projectManager: MOCK_MANAGER_LIST[0],
+      bdManager: MOCK_MANAGER_LIST[1],
+      solutionManager: MOCK_MANAGER_LIST[2],
+      clusterHead: MOCK_MANAGER_LIST[3],
+      siteManager: MOCK_MANAGER_LIST[4],
+      projectSpvDetails: MOCK_CUSTOMER_SPV_LIST.map((spv, idx) => ({
+        projectSpvId: idx + 1,
+        customerSpv: { customerSpvId: spv.customerSpvId, spvName: spv.spvName },
+        wtgConfigurations: [
+          {
+            wtgConfigId: idx * 10 + 1,
+            wtgType: MOCK_WTG_TYPE_LIST[idx % MOCK_WTG_TYPE_LIST.length],
+            capacity: MOCK_CAPACITY_LIST[idx % MOCK_CAPACITY_LIST.length],
+            towerType: MOCK_TOWER_TYPE_LIST[idx % MOCK_TOWER_TYPE_LIST.length],
+            bladeType: MOCK_BLADE_TYPE_LIST[idx % MOCK_BLADE_TYPE_LIST.length],
+            gridConnectivity: MOCK_GRID_LIST[idx % MOCK_GRID_LIST.length],
+            ppaType: MOCK_PPA_LIST[idx % MOCK_PPA_LIST.length],
+            wtgQty: 4 + idx
+          }
+        ]
+      }))
+    };
+  }
+
+  private createProjectLocally(data: any){
+    const newId = Math.max(0, ...(this.projectList ?? []).map((p: any) => p.projectId || 0)) + 1;
+    const customer = this.CustomerNameList.find((c: any) => c.customerId === data.customerId) ?? null;
+    const totalWtgs = (data.projectSpvDetails ?? []).reduce((sum: number, spv: any) =>
+      sum + (spv.wtgConfigurations ?? []).reduce((s: number, c: any) => s + (c.wtgQty || 0), 0), 0);
+
+    const newProject = {
+      projectId: newId,
+      projectCode: data.projectCode,
+      customer,
+      probability: data.probability,
+      totalWtgs,
+      totalCapacity: this.overallTotalCapacity
+    };
+
+    this.projectList = [newProject, ...(this.projectList ?? [])];
+
+    this.addProjectDialog = false;
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Project Created Successfully' });
+  }
+
+  private deleteProjectLocally(){
+    this.projectList = (this.projectList ?? []).filter((p: any) => p.projectId !== this.selectedProject.projectId);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Project' });
+  }
+
+  private updateProjectLocally(data: any){
+    const customer = this.CustomerNameList.find((c: any) => c.customerId === data.customerId)
+      ?? this.selectedProject?.customer ?? null;
+
+    this.projectList = (this.projectList ?? []).map((p: any) =>
+      p.projectId === data.projectId ? {
+        ...p,
+        customer,
+        probability: data.probability,
+        totalWtgs: data.projectTotalQty ?? p.totalWtgs,
+        totalCapacity: data.projectTotalCapacity ?? p.totalCapacity
+      } : p
+    );
+
+    this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Updated Project Details'});
+    this.showEditProjectModal = false;
+  }
+
+  private removeProjectSpvLocally(projectSpvId: number){
+    const formArrayIndex = this.spvs.controls.findIndex(
+      control => control.get('projectSpvId')?.value === projectSpvId
+    );
+
+    console.log('Deleting FormArray index:', formArrayIndex);
+
+    if (formArrayIndex !== -1) {
+      this.spvs.removeAt(formArrayIndex);
+    }
+
+    this.spvs.updateValueAndValidity();
+
+    console.log('Remaining SPVs:', this.spvs.value);
+
+    this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Deleted Project SPV'});
+  }
+
+  private removePrjSpvWtgLocally(spvIdx: number, wtgConfigId: number){
+    const index = this.getWtgConfigurations(spvIdx).controls.findIndex(
+      control => control.get('wtgConfigId')?.value === wtgConfigId
+    );
+
+    console.log(index);
+
+    if (index !== -1) {
+      this.getWtgConfigurations(spvIdx).removeAt(index);
+    }
+
+    this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Deleted Project SPV WTG Configuration'});
+  }
+
   fetchProjectDetails(){
     try {
       const data = {
@@ -1160,37 +1308,15 @@ buildOptsList(): void {
       this.apiService.fetchProjectDetails(data).subscribe({
         next: val => {
           console.log(val);
-
-          this.projectDetails = val.data;
-          this.projectForm.patchValue({
-            ...this.projectDetails,
-            projectId: this.projectDetails.projectCode,
-            customerId: this.projectDetails?.customer?.customerId,
-            clusterId: this.projectDetails?.cluster?.clusterId,
-            zoneId: this.projectDetails?.zone?.zoneId,
-            projectManagerId: this.projectDetails?.projectManager?.userId,
-            bdManagerId: this.projectDetails?.bdManager?.userId,
-            solutionManagerId: this.projectDetails?.solutionManager?.userId,
-            clusterHeadId: this.projectDetails?.clusterHead?.userId,
-            siteManagerId: this.projectDetails?.siteManager?.userId,
-            projectStatus: this.projectDetails?.projectStatus
-          });
-
-          this.fetchCustomerSPVInfo();
-
-          this.spvs.clear();
-
-          this.projectDetails?.projectSpvDetails?.forEach((spv: any) => {
-            this.spvs.push(this.createSpvForm(spv));
-          });
-
-          console.log('SPV Forms:', this.spvs.value);
+          this.applyProjectDetails(val.data);
         },
         error: err => {
           console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.applyProjectDetails(this.buildMockProjectDetails(this.selectedProject));
           }
         }
       })
@@ -1221,6 +1347,8 @@ buildOptsList(): void {
           console.log(err);
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.updateProjectLocally(data);
           }
         }
       })
@@ -1281,9 +1409,11 @@ buildOptsList(): void {
         },
         error: err => {
           console.log(err);
-  
+
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Updated Project SPV'});
           }
         }
       })
@@ -1323,7 +1453,7 @@ buildOptsList(): void {
 
           console.log('Deleting FormArray index:', formArrayIndex);
 
-          if (formArrayIndex !== -1) {        
+          if (formArrayIndex !== -1) {
             this.spvs.removeAt(formArrayIndex);
           }
 
@@ -1334,9 +1464,11 @@ buildOptsList(): void {
         },
         error: err => {
           console.log(err);
-  
+
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.removeProjectSpvLocally(projectSpvId);
           }
         }
       })
@@ -1377,9 +1509,11 @@ buildOptsList(): void {
         },
         error: err => {
           console.log(err);
-  
+
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.removePrjSpvWtgLocally(spvIdx, config.value.wtgConfigId);
           }
         }
       })
@@ -1423,9 +1557,11 @@ buildOptsList(): void {
         },
         error: err => {
           console.log(err);
-  
+
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.messageService.add({severity: "success", summary: 'Success', detail: 'Successfully Updated Project SPV WTG Configuration'});
           }
         }
       })

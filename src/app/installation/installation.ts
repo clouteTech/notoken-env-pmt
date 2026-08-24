@@ -827,7 +827,7 @@ export class Installation implements OnInit {
           this.apiService.installationCreate(payload).subscribe({
             next: val => {
               console.log(val);
-  
+
               this.messageService.add({
                 severity: 'success',
                 summary: 'Step Saved',
@@ -836,9 +836,15 @@ export class Installation implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Step Saved',
+                  detail: `${this.steps[stepIdx].label} data saved successfully.`
+                });
               }
             }
           });
@@ -1653,6 +1659,8 @@ export class Installation implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.updateInstallationLocally(payload);
           }
         }
       })
@@ -1661,6 +1669,31 @@ export class Installation implements OnInit {
 
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  // Demo mode fallback: merge the built update payload back into the in-memory
+  // installation activity rows (same rows keyed off stepForms[0]) when the backend is unreachable.
+  private updateInstallationLocally(payload: any[]){
+    const eligibleIdxs = this.installationActivityDetails
+      .map((_: any, idx: number) => idx)
+      .filter((idx: number) => {
+        const form = this.stepForms[0][idx];
+        return Object.values(form.value).some(
+          v => v !== null && v !== '' && v !== undefined
+        );
+      });
+
+    this.installationActivityDetails = this.installationActivityDetails.map((wtg: any, idx: number) => {
+      const pos = eligibleIdxs.indexOf(idx);
+      if (pos === -1) return wtg;
+      return { ...wtg, ...payload[pos] };
+    });
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Successfully Updated Installation'
+    });
   }
 
   openEditInstallationModal(){

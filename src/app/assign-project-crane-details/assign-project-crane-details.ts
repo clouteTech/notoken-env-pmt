@@ -241,16 +241,18 @@ export class AssignProjectCraneDetails implements OnInit {
         this.apiService.assignPrjCraneDetail(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', 
+            this.messageService.add({ severity: 'success', summary: 'Success',
                   detail: `Successfully Crane Detail Assigned` });
             this.showPrjCraneDetail = false;
             this.fetchAllProjectCraneDetails();
           },
           error: err => {
             console.log(err);
-      
+
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            } else {
+              this.assignPrjCraneLocally(data);
             }
           }
         })
@@ -269,16 +271,18 @@ export class AssignProjectCraneDetails implements OnInit {
         this.apiService.updatePrjCraneDetail(data).subscribe({
           next: val => {
             console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success', 
+            this.messageService.add({ severity: 'success', summary: 'Success',
                   detail: `Successfully Crane Detail Updated` });
             this.showPrjCraneDetail = false;
             this.fetchAllProjectCraneDetails();
           },
           error: err => {
             console.log(err);
-      
+
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            } else {
+              this.updatePrjCraneLocally(data);
             }
           }
         })
@@ -317,15 +321,17 @@ export class AssignProjectCraneDetails implements OnInit {
             this.apiService.deletePrjCraneDetail(data).subscribe({
               next: val => {
                 console.log(val);
-                this.messageService.add({ severity: 'success', summary: 'Success', 
+                this.messageService.add({ severity: 'success', summary: 'Success',
                       detail: `Successfully Deleted Crane Detail` });
                 this.fetchAllProjectCraneDetails();
               },
               error: err => {
                 console.log(err);
-          
+
                 if (err.status === 400) {
                   this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+                } else {
+                  this.deletePrjCraneLocally();
                 }
               }
             })
@@ -339,6 +345,52 @@ export class AssignProjectCraneDetails implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private buildCraneRef(craneId: number | null | undefined){
+    return (this.craneInfoList.length ? this.craneInfoList : MOCK_CRANE_INFO_LIST)
+      .find(c => c.craneId === craneId) ?? null;
+  }
+
+  private buildSupplierRef(supplierId: number | null | undefined){
+    return (this.supplierList.length ? this.supplierList : MOCK_CRANE_SUPPLIER_LIST)
+      .find(s => s.supplierId === supplierId) ?? null;
+  }
+
+  private assignPrjCraneLocally(data: any){
+    const newId = Math.max(0, ...this.projectCraneList.map(c => c.projectCraneDetailId || 0)) + 1;
+    const newDetail = {
+      projectCraneDetailId: newId,
+      crane: this.buildCraneRef(data.craneId),
+      supplier: this.buildSupplierRef(data.supplierId),
+      registrationNumber: data.registrationNumber,
+      status: true
+    };
+    this.projectCraneList = [newDetail, ...this.projectCraneList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: `Successfully Crane Detail Assigned` });
+    this.showPrjCraneDetail = false;
+  }
+
+  private updatePrjCraneLocally(data: any){
+    this.projectCraneList = this.projectCraneList.map(c => c.projectCraneDetailId === data.projectCraneDetailId ? {
+      ...c,
+      crane: this.buildCraneRef(data.craneId) ?? c.crane,
+      supplier: this.buildSupplierRef(data.supplierId) ?? c.supplier,
+      registrationNumber: data.registrationNumber,
+      status: data.status
+    } : c);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: `Successfully Crane Detail Updated` });
+    this.showPrjCraneDetail = false;
+  }
+
+  private deletePrjCraneLocally(){
+    this.projectCraneList = this.projectCraneList.filter(c => c.projectCraneDetailId !== this.selectedPrjCrane.projectCraneDetailId);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: `Successfully Deleted Crane Detail` });
   }
 
   openCraneDetail(){

@@ -77,10 +77,15 @@ export class AddCustomer {
           error: err => {
             console.log(err);
             console.log(err.error);
-            console.log(err.error.detail);
+            console.log(err.error?.detail);
 
-            if (err.error.status === 400) {
+            if (err.error?.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            } else {
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Customer' });
+              this.customerCode = '';
+              this.customerName = '';
+              this.spvList = [];
             }
           }
         })

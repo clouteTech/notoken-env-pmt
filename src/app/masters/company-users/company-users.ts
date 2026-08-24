@@ -5,17 +5,19 @@ import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 // Demo fallback data — shown only when the backend API cannot be reached.
+// assignedPlantId / assignedClusterIds / assignedDepartmentIds / assignedComponentIds drive the
+// Assign/Remove mapping modals in demo mode (userGroups already carries the assigned groups).
 const MOCK_COMPANY_USERS: any[] = [
-  { userId: 1, userName: 'Sanjay Kumar', email: 'sanjay.kumar@windtechindia.com', userGroups: [{ userGroupId: 1, groupName: 'Super Admin Group' }], status: true },
-  { userId: 2, userName: 'Ananya Iyer', email: 'ananya.iyer@windtechindia.com', userGroups: [{ userGroupId: 2, groupName: 'Plant Operations Group' }], status: true },
-  { userId: 3, userName: 'Sivakumar R', email: 'sivakumar.r@windtechindia.com', userGroups: [{ userGroupId: 3, groupName: 'Project Management Group' }], status: false },
-  { userId: 4, userName: 'Kayalvizhi M', email: 'kayalvizhi.m@windtechindia.com', userGroups: [{ userGroupId: 4, groupName: 'Quality Control Group' }], status: true },
-  { userId: 5, userName: 'Rakesh Patel', email: 'rakesh.patel@windtechindia.com', userGroups: [{ userGroupId: 5, groupName: 'Logistics Group' }], status: true },
-  { userId: 6, userName: 'Meera Shah', email: 'meera.shah@windtechindia.com', userGroups: [{ userGroupId: 6, groupName: 'Finance Group' }], status: true },
-  { userId: 7, userName: 'Vikram Singh', email: 'vikram.singh@windtechindia.com', userGroups: [{ userGroupId: 7, groupName: 'HR Group' }], status: false },
-  { userId: 8, userName: 'Deepa Nair', email: 'deepa.nair@windtechindia.com', userGroups: [{ userGroupId: 8, groupName: 'Site Engineering Group' }], status: true },
-  { userId: 9, userName: 'Suresh Reddy', email: 'suresh.reddy@windtechindia.com', userGroups: [{ userGroupId: 9, groupName: 'Store & Inventory Group' }], status: true },
-  { userId: 10, userName: 'Arjun Mehta', email: 'arjun.mehta@windtechindia.com', userGroups: [], status: true },
+  { userId: 1, userName: 'Sanjay Kumar', email: 'sanjay.kumar@windtechindia.com', userGroups: [{ userGroupId: 1, groupName: 'Super Admin Group' }], status: true, assignedPlantId: 1, assignedClusterIds: [1, 7], assignedDepartmentIds: [4], assignedComponentIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+  { userId: 2, userName: 'Ananya Iyer', email: 'ananya.iyer@windtechindia.com', userGroups: [{ userGroupId: 2, groupName: 'Plant Operations Group' }], status: true, assignedPlantId: 2, assignedClusterIds: [3, 6], assignedDepartmentIds: [1], assignedComponentIds: [1, 2] },
+  { userId: 3, userName: 'Sivakumar R', email: 'sivakumar.r@windtechindia.com', userGroups: [{ userGroupId: 3, groupName: 'Project Management Group' }], status: false, assignedPlantId: 3, assignedClusterIds: [4, 5], assignedDepartmentIds: [4], assignedComponentIds: [3, 4] },
+  { userId: 4, userName: 'Kayalvizhi M', email: 'kayalvizhi.m@windtechindia.com', userGroups: [{ userGroupId: 4, groupName: 'Quality Control Group' }], status: true, assignedPlantId: 4, assignedClusterIds: [4], assignedDepartmentIds: [2], assignedComponentIds: [5, 6] },
+  { userId: 5, userName: 'Rakesh Patel', email: 'rakesh.patel@windtechindia.com', userGroups: [{ userGroupId: 5, groupName: 'Logistics Group' }], status: true, assignedPlantId: 5, assignedClusterIds: [1, 7], assignedDepartmentIds: [3], assignedComponentIds: [7, 8] },
+  { userId: 6, userName: 'Meera Shah', email: 'meera.shah@windtechindia.com', userGroups: [{ userGroupId: 6, groupName: 'Finance Group' }], status: true, assignedPlantId: 6, assignedClusterIds: [1], assignedDepartmentIds: [6], assignedComponentIds: [] },
+  { userId: 7, userName: 'Vikram Singh', email: 'vikram.singh@windtechindia.com', userGroups: [{ userGroupId: 7, groupName: 'HR Group' }], status: false, assignedPlantId: 7, assignedClusterIds: [2], assignedDepartmentIds: [7], assignedComponentIds: [] },
+  { userId: 8, userName: 'Deepa Nair', email: 'deepa.nair@windtechindia.com', userGroups: [{ userGroupId: 8, groupName: 'Site Engineering Group' }], status: true, assignedPlantId: 8, assignedClusterIds: [9], assignedDepartmentIds: [5], assignedComponentIds: [9, 10] },
+  { userId: 9, userName: 'Suresh Reddy', email: 'suresh.reddy@windtechindia.com', userGroups: [{ userGroupId: 9, groupName: 'Store & Inventory Group' }], status: true, assignedPlantId: 9, assignedClusterIds: [], assignedDepartmentIds: [8], assignedComponentIds: [8] },
+  { userId: 10, userName: 'Arjun Mehta', email: 'arjun.mehta@windtechindia.com', userGroups: [], status: true, assignedPlantId: 10, assignedClusterIds: [], assignedDepartmentIds: [], assignedComponentIds: [] },
 ];
 
 const MOCK_USER_GROUP_INFO: any[] = [
@@ -209,9 +211,11 @@ export class CompanyUsers implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createCompanyUserLocally(data);
               }
             }
           })
@@ -228,9 +232,11 @@ export class CompanyUsers implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateCompanyUserLocally(data);
               }
             }
           })
@@ -241,6 +247,25 @@ export class CompanyUsers implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createCompanyUserLocally(data: any){
+    const newId = Math.max(0, ...this.companyUserList.map(u => u.userId || 0)) + 1;
+    const newUser = { ...data, userId: newId, userGroups: [], assignedPlantId: null, assignedClusterIds: [], assignedDepartmentIds: [], assignedComponentIds: [] };
+    this.companyUserList = [newUser, ...this.companyUserList];
+    this.totalRecords = this.companyUserList.length;
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Company User' });
+    this.showCompanyUserModal = false;
+  }
+
+  private updateCompanyUserLocally(data: any){
+    this.companyUserList = this.companyUserList.map(u => u.userId === data.userId ? { ...u, ...data } : u);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Company User' });
+    this.showCompanyUserModal = false;
   }
 
   isUserGroupAssigned(userGroupId: number): boolean{
@@ -373,6 +398,10 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            const user = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+            const ids: number[] = user?.assignedClusterIds ?? [];
+            this.assignedActiveClusters = MOCK_CLUSTER_INFO.filter(c => ids.includes(c.clusterId));
           }
         }
       })
@@ -401,6 +430,8 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleClusterLocally(cluster.clusterId, true);
           }
         }
       })
@@ -429,6 +460,8 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleClusterLocally(cluster.clusterId, false);
           }
         }
       })
@@ -436,6 +469,21 @@ export class CompanyUsers implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  private toggleClusterLocally(clusterId: number, assign: boolean){
+    this.companyUserList = this.companyUserList.map(u => {
+      if (u.userId !== this.selectedCompanyUser.userId) return u;
+      const ids: number[] = u.assignedClusterIds ?? [];
+      const nextIds = assign
+        ? (ids.includes(clusterId) ? ids : [...ids, clusterId])
+        : ids.filter((id: number) => id !== clusterId);
+      return { ...u, assignedClusterIds: nextIds };
+    });
+    this.selectedCompanyUser = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: assign ? 'Cluster Assigned Successfully' : 'Cluster Removed Successfully' });
+    this.fetchActiveClustersFromUser();
   }
 
   isDepartmentAssigned(departmentId: number){
@@ -490,6 +538,10 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            const user = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+            const ids: number[] = user?.assignedDepartmentIds ?? [];
+            this.assignedActiveDepartments = MOCK_DEPARTMENT_INFO.filter(d => ids.includes(d.departmentId));
           }
         }
       })
@@ -518,6 +570,8 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleDepartmentLocally(department.departmentId, true);
           }
         }
       })
@@ -546,6 +600,8 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleDepartmentLocally(department.departmentId, false);
           }
         }
       })
@@ -553,6 +609,21 @@ export class CompanyUsers implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  private toggleDepartmentLocally(departmentId: number, assign: boolean){
+    this.companyUserList = this.companyUserList.map(u => {
+      if (u.userId !== this.selectedCompanyUser.userId) return u;
+      const ids: number[] = u.assignedDepartmentIds ?? [];
+      const nextIds = assign
+        ? (ids.includes(departmentId) ? ids : [...ids, departmentId])
+        : ids.filter((id: number) => id !== departmentId);
+      return { ...u, assignedDepartmentIds: nextIds };
+    });
+    this.selectedCompanyUser = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: assign ? 'Department Assigned Successfully' : 'Department Removed Successfully' });
+    this.fetchActiveDepartmentsFromUser();
   }
 
   isComponentAssigned(componentId: number){
@@ -607,6 +678,10 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            const user = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+            const ids: number[] = user?.assignedComponentIds ?? [];
+            this.assignedActiveComponents = MOCK_COMPONENT_INFO.filter(c => ids.includes(c.componentId));
           }
         }
       })
@@ -636,6 +711,8 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleComponentLocally(component.componentId, true);
           }
         }
       })
@@ -664,6 +741,8 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleComponentLocally(component.componentId, false);
           }
         }
       })
@@ -671,6 +750,21 @@ export class CompanyUsers implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  private toggleComponentLocally(componentId: number, assign: boolean){
+    this.companyUserList = this.companyUserList.map(u => {
+      if (u.userId !== this.selectedCompanyUser.userId) return u;
+      const ids: number[] = u.assignedComponentIds ?? [];
+      const nextIds = assign
+        ? (ids.includes(componentId) ? ids : [...ids, componentId])
+        : ids.filter((id: number) => id !== componentId);
+      return { ...u, assignedComponentIds: nextIds };
+    });
+    this.selectedCompanyUser = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: assign ? 'Component Assigned Successfully' : 'Component Removed Successfully' });
+    this.fetchActiveComponentsFromUser();
   }
 
   fetchUserGroupInfo(){
@@ -718,6 +812,9 @@ export class CompanyUsers implements OnInit {
         error: err => {
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            const user = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+            this.assignedUserGroups = user?.userGroups ?? [];
           }
         }
       })
@@ -766,7 +863,7 @@ export class CompanyUsers implements OnInit {
 
       this.apiService.assignPlantToUser(data).subscribe({
         next: val => {
-          console.log("Plant Assigned Successfully:", val);   
+          console.log("Plant Assigned Successfully:", val);
           this.assignedPlant = plant.id;
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Assigned Successfully' });
           this.fetchActivePlantsFromUser();
@@ -777,6 +874,8 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.assignPlantToUserLocally(plant);
           }
         }
       })
@@ -784,6 +883,28 @@ export class CompanyUsers implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  private assignPlantToUserLocally(plant: any){
+    this.companyUserList = this.companyUserList.map(u =>
+      u.userId === this.selectedCompanyUser.userId ? { ...u, assignedPlantId: plant.id } : u
+    );
+    this.selectedCompanyUser = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+    this.assignedPlant = plant.id;
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Assigned Successfully' });
+    this.fetchActivePlantsFromUser();
+  }
+
+  private removePlantFromUserLocally(){
+    this.companyUserList = this.companyUserList.map(u =>
+      u.userId === this.selectedCompanyUser.userId ? { ...u, assignedPlantId: null } : u
+    );
+    this.selectedCompanyUser = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+    this.assignedPlant = null;
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Removed Successfully' });
+    this.fetchActivePlantsFromUser();
   }
 
   removePlantFromUser(plant: any){
@@ -827,6 +948,8 @@ export class CompanyUsers implements OnInit {
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.data });
+              } else {
+                this.removePlantFromUserLocally();
               }
             }
           })
@@ -861,6 +984,11 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            const user = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+            const plantId = user?.assignedPlantId ?? null;
+            const plant = plantId != null ? MOCK_PLANT_INFO.find(p => p.id === plantId) : null;
+            this.assignedPlant = plant ? { ...plant, plantId: plant.id } : null;
           }
         }
       })
@@ -928,6 +1056,8 @@ export class CompanyUsers implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleUserGroupLocally(usergroup, true);
           }
         }
       })
@@ -958,6 +1088,8 @@ export class CompanyUsers implements OnInit {
         error: err => {
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleUserGroupLocally(usergroup, false);
           }
         }
       })
@@ -965,6 +1097,21 @@ export class CompanyUsers implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  private toggleUserGroupLocally(usergroup: any, assign: boolean){
+    this.companyUserList = this.companyUserList.map(u => {
+      if (u.userId !== this.selectedCompanyUser.userId) return u;
+      const groups: any[] = u.userGroups ?? [];
+      const nextGroups = assign
+        ? (groups.some((g: any) => g.userGroupId === usergroup.userGroupId) ? groups : [...groups, { userGroupId: usergroup.userGroupId, groupName: usergroup.groupName }])
+        : groups.filter((g: any) => g.userGroupId !== usergroup.userGroupId);
+      return { ...u, userGroups: nextGroups };
+    });
+    this.selectedCompanyUser = this.companyUserList.find(u => u.userId === this.selectedCompanyUser.userId);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: assign ? 'User Group Assigned Successfully' : 'User Group Removed Successfully' });
+    this.fetchCompanyUser();
   }
 
   fetchClusterInfo(){
@@ -1080,6 +1227,10 @@ export class CompanyUsers implements OnInit {
 
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            } else {
+              this.companyUserList = this.companyUserList.filter(u => u.userId !== this.selectedCompanyUser.userId);
+              this.totalRecords = this.companyUserList.length;
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Company User' });
             }
           }
         })

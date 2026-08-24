@@ -97,9 +97,11 @@ export class TowerTypes implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createTowerTypeLocally(data);
               }
             }
           })
@@ -110,16 +112,18 @@ export class TowerTypes implements OnInit {
           this.apiService.updateTowerType(data).subscribe({
             next: val => {
               console.log(val);
-  
+
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Tower Type' });
               this.showTowerTypeModal = false;
               this.fetchAllTowerType();
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateTowerTypeLocally(data);
               }
             }
           })
@@ -130,6 +134,24 @@ export class TowerTypes implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createTowerTypeLocally(data: any){
+    const newId = Math.max(0, ...this.towerTypeList.map((t: any) => t.towerTypeId || 0)) + 1;
+    const newTowerType = { ...data, towerTypeId: newId };
+    this.towerTypeList = [newTowerType, ...this.towerTypeList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Tower Type' });
+    this.showTowerTypeModal = false;
+  }
+
+  private updateTowerTypeLocally(data: any){
+    this.towerTypeList = this.towerTypeList.map((t: any) => t.towerTypeId === data.towerTypeId ? { ...t, ...data } : t);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Tower Type' });
+    this.showTowerTypeModal = false;
   }
 
   editTowerType(){
@@ -209,6 +231,9 @@ export class TowerTypes implements OnInit {
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.towerTypeList = this.towerTypeList.filter((t: any) => t.towerTypeId !== this.selectedTowerType.towerTypeId);
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Tower Type' });
               }
             }
           })

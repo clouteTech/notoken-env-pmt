@@ -182,16 +182,18 @@ export class Departments implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createDepartmentLocally(data);
               }
             }
           })
         } else {
           const data = this.departmentForm.value;
           console.log(data);
-  
+
           this.apiService.updateDepartments(data).subscribe({
             next: val => {
               console.log(val);
@@ -201,9 +203,11 @@ export class Departments implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateDepartmentLocally(data);
               }
             }
           })
@@ -214,6 +218,37 @@ export class Departments implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private findUserById(userId: number): any {
+    const match = this.userList.find((u: any) => u.user?.userId === userId);
+    return match ? match.user : { userId, userName: 'Unassigned' };
+  }
+
+  private createDepartmentLocally(data: any){
+    const newId = Math.max(0, ...this.departmentList.map(d => d.departmentId || 0)) + 1;
+    const newDepartment = {
+      ...data,
+      departmentId: newId,
+      departmentHead: this.findUserById(data.departmentHeadId),
+      clusters: []
+    };
+    this.departmentList = [newDepartment, ...this.departmentList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Department' });
+    this.showDepartmentModal = false;
+  }
+
+  private updateDepartmentLocally(data: any){
+    this.departmentList = this.departmentList.map(d => d.departmentId === data.departmentId
+      ? { ...d, ...data, departmentHead: this.findUserById(data.departmentHeadId) }
+      : d
+    );
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Department' });
+    this.showDepartmentModal = false;
   }
 
   editDepartment(){
@@ -324,6 +359,12 @@ export class Departments implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.assignedClusters = this.selectedDepartment?.clusters ?? [];
+
+            this.assignedClusters.forEach((cluster: any) => {
+              this.selectedClusterHeadId[cluster.clusterId] = cluster.clusterHeadId;
+            });
           }
         }
       })
@@ -355,6 +396,8 @@ export class Departments implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleClusterLocally(cluster, true);
           }
         }
       })
@@ -385,6 +428,8 @@ export class Departments implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleClusterLocally(cluster, false);
           }
         }
       })
@@ -392,6 +437,34 @@ export class Departments implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  private toggleClusterLocally(cluster: any, assign: boolean){
+    const deptId = this.selectedDepartment.departmentId;
+
+    this.departmentList = this.departmentList.map(d => {
+      if (d.departmentId !== deptId) return d;
+
+      const existingClusters = d.clusters ?? [];
+      const nextClusters = assign
+        ? [...existingClusters.filter((c: any) => c.clusterId !== cluster.clusterId), { clusterId: cluster.clusterId, clusterHeadId: this.selectedClusterHeadId[cluster.clusterId] }]
+        : existingClusters.filter((c: any) => c.clusterId !== cluster.clusterId);
+
+      const updatedDepartment = { ...d, clusters: nextClusters };
+
+      if (this.selectedDepartment?.departmentId === deptId) {
+        this.selectedDepartment = updatedDepartment;
+      }
+
+      return updatedDepartment;
+    });
+
+    this.assignedClusters = this.selectedDepartment?.clusters ?? [];
+    this.assignedClusters.forEach((c: any) => {
+      this.selectedClusterHeadId[c.clusterId] = c.clusterHeadId;
+    });
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: assign ? 'Cluster Assigned Successfully' : 'Cluster Removed Successfully' });
   }
 
   selectedClusterHead(clusterId: number, userId: number){
@@ -449,6 +522,9 @@ export class Departments implements OnInit {
 
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+            } else {
+              this.departmentList = this.departmentList.filter(d => d.departmentId !== this.selectedDepartment.departmentId);
+              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Department' });
             }
           }
         })

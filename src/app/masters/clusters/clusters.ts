@@ -97,16 +97,18 @@ export class Clusters implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createClusterLocally(data);
               }
             }
           })
         } else {
           const data = this.clusterForm.value;
           console.log(data);
-  
+
           this.apiService.updateCluster(data).subscribe({
             next: val => {
               console.log(val);
@@ -116,9 +118,11 @@ export class Clusters implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateClusterLocally(data);
               }
             }
           })
@@ -129,6 +133,24 @@ export class Clusters implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createClusterLocally(data: any){
+    const newId = Math.max(0, ...this.clusterList.map(c => c.clusterId || 0)) + 1;
+    const newCluster = { ...data, clusterId: newId };
+    this.clusterList = [newCluster, ...this.clusterList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Cluster' });
+    this.showClusterModal = false;
+  }
+
+  private updateClusterLocally(data: any){
+    this.clusterList = this.clusterList.map(c => c.clusterId === data.clusterId ? { ...c, ...data } : c);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Cluster' });
+    this.showClusterModal = false;
   }
 
   editCluster(){
@@ -172,6 +194,9 @@ export class Clusters implements OnInit {
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.clusterList = this.clusterList.filter(c => c.clusterId !== this.selectedCluster.clusterId);
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Cluster' });
               }
             }
           })

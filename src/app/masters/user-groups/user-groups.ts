@@ -5,17 +5,18 @@ import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
 // Demo fallback data — shown only when the backend API cannot be reached.
+// assignedRoleIds drives the Assign/Remove Role modal in demo mode.
 const MOCK_USER_GROUPS: any[] = [
-  { userGroupId: 1, groupName: 'Super Admin Group', description: 'Full administrative access to all modules', totalRoles: 1, totalUsers: 2, status: true },
-  { userGroupId: 2, groupName: 'Plant Operations Group', description: 'Manages plant-wise production and configuration', totalRoles: 2, totalUsers: 8, status: true },
-  { userGroupId: 3, groupName: 'Project Management Group', description: 'Handles project, SPV and WTG planning', totalRoles: 3, totalUsers: 6, status: true },
-  { userGroupId: 4, groupName: 'Quality Control Group', description: 'Quality inspection and compliance checks', totalRoles: 1, totalUsers: 5, status: false },
-  { userGroupId: 5, groupName: 'Logistics Group', description: 'Crane, transport and supplier coordination', totalRoles: 2, totalUsers: 4, status: true },
-  { userGroupId: 6, groupName: 'Finance Group', description: 'Budgeting and financial reporting', totalRoles: 1, totalUsers: 3, status: true },
-  { userGroupId: 7, groupName: 'HR Group', description: 'Employee and department management', totalRoles: 1, totalUsers: 3, status: true },
-  { userGroupId: 8, groupName: 'Site Engineering Group', description: 'Installation activity tracking at site', totalRoles: 2, totalUsers: 7, status: true },
-  { userGroupId: 9, groupName: 'Store & Inventory Group', description: 'Component and inventory tracking', totalRoles: 1, totalUsers: 4, status: false },
-  { userGroupId: 10, groupName: 'Read Only Viewers', description: 'View only access across all masters', totalRoles: 1, totalUsers: 10, status: true },
+  { userGroupId: 1, groupName: 'Super Admin Group', description: 'Full administrative access to all modules', totalRoles: 1, totalUsers: 2, status: true, assignedRoleIds: [1] },
+  { userGroupId: 2, groupName: 'Plant Operations Group', description: 'Manages plant-wise production and configuration', totalRoles: 2, totalUsers: 8, status: true, assignedRoleIds: [2, 9] },
+  { userGroupId: 3, groupName: 'Project Management Group', description: 'Handles project, SPV and WTG planning', totalRoles: 3, totalUsers: 6, status: true, assignedRoleIds: [3, 5, 9] },
+  { userGroupId: 4, groupName: 'Quality Control Group', description: 'Quality inspection and compliance checks', totalRoles: 1, totalUsers: 5, status: false, assignedRoleIds: [4] },
+  { userGroupId: 5, groupName: 'Logistics Group', description: 'Crane, transport and supplier coordination', totalRoles: 2, totalUsers: 4, status: true, assignedRoleIds: [5, 7] },
+  { userGroupId: 6, groupName: 'Finance Group', description: 'Budgeting and financial reporting', totalRoles: 1, totalUsers: 3, status: true, assignedRoleIds: [6] },
+  { userGroupId: 7, groupName: 'HR Group', description: 'Employee and department management', totalRoles: 1, totalUsers: 3, status: true, assignedRoleIds: [8] },
+  { userGroupId: 8, groupName: 'Site Engineering Group', description: 'Installation activity tracking at site', totalRoles: 2, totalUsers: 7, status: true, assignedRoleIds: [9, 5] },
+  { userGroupId: 9, groupName: 'Store & Inventory Group', description: 'Component and inventory tracking', totalRoles: 1, totalUsers: 4, status: false, assignedRoleIds: [7] },
+  { userGroupId: 10, groupName: 'Read Only Viewers', description: 'View only access across all masters', totalRoles: 1, totalUsers: 10, status: true, assignedRoleIds: [10] },
 ];
 
 const MOCK_ROLE_INFO: any[] = [
@@ -138,9 +139,11 @@ export class UserGroups implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createUserGroupLocally(data);
               }
             }
           })
@@ -157,9 +160,11 @@ export class UserGroups implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateUserGroupLocally(data);
               }
             }
           })
@@ -170,6 +175,25 @@ export class UserGroups implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createUserGroupLocally(data: any){
+    const newId = Math.max(0, ...this.userGroupList.map(g => g.userGroupId || 0)) + 1;
+    const newGroup = { ...data, userGroupId: newId, totalRoles: 0, totalUsers: 0, assignedRoleIds: [] };
+    this.userGroupList = [newGroup, ...this.userGroupList];
+    this.totalRecords = this.userGroupList.length;
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created User Group' });
+    this.showUserGroupModal = false;
+  }
+
+  private updateUserGroupLocally(data: any){
+    this.userGroupList = this.userGroupList.map(g => g.userGroupId === data.userGroupId ? { ...g, ...data } : g);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated User Group' });
+    this.showUserGroupModal = false;
   }
 
   editUserGroup(){
@@ -214,6 +238,10 @@ export class UserGroups implements OnInit {
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.userGroupList = this.userGroupList.filter(g => g.userGroupId !== this.selectedUsergroup.userGroupId);
+                this.totalRecords = this.userGroupList.length;
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted User Group' });
               }
             }
           })
@@ -279,6 +307,8 @@ export class UserGroups implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleRoleLocally(role, true);
           }
         }
       })
@@ -309,6 +339,8 @@ export class UserGroups implements OnInit {
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            this.toggleRoleLocally(role, false);
           }
         }
       })
@@ -316,6 +348,21 @@ export class UserGroups implements OnInit {
       console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  private toggleRoleLocally(role: any, assign: boolean){
+    this.userGroupList = this.userGroupList.map(g => {
+      if (g.userGroupId !== this.selectedUsergroup.userGroupId) return g;
+      const ids: number[] = g.assignedRoleIds ?? [];
+      const nextIds = assign
+        ? (ids.includes(role.roleId) ? ids : [...ids, role.roleId])
+        : ids.filter((id: number) => id !== role.roleId);
+      return { ...g, assignedRoleIds: nextIds, totalRoles: nextIds.length };
+    });
+    this.selectedUsergroup = this.userGroupList.find(g => g.userGroupId === this.selectedUsergroup.userGroupId);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: assign ? 'Role Assigned Successfully' : 'Role Removed Successfully' });
+    this.fetchUsergroup();
   }
 
   fetchRoleInfo(){
@@ -362,6 +409,10 @@ export class UserGroups implements OnInit {
         error: err => {
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else {
+            const group = this.userGroupList.find(g => g.userGroupId === this.selectedUsergroup.userGroupId);
+            const ids: number[] = group?.assignedRoleIds ?? [];
+            this.assignedRoles = MOCK_ROLE_INFO.filter(r => ids.includes(r.roleId));
           }
         }
       })

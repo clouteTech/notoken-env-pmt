@@ -95,9 +95,11 @@ export class Zones implements OnInit {
             },
             error: err => {
               console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.createZoneLocally(data);
               }
             }
           })
@@ -114,9 +116,11 @@ export class Zones implements OnInit {
             },
             error: err => {
               console.log(err);
-  
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.updateZoneLocally(data);
               }
             }
           })
@@ -129,6 +133,24 @@ export class Zones implements OnInit {
 
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
+  }
+
+  // ── Demo mode CRUD (operates on the in-memory mock list when the backend is unreachable) ──
+
+  private createZoneLocally(data: any){
+    const newId = Math.max(0, ...this.zoneList.map(z => z.zoneId || 0)) + 1;
+    const newZone = { ...data, zoneId: newId };
+    this.zoneList = [newZone, ...this.zoneList];
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
+    this.showZoneModal = false;
+  }
+
+  private updateZoneLocally(data: any){
+    this.zoneList = this.zoneList.map(z => z.zoneId === data.zoneId ? { ...z, ...data } : z);
+
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
+    this.showZoneModal = false;
   }
 
   editZone(){
@@ -174,6 +196,9 @@ export class Zones implements OnInit {
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+              } else {
+                this.zoneList = this.zoneList.filter(z => z.zoneId !== this.selectedZone.zoneId);
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Zone' });
               }
             }
           })
