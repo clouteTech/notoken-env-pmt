@@ -136,16 +136,39 @@ body {
   min-width: var(--sidebar-w);
   background: #3B82F6;
   border-right: 1px solid var(--border);
-  padding: 16px 12px;
+  padding: 12px 10px 6px 10px;
   flex-shrink: 0;
   position: sticky;
   top: var(--header-h);
   height: calc(100vh - var(--header-h));
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: width .25s cubic-bezier(.4,0,.2,1), min-width .25s cubic-bezier(.4,0,.2,1), padding .25s;
   z-index: 90;
+}
+
+.sb-nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.sb-nav::-webkit-scrollbar {
+  width: 6px;
+}
+.sb-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sb-nav::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+}
+.sb-nav:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .layout.sidebar-collapsed .sidebar {
@@ -176,6 +199,7 @@ body {
 
 .sb-submenu {
   display: grid;
+  gap: 2px;
   margin-left: 28px;
   margin-top: 4px;
 }
@@ -214,8 +238,9 @@ body {
 }
 
 .sb-exit {
-  margin-top: auto;
-  padding: 12px;
+  flex-shrink: 0;
+  margin-top: 6px;
+  padding: 10px;
   border: 1px dashed rgba(255, 255, 255, 0.35);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);

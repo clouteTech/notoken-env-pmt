@@ -34,7 +34,7 @@
 .sidebar {
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
               min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: auto;
+  overflow: hidden;
 }
 
 /* Mobile: drawer mode */
@@ -80,8 +80,8 @@
 /* Logout btn hover */
 .sb-logout {
   &:hover {
-    background: rgba(239, 68, 68, 0.18) !important;
-    color: #FFD1D1 !important;
+    background: #ffffff !important;
+    color: #DC2626 !important;
   }
 }
 

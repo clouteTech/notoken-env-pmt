@@ -58,7 +58,7 @@
 
     <!-- Sidebar -->
     <aside class="sidebar" [class.sidebar-open]="sidebarOpen()">
-      <div>
+      <div class="sb-nav" #sbNav>
         <div class="sb-label">PMO</div>
         <!-- <button class="sb-item" [class.active]="activeMenu === 'saleDemand'" (click)="navigate('saleDemand')">
           <i class="pi pi-arrows-alt"></i>
@@ -150,7 +150,7 @@
           <span>Commissioning</span>
         </button> -->
 
-        <button class="sb-item" (click)="showMastersMenu = !showMastersMenu">
+        <button class="sb-item" (click)="toggleMastersMenu()">
           <i class="pi pi-database"></i>
           <span>Masters</span>
           <span class="arrow" [class.rotate]="showMastersMenu">
