@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ViewChild, ElementRef } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription, filter } from 'rxjs';
@@ -19,6 +19,8 @@ export class AppComponent implements OnInit, OnDestroy {
   currentRoute = '';
   activeMenu = 'create';
   private routeSub!: Subscription;
+
+  @ViewChild('sbNav') sbNav?: ElementRef<HTMLDivElement>;
 
   constructor(public auth: AuthService, private router: Router) {}
 
@@ -84,7 +86,13 @@ export class AppComponent implements OnInit, OnDestroy {
         'wtgCapacities','ppaTypes','plants','customers','zone','department',
         'clusters','companyUsers','userGroups','roles'];
       if (masterMenus.includes(match.menu)) {
-        this.showMastersMenu = true;
+        if (!this.showMastersMenu) {
+          this.showMastersMenu = true;
+          setTimeout(() => {
+            const el = this.sbNav?.nativeElement;
+            if (el) el.scrollTop = el.scrollHeight;
+          });
+        }
       }
     }
   }
@@ -130,6 +138,16 @@ export class AppComponent implements OnInit, OnDestroy {
     else if(menu === 'userGroups') this.router.navigate(['/user-groups']);
     else if(menu === 'roles') this.router.navigate(['/roles']);
     if (window.innerWidth <= 768) this.sidebarOpen.set(false);
+  }
+
+  toggleMastersMenu() {
+    this.showMastersMenu = !this.showMastersMenu;
+    if (this.showMastersMenu) {
+      setTimeout(() => {
+        const el = this.sbNav?.nativeElement;
+        if (el) el.scrollTop = el.scrollHeight;
+      });
+    }
   }
 
   toggleSidebar() { this.sidebarOpen.update(v => !v); }
