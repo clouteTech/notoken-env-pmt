@@ -43,6 +43,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'yearly-demand-plans/create',
+    loadComponent: () => import('./demand-plan/demand-plan.component').then(m => m.DemandPlanComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'monthlyDemandPlan',
     loadComponent: () => import('./monthly-plan/monthly-plan').then(m => m.MonthlyPlan),
     canActivate: [authGuard]
