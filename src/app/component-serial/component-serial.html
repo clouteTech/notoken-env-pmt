@@ -5,7 +5,7 @@
             <p-button label="Back" icon="pi pi-arrow-circle-left" routerLink="/monthlyDemandPlan" />
             <p-menu #menu [model]="actionItems" [popup]="true" appendTo="body" />
             <button pButton pRipple type="button" (click)="menu.toggle($event)">
-                <span pButtonLabel>Actions</span>
+                <span pButtonLabel>Action</span>
                 <i pButtonIcon>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <rect width="24" height="24" fill="none" />
@@ -63,7 +63,7 @@
                     <th>Production Manager</th>
                     <th>Production Plan Start</th>
                     <th>Production Plan Finish</th>
-                    <th>Actions</th>
+                    <th>Action</th>
                 </tr>
             </ng-template>
             <ng-template #body let-serial let-i="rowIndex">
