@@ -114,6 +114,8 @@ export class DemandPlanComponent implements OnInit {
 
   constructor(private ds: DataService, private msgSvc: MessageService, private apiService: Apiservice) {}
 
+  private projectEntrySeq = 0;
+
   yearlyDemandPlanForm = this.fb.group({
     planYear: [],
     customerId: [],
@@ -122,12 +124,13 @@ export class DemandPlanComponent implements OnInit {
 
   createProjectForm(project?: any): FormGroup{
     const spvs = this.fb.array(
-      (project?.spvs ?? []).map((spv: any) => 
+      (project?.spvs ?? []).map((spv: any) =>
         this.createSpvForm(spv)
       )
     );
 
     return this.fb.group({
+      entryNo: [project?.entryNo ?? ++this.projectEntrySeq],
       projectId: [project?.projectId ?? null],
       spvs: spvs
     })
@@ -319,7 +322,10 @@ export class DemandPlanComponent implements OnInit {
     }
   }
 
-  get filtersReady(): boolean { return !!this.year && !!this.customer; }
+  get filtersReady(): boolean {
+    const v = this.yearlyDemandPlanForm.value;
+    return !!v.planYear && !!v.customerId;
+  }
   get hasData(): boolean { return this.projects.some(p => p.spv && p.rows.length > 0); }
 
   displayIndex(uid: number): number {
@@ -369,14 +375,11 @@ export class DemandPlanComponent implements OnInit {
     console.log(customerId);
     this.selectedCustomerId = customerId;
     this.fetchProjectsByCustomer();
-    // this.projects = [];
-    // this.uidSeed  = 0;
-    if (this.filtersReady) { this.addProject(); }
     console.log(this.yearlyDemandPlanForm.value);
   }
 
   addProject() {
-    this.projectsArray.push(this.createProjectForm());
+    this.projectsArray.insert(0, this.createProjectForm());
   }
 
   removeProject(uid: number) {
