@@ -5,12 +5,12 @@
             <ng-template #header>
                 <tr>
                     <th>SL NO</th>
-                    <th>Component</th>
-                    <th>Serial Number</th>
-                    <th>Final QC Date</th>
-                    <th>Project Code</th>
+                    <th>P-Code</th>
+                    <th>Components</th>
+                    <th>Sub Components</th>
                     <th>Inspection Call Plan</th>
                     <th>Customer Inspection Actual</th>
+                    <th>Customer In Progress Inspection</th>
                     <th>MDCC Plan</th>
                     <th>MDCC Actual</th>
                     <th>Action</th>
@@ -19,12 +19,12 @@
             <ng-template #body let-quality let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
+                    <td>{{ quality.pCode || '-' }}</td>
                     <td>{{ quality.component || '-' }}</td>
-                    <td>{{ quality.serialNumber || '-' }}</td>
-                    <td>{{ quality.finalQcDate || '-' }}</td>
-                    <td>{{ quality.projectCode || '-' }}</td>
+                    <td>{{ quality.subComponent || '-' }}</td>
                     <td>{{ quality.inspectionCallPlan || '-' }}</td>
                     <td>{{ quality.customerInspectionActual || '-' }}</td>
+                    <td>{{ quality.customerInprogressInspection || '-' }}</td>
                     <td>{{ quality.mdccPlan || '-' }}</td>
                     <td>{{ quality.mdccActual || '-' }}</td>
                     <td>
