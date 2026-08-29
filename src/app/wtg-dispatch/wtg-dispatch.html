@@ -8,18 +8,66 @@
             <ng-template #header>
                 <tr>
                     <th>SL NO</th>
-                    <th>Plan Date</th>
-                    <th>Project Code</th>
-                    <th>WTG Count</th>
+                    <th>P-Code</th>
+                    <th>Components</th>
+                    <th>Sub Components</th>
+                    <th>Dispatch Plan Start</th>
+                    <th>Dispatch Actual Start</th>
+                    <th>Dispatch Forecast Start</th>
+                    <th>Dispatch Start Delay Reason</th>
+                    <th>Dispatch Plan Finish</th>
+                    <th>Dispatch Actual Finish</th>
+                    <th>Dispatch Forecast Finish</th>
+                    <th>Dispatch Finish Delay Reason</th>
+                    <th>Frame No</th>
+                    <th>Root Frame No</th>
+                    <th>Tip Frame No</th>
+                    <th>Transporter</th>
+                    <th>Invoice Number</th>
+                    <th>Invoice Date</th>
+                    <th>Vehicle No</th>
+                    <th>LR Number</th>
+                    <th>LR Date</th>
+                    <th>DC No</th>
+                    <th>DC Date</th>
+                    <th>Vehicle In Date</th>
+                    <th>Delivery Plan</th>
+                    <th>Delivery Actual</th>
+                    <th>Delivery Forecast</th>
+                    <th>Delivery Delay Reason</th>
                     <th>Action</th>
                 </tr>
             </ng-template>
             <ng-template #body let-dispatch let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
-                    <td>{{ dispatch.planDate }}</td>
-                    <td>{{ dispatch.projectCode }}</td>
-                    <td>{{ dispatch.wtgCount }}</td>
+                    <td>{{ dispatch.pCode }}</td>
+                    <td>{{ dispatch.component }}</td>
+                    <td>{{ dispatch.subComponent }}</td>
+                    <td>{{ dispatch.dispatchPlanStart }}</td>
+                    <td>{{ dispatch.dispatchActualStart }}</td>
+                    <td>{{ dispatch.dispatchForecastStart }}</td>
+                    <td>{{ dispatch.dispatchStartDelayReason }}</td>
+                    <td>{{ dispatch.dispatchPlanFinish }}</td>
+                    <td>{{ dispatch.dispatchActualFinish }}</td>
+                    <td>{{ dispatch.dispatchForecastFinish }}</td>
+                    <td>{{ dispatch.dispatchFinishDelayReason }}</td>
+                    <td>{{ dispatch.frameNo }}</td>
+                    <td>{{ dispatch.rootFrameNo }}</td>
+                    <td>{{ dispatch.tipFrameNo }}</td>
+                    <td>{{ dispatch.transporter }}</td>
+                    <td>{{ dispatch.invoiceNumber }}</td>
+                    <td>{{ dispatch.invoiceDate }}</td>
+                    <td>{{ dispatch.vehicleNo }}</td>
+                    <td>{{ dispatch.lrNumber }}</td>
+                    <td>{{ dispatch.lrDate }}</td>
+                    <td>{{ dispatch.dcNo }}</td>
+                    <td>{{ dispatch.dcDate }}</td>
+                    <td>{{ dispatch.vehicleInDate }}</td>
+                    <td>{{ dispatch.deliveryPlan }}</td>
+                    <td>{{ dispatch.deliveryActual }}</td>
+                    <td>{{ dispatch.deliveryForecast }}</td>
+                    <td>{{ dispatch.deliveryDelayReason }}</td>
                     <td>
                         <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
                         <button pButton pRipple text rounded severity="secondary" type="button" (click)="dispatchMenu($event, menu, dispatch)">
