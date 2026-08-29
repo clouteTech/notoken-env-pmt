@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
@@ -33,7 +33,9 @@ export class Roles implements OnInit {
 
   roleList: any[] = [];
 
-  constructor(private confirmationService: ConfirmationService, 
+  items: MenuItem[] = [];
+
+  constructor(private confirmationService: ConfirmationService,
     private apiService: Apiservice, private messageService: MessageService){}
 
   ngOnInit(): void {
@@ -79,5 +81,14 @@ export class Roles implements OnInit {
 
     this.page = event.first / event.rows;
     this.size = event.rows;
+  }
+
+  // Stub handlers — wire to real edit/delete APIs once role CRUD is available.
+  roleMenu(event: Event, menu: any, role: any) {
+    this.items = [
+      { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', role) },
+      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', role) }
+    ];
+    menu.toggle(event);
   }
 }

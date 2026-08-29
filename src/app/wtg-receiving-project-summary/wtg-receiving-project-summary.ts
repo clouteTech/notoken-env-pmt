@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MenuItem } from 'primeng/api';
 import { Shared } from '../shared/services/shared';
 
 @Component({
@@ -8,6 +9,8 @@ import { Shared } from '../shared/services/shared';
   styleUrl: './wtg-receiving-project-summary.css',
 })
 export class WtgReceivingProjectSummary {
+  items: MenuItem[] = [];
+
   wtgProjects = [
     {
       slNo: 1,
@@ -80,4 +83,13 @@ export class WtgReceivingProjectSummary {
       wtgCount: 4
     }
   ];
+
+  // Stub handlers — wire to real edit/delete APIs once project CRUD is available here.
+  receivingMenu(event: Event, menu: any, receiving: any) {
+    this.items = [
+      { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', receiving) },
+      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', receiving) }
+    ];
+    menu.toggle(event);
+  }
 }

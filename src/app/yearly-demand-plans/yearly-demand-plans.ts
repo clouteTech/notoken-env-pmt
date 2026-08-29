@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Shared } from '../shared/services/shared';
 import { Apiservice } from '../service/apiservice';
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 
 // Demo fallback data — shown only when the backend API cannot be reached.
 const MOCK_YEARLY_DEMAND_PLAN: any[] = [
@@ -32,6 +32,8 @@ export class YearlyDemandPlans implements OnInit {
   totalRecords = 0;
 
   yearlyDemandPlanList: any[] = [];
+
+  items: MenuItem[] = [];
 
   constructor(private apiService: Apiservice, private messageService: MessageService){}
 
@@ -95,5 +97,14 @@ export class YearlyDemandPlans implements OnInit {
     this.size = event.rows;
 
     this.fetchAllYearlyDemandPlan();
+  }
+
+  // Stub handlers — wire to real edit/delete APIs once yearly demand plan CRUD is available.
+  yearlyPlanMenu(event: Event, menu: any, yearlyPlan: any) {
+    this.items = [
+      { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', yearlyPlan) },
+      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', yearlyPlan) }
+    ];
+    menu.toggle(event);
   }
 }

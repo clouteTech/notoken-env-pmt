@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MenuItem } from 'primeng/api';
 import { Shared } from '../shared/services/shared';
 
 @Component({
@@ -8,6 +9,8 @@ import { Shared } from '../shared/services/shared';
   styleUrl: './wtg-dispatch.css',
 })
 export class WtgDispatch {
+  items: MenuItem[] = [];
+
   wtgDispatchPlanList = [
     {
       slNo: 1,
@@ -70,4 +73,13 @@ export class WtgDispatch {
       wtgCount: 7
     }
   ];
+
+  // Stub handlers — wire to real edit/delete APIs once dispatch plan CRUD is available.
+  dispatchMenu(event: Event, menu: any, dispatch: any) {
+    this.items = [
+      { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', dispatch) },
+      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', dispatch) }
+    ];
+    menu.toggle(event);
+  }
 }

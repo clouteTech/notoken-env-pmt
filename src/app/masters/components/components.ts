@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { Apiservice } from 'src/app/service/apiservice';
 import { Shared } from 'src/app/shared/services/shared';
 
@@ -25,7 +25,9 @@ const MOCK_COMPONENTS: any[] = [
 })
 export class Components implements OnInit {
   componentList: any[] = [];
-  
+
+  items: MenuItem[] = [];
+
   constructor(private apiService: Apiservice, private messageService: MessageService){}
 
   ngOnInit(): void {
@@ -83,4 +85,13 @@ export class Components implements OnInit {
   //     componentName: 'SCADA'
   //   },
   // ]
+
+  // Stub handlers — wire to real edit/delete APIs once component CRUD is available.
+  componentMenu(event: Event, menu: any, component: any) {
+    this.items = [
+      { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', component) },
+      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', component) }
+    ];
+    menu.toggle(event);
+  }
 }

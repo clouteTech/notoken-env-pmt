@@ -31,25 +31,16 @@
                     <td>4</td>
                     <td>8</td>
                     <td>
-                        <!-- <p-menu #menu [model]="items" [popup]="true" appendTo="body">
-                            <ng-template #item let-item>
-                                <div class="menu-action gap-2 px-3 py-1 cursor-pointer">
-                                    <span [innerHTML]="getSafeSvg(item.svgIcon)"></span>
-                                    <span>{{ item.label }}</span>
-                                </div>
-                            </ng-template>
-                        </p-menu>
-                        <button pButton pRipple text rounded severity="secondary" type="button"
-                            (click)="menu.toggle($event)">
+                        <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
+                        <button pButton pRipple text rounded severity="secondary" type="button" (click)="yearlyPlanMenu($event, menu, yearlyPlan)">
                             <i pButtonIcon>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    class="text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
                                     <rect width="24" height="24" fill="none" />
                                     <path fill="currentColor"
                                         d="M12 7a2 2 0 1 0-2-2a2 2 0 0 0 2 2m0 10a2 2 0 1 0 2 2a2 2 0 0 0-2-2m0-7a2 2 0 1 0 2 2a2 2 0 0 0-2-2" />
                                 </svg>
                             </i>
-                        </button> -->
+                        </button>
                     </td>
                 </tr>
             </ng-template>
