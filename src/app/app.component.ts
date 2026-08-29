@@ -48,6 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private updateActiveMenu(url: string) {
     const routeMenuMap: { segment: string; menu: string }[] = [
       { segment: 'create-project',      menu: 'create' },
+      { segment: 'yearly-demand-plans', menu: 'yearlyDemandPlans' },
       { segment: 'dashboard',           menu: 'demand' },
       { segment: 'saleDemand',          menu: 'saleDemand' },
       { segment: 'monthlyDemandPlan',   menu: 'monthlyDemandPlan' },
