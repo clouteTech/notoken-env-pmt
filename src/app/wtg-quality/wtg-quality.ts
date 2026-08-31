@@ -22,105 +22,105 @@ export class WtgQuality implements OnInit {
 
   qualityList = [
     {
-      pCode: 'P-8001',
-      component: 'Nacelle',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-05',
-      customerInspectionActual: '2026-04-06',
-      customerInprogressInspection: '2026-04-04',
-      mdccPlan: '2026-04-08',
-      mdccActual: '2026-04-09'
-    },
-      {
-      pCode: 'P-8002',
-      component: 'Hub',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-06',
-      customerInspectionActual: '2026-04-07',
-      customerInprogressInspection: '2026-04-05',
-      mdccPlan: '2026-04-09',
-      mdccActual: '2026-04-10'
+      pCode: "P-8001",
+      component: "Nacelle",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-05",
+      customerInspectionActual: "2026-04-06",
+      customerInprogressInspection: "2026-04-04",
+      mdccPlan: "2026-04-08",
+      mdccActual: "2026-04-09"
     },
     {
-      pCode: 'P-8003',
-      component: 'Blade',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-07',
-      customerInspectionActual: '2026-04-08',
-      customerInprogressInspection: '2026-04-06',
-      mdccPlan: '2026-04-10',
-      mdccActual: '2026-04-11'
+      pCode: "P-8002",
+      component: "Hub",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-06",
+      customerInspectionActual: "2026-04-07",
+      customerInprogressInspection: "2026-04-05",
+      mdccPlan: "2026-04-09",
+      mdccActual: "2026-04-10"
     },
     {
-      pCode: 'P-8004',
-      component: 'Tower',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-08',
-      customerInspectionActual: null,
-      customerInprogressInspection: null,
-      mdccPlan: '2026-04-11',
-      mdccActual: null
+      pCode: "P-8003",
+      component: "Blade",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-07",
+      customerInspectionActual: "2026-04-08",
+      customerInprogressInspection: "2026-04-06",
+      mdccPlan: "2026-04-10",
+      mdccActual: "2026-04-11"
     },
     {
-      pCode: 'P-8005',
-      component: 'Converter Panel',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-09',
-      customerInspectionActual: '2026-04-10',
-      customerInprogressInspection: '2026-04-08',
-      mdccPlan: '2026-04-12',
-      mdccActual: '2026-04-13'
+      pCode: "P-8004",
+      component: "Tower",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-08",
+      customerInspectionActual: "2026-04-09",
+      customerInprogressInspection: "2026-04-07",
+      mdccPlan: "2026-04-11",
+      mdccActual: "2026-04-12"
     },
     {
-      pCode: 'P-8006',
-      component: 'Nacelle',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-10',
-      customerInspectionActual: null,
-      customerInprogressInspection: null,
-      mdccPlan: '2026-04-13',
-      mdccActual: null
+      pCode: "P-8005",
+      component: "Converter Panel",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-09",
+      customerInspectionActual: "2026-04-10",
+      customerInprogressInspection: "2026-04-08",
+      mdccPlan: "2026-04-12",
+      mdccActual: "2026-04-13"
     },
     {
-      pCode: 'P-8007',
-      component: 'Hub',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-11',
-      customerInspectionActual: '2026-04-12',
-      customerInprogressInspection: '2026-04-10',
-      mdccPlan: '2026-04-14',
-      mdccActual: '2026-04-15'
+      pCode: "P-8006",
+      component: "Nacelle",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-10",
+      customerInspectionActual: "2026-04-11",
+      customerInprogressInspection: "2026-04-09",
+      mdccPlan: "2026-04-13",
+      mdccActual: "2026-04-14"
     },
     {
-      pCode: 'P-8008',
-      component: 'Blade',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-12',
-      customerInspectionActual: '2026-04-13',
-      customerInprogressInspection: '2026-04-11',
-      mdccPlan: '2026-04-15',
-      mdccActual: null
+      pCode: "P-8007",
+      component: "Hub",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-11",
+      customerInspectionActual: "2026-04-12",
+      customerInprogressInspection: "2026-04-10",
+      mdccPlan: "2026-04-14",
+      mdccActual: "2026-04-15"
     },
     {
-      pCode: 'P-8009',
-      component: 'Tower',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-13',
-      customerInspectionActual: '2026-04-14',
-      customerInprogressInspection: '2026-04-12',
-      mdccPlan: '2026-04-16',
-      mdccActual: '2026-04-17'
+      pCode: "P-8008",
+      component: "Blade",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-12",
+      customerInspectionActual: "2026-04-13",
+      customerInprogressInspection: "2026-04-11",
+      mdccPlan: "2026-04-15",
+      mdccActual: "2026-04-16"
     },
     {
-      pCode: 'P-8010',
-      component: 'Converter Panel',
-      subComponent: 'Root Section',
-      inspectionCallPlan: '2026-04-14',
-      customerInspectionActual: null,
-      customerInprogressInspection: null,
-      mdccPlan: '2026-04-17',
-      mdccActual: null
-    }
+      pCode: "P-8009",
+      component: "Tower",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-13",
+      customerInspectionActual: "2026-04-14",
+      customerInprogressInspection: "2026-04-12",
+      mdccPlan: "2026-04-16",
+      mdccActual: "2026-04-17"
+    },
+    {
+      pCode: "P-8010",
+      component: "Converter Panel",
+      subComponent: "Root Section",
+      inspectionCallPlan: "2026-04-14",
+      customerInspectionActual: "2026-04-15",
+      customerInprogressInspection: "2026-04-13",
+      mdccPlan: "2026-04-17",
+      mdccActual: "2026-04-18"
+    },
   ]
 
   openQualityDetails(){
