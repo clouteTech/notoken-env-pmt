@@ -320,7 +320,7 @@ export class CreateProjectComponent implements OnInit {
   gridOptions: any[]    = [/* { label: 'STU', value: '1' }, { label: 'CTU', value: '2' } */];
   ppaOptions: any[]     = [/* { label: 'Auction', value: '1' }, { label: 'C&I', value: '2' } */];
 
-  // Capacity options driven by WTG type (same mapping as sale-demand)
+  // Capacity options driven by WTG type
   private wtgCapacityMap: Record<string, { label: string; value: string }[]> = {
     EN132:       [{ label: '2.4 MW', value: '2.4' }, { label: '2.5 MW', value: '2.5' }],
     EN156:       [{ label: '3.3 MW', value: '3.3' }, { label: '3.5 MW', value: '3.5' }],

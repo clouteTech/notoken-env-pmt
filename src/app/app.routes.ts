@@ -13,11 +13,6 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'saleDemand',
-    loadComponent: () => import('./sale-demand/sale-demand').then(m => m.SaleDemand),
-    canActivate: [authGuard]
-  },
-  {
     path: 'create-project',
     loadComponent: () => import('./create-project/create-project.component').then(m => m.CreateProjectComponent),
     canActivate: [authGuard]

@@ -50,7 +50,6 @@ export class AppComponent implements OnInit, OnDestroy {
       { segment: 'create-project',      menu: 'create' },
       { segment: 'yearly-demand-plans', menu: 'yearlyDemandPlans' },
       { segment: 'dashboard',           menu: 'demand' },
-      { segment: 'saleDemand',          menu: 'saleDemand' },
       { segment: 'monthlyDemandPlan',   menu: 'monthlyDemandPlan' },
       { segment: 'allocationApproval',  menu: 'allocationApproval' },
       { segment: 'WTGProduction',       menu: 'WTGProduction' },
@@ -106,7 +105,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.activeMenu = menu;
     if (menu === 'demand') this.router.navigate(['/dashboard']);
     if (menu === 'yearlyDemandPlans') this.router.navigate(['/yearly-demand-plans']);
-    else if (menu === 'saleDemand') this.router.navigate(['/saleDemand']);
     else if (menu === 'create') this.router.navigate(['/create-project']);
     else if (menu === 'monthlyDemandPlan') this.router.navigate(['/monthlyDemandPlan']);
     else if (menu === 'allocationApproval') this.router.navigate(['/allocationApproval']);
