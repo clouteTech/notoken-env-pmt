@@ -4,8 +4,6 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, Reacti
 import { ButtonModule }    from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule }  from 'primeng/textarea';
-import { SelectModule }    from 'primeng/select';
-import { DatePickerModule }from 'primeng/datepicker';
 import { AccordionModule } from 'primeng/accordion';
 import { TableModule }     from 'primeng/table';
 import { ToastModule }     from 'primeng/toast';
@@ -26,20 +24,23 @@ import { MenuModule } from 'primeng/menu';
   selector: 'app-allocation-approval',
   imports: [CommonModule, FormsModule,
     ButtonModule, InputTextModule, TextareaModule,
-    SelectModule, DatePickerModule,
     AccordionModule, TableModule,
     ToastModule, CardModule,IconFieldModule,TagModule,InputIconModule,DialogModule,ConfirmDialogModule,
     FluidModule,ReactiveFormsModule,MultiSelectModule,CheckboxModule, RouterModule, MenuModule],
+  providers: [MessageService],
   templateUrl: './allocation-approval.html',
   styleUrl: './allocation-approval.css',
 })
 export class AllocationApproval {
   items: MenuItem[] = [];
-  
+
   showAllocatedComponents = false;
   showRejectModal = false;
 
   selectedAllocation: any;
+  rejectReason = '';
+
+  constructor(private messageService: MessageService){}
 
  allocationApprovalList = [
     {
@@ -48,7 +49,7 @@ export class AllocationApproval {
       planMonth: 'Apr 2026',
       plantName: 'Chennai',
       plantManager: 'Suresh Reddy',
-      status: 'Created'
+      status: 'CREATED'
     },
     {
       initiatedBy: 'Meena Iyer',
@@ -56,15 +57,15 @@ export class AllocationApproval {
       planMonth: 'Apr 2026',
       plantName: 'Chennai',
       plantManager: 'Lakshmi Devi',
-      status: 'Created'
+      status: 'CREATED'
     },
     {
       initiatedBy: 'Arjun Naik',
       initiatedOn: '2026-03-18',
       planMonth: 'May 2026',
-      plantName: 'Trichy',
+      plantName: 'Tirichy',
       plantManager: 'Manjunath H',
-      status: 'Reviewed',
+      status: 'REVIEWED',
       reviewedBy: 'Ajith Kumar',
       reviewedOn: '2026-03-19'
     },
@@ -74,7 +75,7 @@ export class AllocationApproval {
       planMonth: 'Apr 2026',
       plantName: 'Pune',
       plantManager: 'Anitha Rao',
-      status: 'Created'
+      status: 'CREATED'
     },
     {
       initiatedBy: 'Divya Menon',
@@ -82,17 +83,19 @@ export class AllocationApproval {
       planMonth: 'May 2026',
       plantName: 'Chennai',
       plantManager: 'Suresh Reddy',
-      status: 'Reviewed',
+      status: 'COMPLETED',
       reviewedBy: 'Mohan',
-      reviewedOn: '2026-03-16'
+      reviewedOn: '2026-03-16',
+      approvedBy: 'Mohan',
+      approvedOn: '2026-03-17'
     },
     {
       initiatedBy: 'Ravi Kumar',
       initiatedOn: '2026-03-27',
       planMonth: 'May 2026',
-      plantName: 'Trichy',
+      plantName: 'Tirichy',
       plantManager: 'Manjunath H',
-      status: 'Created'
+      status: 'CREATED'
     },
     {
       initiatedBy: 'Suresh Reddy',
@@ -100,7 +103,7 @@ export class AllocationApproval {
       planMonth: 'Mar 2026',
       plantName: 'Pune',
       plantManager: 'Anitha Rao',
-      status: 'Reviewed',
+      status: 'In_PROGRESS',
       reviewedBy: 'Ajith Kumar',
       reviewedOn: '2026-03-13'
     },
@@ -110,15 +113,15 @@ export class AllocationApproval {
       planMonth: 'Jun 2026',
       plantName: 'Chennai',
       plantManager: 'Lakshmi Devi',
-      status: 'Created'
+      status: 'CREATED'
     },
     {
       initiatedBy: 'Arjun Naik',
       initiatedOn: '2026-03-08',
       planMonth: 'Mar 2026',
-      plantName: 'Trichy',
+      plantName: 'Tirichy',
       plantManager: 'Manjunath H',
-      status: 'Reviewed',
+      status: 'REVIEWED',
       reviewedBy: 'Mohan',
       reviewedOn: '2026-03-09'
     }
@@ -139,38 +142,22 @@ export class AllocationApproval {
     }
   ]
 
-  productionManagerList = [
-    {
-      label: 'Ajith Kumar',
-      value: 'Ajith Kumar'
-    },
-    {
-      label: 'Surya',
-      value: 'Surya'
-    },
-    {
-      label: 'Karan',
-      value: 'Karan'
-    },
-    {
-      label: 'Siva',
-      value: 'Siva'
-    },
-  ]
-
   getSeverity(status: string){
     switch(status){
-      case 'Created':
+      case 'CREATED':
         return 'info';
-      
-      case 'Reviewed':
+
+      case 'REVIEWED':
         return 'success';
-      
-      case 'In_Progress':
+
+      case 'In_PROGRESS':
         return 'warn';
 
-      case 'Completed':
+      case 'COMPLETED':
         return 'success';
+
+      case 'REJECTED':
+        return 'danger';
 
       default:
         return 'info';
@@ -179,19 +166,37 @@ export class AllocationApproval {
 
   review(item: any){
     console.log(item);
-    item.status = 'Reviewed';
+    item.status = 'REVIEWED';
     item.reviewedBy = this.getCurrentUser();
     item.reviewedOn = this.getToday();
-
-    // item.menuItems = this.getMenuItems(item);
-
-    // this.allocationApprovalList = [...this.allocationApprovalList];
 
     console.log(this.allocationApprovalList);
   }
 
+  acceptAllocation(){
+    if (!this.selectedAllocation) return;
+
+    this.selectedAllocation.status = 'COMPLETED';
+    this.selectedAllocation.approvedBy = this.getCurrentUser();
+    this.selectedAllocation.approvedOn = this.getToday();
+
+    this.showAllocatedComponents = false;
+    this.messageService.add({ severity: 'success', summary: 'Accepted', detail: 'Allocation accepted successfully.' });
+  }
+
+  rejectAllocation(){
+    if (!this.selectedAllocation) return;
+
+    this.selectedAllocation.status = 'REJECTED';
+    this.selectedAllocation.rejectionReason = this.rejectReason;
+
+    this.showRejectModal = false;
+    this.rejectReason = '';
+    this.messageService.add({ severity: 'warn', summary: 'Rejected', detail: 'Allocation rejected.' });
+  }
+
   getMenuItems() {
-    if (this.selectedAllocation?.status === 'Created') {
+    if (this.selectedAllocation?.status === 'CREATED') {
       return [
         {
           label: 'Review',
@@ -201,8 +206,13 @@ export class AllocationApproval {
       ];
     }
 
-    if (this.selectedAllocation?.status === 'Reviewed') {
+    if (this.selectedAllocation?.status === 'REVIEWED') {
       return [
+        {
+          label: 'View Allocated Components',
+          icon: 'pi pi-list',
+          command: () => this.showAllocatedComponents = true
+        },
         {
           label: 'Accept',
           icon: 'pi pi-check',

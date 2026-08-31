@@ -81,4 +81,9 @@
     color: #2563eb;
 }
 
+.total-row td {
+    font-weight: 600;
+    background: #f8fafc;
+}
+
 

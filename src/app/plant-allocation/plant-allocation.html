@@ -1,3 +1,4 @@
+<p-toast />
 <div class="full-height">
     <div class="top-grid">
         <div class="card-box">
@@ -53,28 +54,37 @@
         </form>
     </div>
     <div class="card-box">
-        <p class="section-title">Allocation List</p>
+        <p class="section-title">Allocation Summary</p>
 
         <p-table [value]="allocations">
 
             <ng-template #header>
                 <tr>
+                    <th>Component</th>
                     <th>Plant</th>
-                    <th>Manager</th>
-                    <th>Qty</th>
+                    <th>Plant Manager</th>
+                    <th>Allocated Qty</th>
                     <th>Action</th>
                 </tr>
             </ng-template>
 
             <ng-template #body let-allocate let-i="rowIndex">
                 <tr>
-                    <td>{{ allocate.plantName.label }}</td>
-                    <td>{{ allocate.plantManager.label }}</td>
+                    <td>{{ allocate.componentName }}</td>
+                    <td>{{ allocate.plantName }}</td>
+                    <td>{{ allocate.plantManager }}</td>
                     <td>{{ allocate.qty }}</td>
                     <td>
-                        <button pButton icon="pi pi-trash" 
+                        <button pButton icon="pi pi-trash"
                             class="p-button-danger p-button-sm" (click)="removeAllocation(i, allocate)"></button>
                     </td>
+                </tr>
+            </ng-template>
+            <ng-template #footer>
+                <tr class="total-row" *ngIf="allocations.length">
+                    <td colspan="3">Grand Total</td>
+                    <td>{{ getGrandTotal() }}</td>
+                    <td></td>
                 </tr>
             </ng-template>
             <ng-template #emptymessage>
@@ -84,7 +94,7 @@
             </ng-template>
         </p-table>
         <div class="footer-row">
-            <button pButton label="Submit All">
+            <button pButton label="Submit All" [disabled]="!allocations.length" (click)="submitAllocations()">
             </button>
         </div>
     </div>
