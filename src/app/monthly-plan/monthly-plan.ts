@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { TableModule }  from 'primeng/table';
 import { MenuModule } from 'primeng/menu';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -13,17 +12,70 @@ import { Shared } from '../shared/services/shared';
 
 // Demo fallback data — shown only when the backend API cannot be reached.
 const MOCK_MONTHLY_DEMAND_PLAN: any[] = [
-  { monthlyDemandPlanId: 1, planMonth: 'Apr 2026', projectCode: 'P-8001', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'ReNew Wind SPV 3', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.4, wtgCount: 8, status: 'ACTIVE', createdOn: '2026-03-01T10:15:00', createdByName: 'Ravi Kumar' },
-  { monthlyDemandPlanId: 2, planMonth: 'Apr 2026', projectCode: 'P-8002', customerCode: 'C-102', customerName: 'Adani Green Energy', spvName: 'Adani Renewable SPV 1', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN156', capMw: 3.3, wtgCount: 5, status: 'DRAFT', createdOn: '2026-03-02T09:30:00', createdByName: 'Sunita Sharma' },
-  { monthlyDemandPlanId: 3, planMonth: 'May 2026', projectCode: 'P-8003', customerCode: 'C-103', customerName: 'Suzlon Energy', spvName: 'Suzlon SPV 2', towerType: '130HH-420T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.5, wtgCount: 12, status: 'ACTIVE', createdOn: '2026-03-05T11:00:00', createdByName: 'Ajay Patel' },
-  { monthlyDemandPlanId: 4, planMonth: 'May 2026', projectCode: 'P-8004', customerCode: 'C-104', customerName: 'Greenko', spvName: 'Greenko SPV 4', towerType: '140HH-353T', bladeType: 'Big', wtgType: 'EN156', capMw: 3.5, wtgCount: 6, status: 'ON_HOLD', createdOn: '2026-03-06T14:45:00', createdByName: 'Meena Joshi' },
-  { monthlyDemandPlanId: 5, planMonth: 'Jun 2026', projectCode: 'P-8005', customerCode: 'C-105', customerName: 'Tata Power Renewable', spvName: 'Tata Power SPV 1', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN182', capMw: 5.0, wtgCount: 4, status: 'COMPLETED', createdOn: '2026-03-07T08:20:00', createdByName: 'Vikram Singh' },
-  { monthlyDemandPlanId: 6, planMonth: 'Jun 2026', projectCode: 'P-8006', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'ReNew Wind SPV 5', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN156', capMw: 3.3, wtgCount: 10, status: 'ACTIVE', createdOn: '2026-03-08T13:10:00', createdByName: 'Ravi Kumar' },
-  { monthlyDemandPlanId: 7, planMonth: 'Jul 2026', projectCode: 'P-8007', customerCode: 'C-102', customerName: 'Adani Green Energy', spvName: 'Adani Renewable SPV 3', towerType: '130HH-420T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.4, wtgCount: 7, status: 'DRAFT', createdOn: '2026-03-09T10:00:00', createdByName: 'Sunita Sharma' },
-  { monthlyDemandPlanId: 8, planMonth: 'Jul 2026', projectCode: 'P-8008', customerCode: 'C-106', customerName: 'JSW Energy', spvName: 'JSW SPV 2', towerType: '140HH-353T', bladeType: 'Big', wtgType: 'EN182', capMw: 5.5, wtgCount: 3, status: 'CANCELLED', createdOn: '2026-03-10T16:30:00', createdByName: 'Meena Joshi' },
-  { monthlyDemandPlanId: 9, planMonth: 'Aug 2026', projectCode: 'P-8009', customerCode: 'C-103', customerName: 'Suzlon Energy', spvName: 'Suzlon SPV 5', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.5, wtgCount: 9, status: 'ACTIVE', createdOn: '2026-03-11T09:45:00', createdByName: 'Ajay Patel' },
-  { monthlyDemandPlanId: 10, planMonth: 'Aug 2026', projectCode: 'P-8010', customerCode: 'C-104', customerName: 'Greenko', spvName: 'Greenko SPV 6', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN156', capMw: 3.5, wtgCount: 11, status: 'ON_HOLD', createdOn: '2026-03-12T15:00:00', createdByName: 'Vikram Singh' },
+  { monthlyDemandPlanId: 1, planMonth: 'Apr 2026', projectCode: 'P-1719', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 1', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN182', capMw: 5, wtgCount: 2, status: 'ACTIVE', createdOn: '2026-03-01T10:15:00', createdByName: 'Ravi Kumar' },
+  { monthlyDemandPlanId: 2, planMonth: 'May 2026', projectCode: 'P-1719', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 1', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN182', capMw: 5, wtgCount: 2, status: 'ACTIVE', createdOn: '2026-03-01T10:15:00', createdByName: 'Ravi Kumar' },
+  { monthlyDemandPlanId: 3, planMonth: 'Jun 2026', projectCode: 'P-1719', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 1', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN182', capMw: 5, wtgCount: 1, status: 'ACTIVE', createdOn: '2026-03-01T10:15:00', createdByName: 'Ravi Kumar' },
+  { monthlyDemandPlanId: 4, planMonth: 'Apr 2026', projectCode: 'P-1719', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 1', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN156', capMw: 3.3, wtgCount: 1, status: 'ACTIVE', createdOn: '2026-03-02T09:30:00', createdByName: 'Sunita Sharma' },
+  { monthlyDemandPlanId: 5, planMonth: 'May 2026', projectCode: 'P-1719', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 1', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN156', capMw: 3.3, wtgCount: 1, status: 'ACTIVE', createdOn: '2026-03-02T09:30:00', createdByName: 'Sunita Sharma' },
+  { monthlyDemandPlanId: 6, planMonth: 'Apr 2026', projectCode: 'P-1719', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 2', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN182', capMw: 5, wtgCount: 1, status: 'DRAFT', createdOn: '2026-03-05T11:00:00', createdByName: 'Ajay Patel' },
+  { monthlyDemandPlanId: 7, planMonth: 'May 2026', projectCode: 'P-1719', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 2', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN182', capMw: 5, wtgCount: 1, status: 'DRAFT', createdOn: '2026-03-05T11:00:00', createdByName: 'Ajay Patel' },
+  { monthlyDemandPlanId: 8, planMonth: 'Jun 2026', projectCode: 'P-1854', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 10', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.4, wtgCount: 3, status: 'ACTIVE', createdOn: '2026-03-06T14:45:00', createdByName: 'Meena Joshi' },
+  { monthlyDemandPlanId: 9, planMonth: 'Jul 2026', projectCode: 'P-1854', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 10', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.4, wtgCount: 2, status: 'ACTIVE', createdOn: '2026-03-06T14:45:00', createdByName: 'Meena Joshi' },
+  { monthlyDemandPlanId: 10, planMonth: 'Sep 2026', projectCode: 'P-1854', customerCode: 'C-101', customerName: 'ReNew Power', spvName: 'SPV 10', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN182', capMw: 5, wtgCount: 3, status: 'ON_HOLD', createdOn: '2026-03-07T08:20:00', createdByName: 'Vikram Singh' },
+
+  { monthlyDemandPlanId: 11, planMonth: 'Apr 2026', projectCode: 'P-2044', customerCode: 'C-102', customerName: 'Adani Green Energy', spvName: 'SPV 4', towerType: '130HH-420T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.4, wtgCount: 3, status: 'ACTIVE', createdOn: '2026-03-08T09:00:00', createdByName: 'Priya Nair' },
+  { monthlyDemandPlanId: 12, planMonth: 'May 2026', projectCode: 'P-2044', customerCode: 'C-102', customerName: 'Adani Green Energy', spvName: 'SPV 4', towerType: '130HH-420T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.4, wtgCount: 2, status: 'ACTIVE', createdOn: '2026-03-08T09:00:00', createdByName: 'Priya Nair' },
+  { monthlyDemandPlanId: 13, planMonth: 'Jun 2026', projectCode: 'P-2044', customerCode: 'C-102', customerName: 'Adani Green Energy', spvName: 'SPV 4', towerType: '140HH-353T', bladeType: 'Big', wtgType: 'EN156', capMw: 3.5, wtgCount: 4, status: 'ACTIVE', createdOn: '2026-03-08T09:00:00', createdByName: 'Priya Nair' },
+  { monthlyDemandPlanId: 14, planMonth: 'Apr 2026', projectCode: 'P-2044', customerCode: 'C-102', customerName: 'Adani Green Energy', spvName: 'SPV 5', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.4, wtgCount: 2, status: 'DRAFT', createdOn: '2026-03-09T10:30:00', createdByName: 'Karan Mehta' },
+  { monthlyDemandPlanId: 15, planMonth: 'Jul 2026', projectCode: 'P-2101', customerCode: 'C-102', customerName: 'Adani Green Energy', spvName: 'SPV 8', towerType: '140HH-474T', bladeType: 'Big', wtgType: 'EN182', capMw: 5.5, wtgCount: 6, status: 'ACTIVE', createdOn: '2026-03-10T13:20:00', createdByName: 'Priya Nair' },
+
+  { monthlyDemandPlanId: 16, planMonth: 'May 2026', projectCode: 'P-3312', customerCode: 'C-103', customerName: 'Suzlon Energy', spvName: 'SPV 2', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN156', capMw: 3.3, wtgCount: 5, status: 'ACTIVE', createdOn: '2026-03-11T11:45:00', createdByName: 'Deepak Rao' },
+  { monthlyDemandPlanId: 17, planMonth: 'Jun 2026', projectCode: 'P-3312', customerCode: 'C-103', customerName: 'Suzlon Energy', spvName: 'SPV 2', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN156', capMw: 3.3, wtgCount: 3, status: 'ACTIVE', createdOn: '2026-03-11T11:45:00', createdByName: 'Deepak Rao' },
+  { monthlyDemandPlanId: 18, planMonth: 'Aug 2026', projectCode: 'P-3312', customerCode: 'C-103', customerName: 'Suzlon Energy', spvName: 'SPV 3', towerType: '140HH-353T', bladeType: 'Big', wtgType: 'EN156', capMw: 3.5, wtgCount: 2, status: 'ON_HOLD', createdOn: '2026-03-12T15:10:00', createdByName: 'Deepak Rao' },
+  { monthlyDemandPlanId: 19, planMonth: 'Sep 2026', projectCode: 'P-3400', customerCode: 'C-103', customerName: 'Suzlon Energy', spvName: 'SPV 6', towerType: '120HH-304T', bladeType: 'Small', wtgType: 'EN132', capMw: 2.5, wtgCount: 4, status: 'CANCELLED', createdOn: '2026-03-13T08:50:00', createdByName: 'Anita Rao' },
 ];
+
+interface MonthlyPlanRow {
+  key: string;
+  wtgType: string;
+  capMw: number | null;
+  towerType: string;
+  bladeType: string;
+  monthlyQty: Record<string, number>;
+  totalQty: number;
+  records: any[];
+}
+
+interface SpvGroup {
+  spvName: string;
+  rows: MonthlyPlanRow[];
+  totalsByMonth: Record<string, number>;
+  totalQty: number;
+  records: any[];
+}
+
+interface ProjectGroup {
+  projectCode: string;
+  spvs: SpvGroup[];
+}
+
+interface CustomerGroup {
+  customerCode: string;
+  customerName: string;
+  projects: ProjectGroup[];
+}
+
+interface SummaryRow {
+  customerName: string;
+  projectCode: string;
+  spvName: string;
+  wtgType: string;
+  capMw: number | null;
+  towerType: string;
+  bladeType: string;
+  totalQty: number;
+  monthlyQty: Record<string, number>;
+}
 
 @Component({
   selector: 'app-monthly-plan',
@@ -32,30 +84,30 @@ const MOCK_MONTHLY_DEMAND_PLAN: any[] = [
   styleUrl: './monthly-plan.css',
 })
 export class MonthlyPlan implements OnInit {
-  first = 0;
-
-  rows = 10;
-  page = 0;
-  size = 10;
-  totalRecords = 0;
-
-  items: MenuItem[] = [];
   actionItems: MenuItem[] = [];
 
   showComponentSerialModal = false;
   showComponentDetails = false;
-
-  selectedMonthlyPlan: any;
+  showSummaryView = false;
 
   monthlyDemandPlanList: any[] = [];
 
+  // Grouped Customer -> Project(P-Code) -> SPV structure, matching the agreed
+  // "Demand Plan" Excel layout. Month columns are pivoted per SPV mini-table.
+  groupedPlan: CustomerGroup[] = [];
+  monthColumns: string[] = [];
+
+  // Flat "View Plan Summary" rollup, mirroring the Excel's summary sheet + Sum row.
+  summaryRows: SummaryRow[] = [];
+  summaryTotals: Record<string, number> = {};
+  summaryGrandTotal = 0;
+
   private router = inject(Router);
   private apiService = inject(Apiservice);
-  
-  constructor(private messageService: MessageService, private sanitizer: DomSanitizer){}
+
+  constructor(private messageService: MessageService){}
 
   ngOnInit(){
-    this.items = this.getMenuItems();
     this.actionItems = this.getActionItems();
 
     this.fetchAllMonthlyDemandPlan();
@@ -63,6 +115,8 @@ export class MonthlyPlan implements OnInit {
 
   fetchAllMonthlyDemandPlan(){
     try {
+      // Grouping is done client-side across the whole plan (Customer -> Project -> SPV),
+      // so this fetches the full working set rather than a single page of rows.
       const data = {
         customerId: null,
         planMonth: null,
@@ -72,19 +126,15 @@ export class MonthlyPlan implements OnInit {
         status: null,
         searchText: null,
         page: 0,
-        size: 10,
+        size: 500,
         sortBy: "createdOn",
         sortDirection: "asc"
       }
 
-      console.log(data);
-
       this.apiService.fetchAllMonthlyDemandPlan(data).subscribe({
         next: val => {
-          console.log(val);
-          this.monthlyDemandPlanList = val?.data?.data?.content;
-
-          this.totalRecords = val?.data?.data?.totalElements ?? 0;
+          this.monthlyDemandPlanList = val?.data?.data?.content ?? [];
+          this.buildGroupedPlan();
         },
         error: err => {
           console.log(err);
@@ -93,7 +143,7 @@ export class MonthlyPlan implements OnInit {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           } else {
             this.monthlyDemandPlanList = MOCK_MONTHLY_DEMAND_PLAN;
-            this.totalRecords = MOCK_MONTHLY_DEMAND_PLAN.length;
+            this.buildGroupedPlan();
           }
         }
       })
@@ -101,30 +151,117 @@ export class MonthlyPlan implements OnInit {
       console.log(error);
 
       this.monthlyDemandPlanList = MOCK_MONTHLY_DEMAND_PLAN;
-      this.totalRecords = MOCK_MONTHLY_DEMAND_PLAN.length;
+      this.buildGroupedPlan();
 
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
         detail: 'Please Try Again.'
       });
-
     }
   }
 
-  getMenuItems(){
-    return [
-      {
-        label: 'View Component Serial',
-        svgIcon: `
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <rect width="24" height="24" fill="none" />
-            <path fill="currentColor" d="M21.92 11.6C19.9 6.91 16.1 4 12 4s-7.9 2.91-9.92 7.6a1 1 0 0 0 0 .8C4.1 17.09 7.9 20 12 20s7.9-2.91 9.92-7.6a1 1 0 0 0 0-.8M12 18c-3.17 0-6.17-2.29-7.9-6C5.83 8.29 8.83 6 12 6s6.17 2.29 7.9 6c-1.73 3.71-4.73 6-7.9 6m0-10a4 4 0 1 0 4 4a4 4 0 0 0-4-4m0 6a2 2 0 1 1 2-2a2 2 0 0 1-2 2" />
-          </svg>
-        `,
-        command: () => this.router.navigate(['/plan', this.selectedMonthlyPlan.monthlyDemandPlanId, 'component-serial'])
+  private monthSortKey(label: string): number {
+    const d = new Date(label);
+    return isNaN(d.getTime()) ? 0 : d.getTime();
+  }
+
+  private buildGroupedPlan(){
+    const customersMap = new Map<string, CustomerGroup>();
+    const monthsSet = new Set<string>();
+
+    for (const rec of this.monthlyDemandPlanList){
+      const month = rec.planMonth || '-';
+      monthsSet.add(month);
+
+      const custKey = rec.customerCode ?? rec.customerName ?? '-';
+      let customer = customersMap.get(custKey);
+      if (!customer){
+        customer = { customerCode: rec.customerCode, customerName: rec.customerName, projects: [] };
+        customersMap.set(custKey, customer);
       }
-    ]
+
+      let project = customer.projects.find(p => p.projectCode === rec.projectCode);
+      if (!project){
+        project = { projectCode: rec.projectCode, spvs: [] };
+        customer.projects.push(project);
+      }
+
+      let spv = project.spvs.find(s => s.spvName === rec.spvName);
+      if (!spv){
+        spv = { spvName: rec.spvName, rows: [], totalsByMonth: {}, totalQty: 0, records: [] };
+        project.spvs.push(spv);
+      }
+      spv.records.push(rec);
+
+      const rowKey = [rec.wtgType, rec.capMw, rec.towerType, rec.bladeType].join('|');
+      let row = spv.rows.find(r => r.key === rowKey);
+      if (!row){
+        row = { key: rowKey, wtgType: rec.wtgType, capMw: rec.capMw, towerType: rec.towerType, bladeType: rec.bladeType, monthlyQty: {}, totalQty: 0, records: [] };
+        spv.rows.push(row);
+      }
+      row.records.push(rec);
+
+      const qty = Number(rec.wtgCount) || 0;
+      row.monthlyQty[month] = (row.monthlyQty[month] || 0) + qty;
+      row.totalQty += qty;
+    }
+
+    for (const customer of customersMap.values()){
+      for (const project of customer.projects){
+        for (const spv of project.spvs){
+          for (const row of spv.rows){
+            spv.totalQty += row.totalQty;
+            for (const [m, q] of Object.entries(row.monthlyQty)){
+              spv.totalsByMonth[m] = (spv.totalsByMonth[m] || 0) + q;
+            }
+          }
+        }
+      }
+    }
+
+    this.monthColumns = Array.from(monthsSet).sort((a, b) => this.monthSortKey(a) - this.monthSortKey(b));
+    this.groupedPlan = Array.from(customersMap.values());
+
+    this.buildSummaryRows();
+  }
+
+  private buildSummaryRows(){
+    const rows: SummaryRow[] = [];
+    const totalsByMonth: Record<string, number> = {};
+    let grandTotal = 0;
+
+    for (const customer of this.groupedPlan){
+      for (const project of customer.projects){
+        for (const spv of project.spvs){
+          for (const row of spv.rows){
+            rows.push({
+              customerName: customer.customerName,
+              projectCode: project.projectCode,
+              spvName: spv.spvName,
+              wtgType: row.wtgType,
+              capMw: row.capMw,
+              towerType: row.towerType,
+              bladeType: row.bladeType,
+              totalQty: row.totalQty,
+              monthlyQty: row.monthlyQty
+            });
+            grandTotal += row.totalQty;
+            for (const [m, q] of Object.entries(row.monthlyQty)){
+              totalsByMonth[m] = (totalsByMonth[m] || 0) + q;
+            }
+          }
+        }
+      }
+    }
+
+    this.summaryRows = rows;
+    this.summaryTotals = totalsByMonth;
+    this.summaryGrandTotal = grandTotal;
+  }
+
+  toggleSummaryView(){
+    this.showSummaryView = !this.showSummaryView;
   }
 
   getActionItems(){
@@ -137,197 +274,10 @@ export class MonthlyPlan implements OnInit {
     ]
   }
 
-  getSeverity(status: string){
-    switch(status){
-      case 'DRAFT':
-        return 'info';
-        
-      case 'ACTIVE':
-        return 'success';
-      
-      case 'ON_HOLD':
-        return 'warn';
-
-      case 'COMPLETED':
-        return 'success';
-
-      case 'CANCELLED':
-        return 'danger';
-
-      default:
-        return 'info';
-    }
-  }
-
   breakdownList = [
-    {
-      towerType: '120HH-474T',
-      bladeType: 'Small',
-      wtgCount: '2',
-      wtgComponentCount: '30'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    },
-    {
-      towerType: '-',
-      bladeType: 'Small',
-      wtgCount: '5',
-      wtgComponentCount: '50'
-    },
-    {
-      towerType: '140HH-520T',
-      bladeType: 'Big',
-      wtgCount: '2',
-      wtgComponentCount: '32'
-    }
+    { towerType: '120HH-474T', bladeType: 'Small', wtgCount: '2', wtgComponentCount: '30' },
+    { towerType: '-', bladeType: 'Small', wtgCount: '5', wtgComponentCount: '50' },
+    { towerType: '140HH-520T', bladeType: 'Big', wtgCount: '2', wtgComponentCount: '32' },
   ]
 
   selectedMonth(month: any){
@@ -342,23 +292,8 @@ export class MonthlyPlan implements OnInit {
     }
   }
 
-  getSafeSvg(svg: string): SafeHtml{
-    return this.sanitizer.bypassSecurityTrustHtml(svg);
-  }
-
-  monthlyMenu(event: Event, menu: any, monthlyPlan: any){
-    this.selectedMonthlyPlan = monthlyPlan;
-    console.log(this.selectedMonthlyPlan);
-    menu.toggle(event);
-  }
-
-  loadMonthlyPlan(event: any){
-    console.log(event);
-    this.first = event.first;
-
-    this.page = event.first / event.rows;
-    this.size = event.rows;
-
-    this.fetchAllMonthlyDemandPlan();
+  viewComponentSerial(spv: SpvGroup){
+    const planId = spv.records?.[0]?.monthlyDemandPlanId;
+    this.router.navigate(['/plan', planId, 'component-serial']);
   }
 }

@@ -1,12 +1,131 @@
-.menu-action{
-    display: flex;
-    align-items: center;
-}
-
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-chips {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.info-chip {
+    display: inline-flex;
+    align-items: stretch;
+    border-radius: 6px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.chip-label {
+    display: inline-flex;
+    align-items: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 8px;
+    white-space: nowrap;
+}
+
+.chip-value {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 0.82rem;
+    padding: 4px 10px;
+    white-space: nowrap;
+}
+
+.chip-customer {
+    border: 1px solid #c7d2fe;
+}
+
+.chip-customer .chip-label {
+    background: #4f46e5;
+}
+
+.chip-customer .chip-value {
+    background: #eef2ff;
+    color: #312e81;
+}
+
+.chip-project {
+    border: 1px solid #99f6e4;
+}
+
+.chip-project .chip-label {
+    background: #0d9488;
+}
+
+.chip-project .chip-value {
+    background: #ccfbf1;
+    color: #134e4a;
+}
+
+.project-block {
+    margin-bottom: 16px;
+}
+
+.project-block:last-child {
+    margin-bottom: 0;
+}
+
+.project-title {
+    margin-bottom: 8px;
+}
+
+.spv-block {
+    margin-bottom: 14px;
+    padding: 12px;
+    border: 1px solid var(--p-content-border-color);
+    border-radius: 8px;
+    background: #fbfbfe;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.spv-block:last-child {
+    margin-bottom: 0;
+}
+
+.spv-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.spv-name {
+    font-weight: 500;
+}
+
+.view-serial-btn {
+    padding: 4px 8px;
+    font-size: 0.82rem;
+    gap: 6px;
+}
+
+.total-row td {
+    font-weight: 600;
+    background: #f8fafc;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 1.5rem 0;
+    color: #6b7280;
 }
 
 .card {
@@ -111,3 +230,4 @@
 .card-right h3 {
     margin: 4px 0 0;
 }
+

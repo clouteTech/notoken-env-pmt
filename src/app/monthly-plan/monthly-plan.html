@@ -1,84 +1,128 @@
 <div class="card">
     <div class="header">
         <h2>Monthly Demand Plan</h2>
-        <p-menu #menu [model]="actionItems" [popup]="true" appendTo="body" />
-        <button pButton pRipple type="button" (click)="menu.toggle($event)">
-            <span pButtonLabel>Action</span>
-            <i pButtonIcon>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <rect width="24" height="24" fill="none" />
-                    <path fill="currentColor"
-                        d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42" />
-                </svg>
-            </i>
-        </button>
+        <div class="header-actions">
+            <button pButton pRipple type="button" severity="secondary" outlined (click)="toggleSummaryView()">
+                <span pButtonLabel>{{ showSummaryView ? 'View Grouped Plan' : 'View Plan Summary' }}</span>
+            </button>
+            <p-menu #menu [model]="actionItems" [popup]="true" appendTo="body" />
+            <button pButton pRipple type="button" (click)="menu.toggle($event)">
+                <span pButtonLabel>Action</span>
+                <i pButtonIcon>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <rect width="24" height="24" fill="none" />
+                        <path fill="currentColor"
+                            d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71L8.46 9.17a1 1 0 0 0-1.41 0a1 1 0 0 0 0 1.42l4.24 4.24a1 1 0 0 0 1.42 0L17 10.59a1 1 0 0 0 0-1.42" />
+                    </svg>
+                </i>
+            </button>
+        </div>
     </div>
 
-    <div class="custom-container">
-        <p-table [value]="monthlyDemandPlanList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }"
-            [paginator]="true" [rows]="size" [first]="first" [showCurrentPageReport]="true" [lazy]="true"
-            [totalRecords]="totalRecords"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            (onLazyLoad)="loadMonthlyPlan($event)"
-            [rowsPerPageOptions]="[10, 25, 50]">
+    <!-- Grouped view: Customer -> Project (P-Code) -> SPV, matching the agreed "Demand Plan" Excel layout -->
+    <div class="custom-container" *ngIf="!showSummaryView">
+        <p-accordion [multiple]="true" *ngIf="groupedPlan.length; else emptyGrouped">
+            <p-accordion-panel *ngFor="let customer of groupedPlan; let ci = index" [value]="'c' + ci">
+                <p-accordion-header>
+                    <div class="header-chips">
+                        <span class="info-chip chip-customer">
+                            <span class="chip-label">Customer</span>
+                            <span class="chip-value">{{ customer.customerName || '-' }}<ng-container *ngIf="customer.customerCode"> ({{ customer.customerCode }})</ng-container></span>
+                        </span>
+                    </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                    <div class="project-block" *ngFor="let project of customer.projects">
+                        <div class="project-title">
+                            <span class="info-chip chip-project">
+                                <span class="chip-label">Project</span>
+                                <span class="chip-value">{{ project.projectCode || '-' }}</span>
+                            </span>
+                        </div>
+
+                        <div class="spv-block" *ngFor="let spv of project.spvs">
+                            <div class="spv-header">
+                                <span class="spv-name">{{ spv.spvName || '-' }}</span>
+                                <button pButton pRipple type="button" text class="view-serial-btn"
+                                    (click)="viewComponentSerial(spv)">
+                                    <i class="pi pi-eye" pButtonIcon></i>
+                                    <span pButtonLabel>View Component Serial</span>
+                                </button>
+                            </div>
+
+                            <p-table [value]="spv.rows" [tableStyle]="{ 'min-width': 'max-content' }">
+                                <ng-template #header>
+                                    <tr>
+                                        <th>Wtg Type</th>
+                                        <th>Capacity</th>
+                                        <th>Tower Type</th>
+                                        <th>Blade Type</th>
+                                        <th>Qty</th>
+                                        <th *ngFor="let m of monthColumns">{{ m }}</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template #body let-row>
+                                    <tr>
+                                        <td>{{ row.wtgType || '-' }}</td>
+                                        <td>{{ row.capMw || '-' }}MW</td>
+                                        <td>{{ row.towerType || '-' }}</td>
+                                        <td>{{ row.bladeType || '-' }}</td>
+                                        <td>{{ row.totalQty }}</td>
+                                        <td *ngFor="let m of monthColumns">{{ row.monthlyQty[m] || 0 }}</td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template #footer>
+                                    <tr class="total-row">
+                                        <td colspan="4">Total Qty</td>
+                                        <td>{{ spv.totalQty }}</td>
+                                        <td *ngFor="let m of monthColumns">{{ spv.totalsByMonth[m] || 0 }}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                </p-accordion-content>
+            </p-accordion-panel>
+        </p-accordion>
+        <ng-template #emptyGrouped>
+            <div class="empty-state">No Records Found</div>
+        </ng-template>
+    </div>
+
+    <!-- Flat rollup view, mirroring the Excel's "View Plan Summary" sheet with a Sum row -->
+    <div class="custom-container" *ngIf="showSummaryView">
+        <p-table [value]="summaryRows" [tableStyle]="{ 'min-width': 'max-content' }">
             <ng-template #header>
                 <tr>
-                    <th>SL NO</th>
-                    <th>Plan Month</th>
-                    <th>Project Code</th>
-                    <th>Customer Code</th>
                     <th>Customer Name</th>
-                    <th>SPV Name</th>
+                    <th>Project</th>
+                    <th>Spv</th>
+                    <th>WtgType</th>
+                    <th>Capacity</th>
                     <th>Tower Type</th>
                     <th>Blade Type</th>
-                    <th>WTG Type</th>
-                    <th>Capacity</th>
-                    <th>WTG Count</th>
-                    <th>Status</th>
-                    <th>Created On</th>
-                    <th>Created By</th>
-                    <th>Action</th>
+                    <th>Qty</th>
+                    <th *ngFor="let m of monthColumns">{{ m }}</th>
                 </tr>
             </ng-template>
-            <ng-template #body let-monthlyPlan let-i="rowIndex">
+            <ng-template #body let-row>
                 <tr>
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ monthlyPlan.planMonth || '-' }}</td>
-                    <td>{{ monthlyPlan.projectCode || '-' }}</td>
-                    <td>{{ monthlyPlan.customerCode || '-' }}</td>
-                    <td>{{ monthlyPlan.customerName || '-' }}</td>
-                    <td>{{ monthlyPlan.spvName || '-' }}</td>
-                    <td>{{ monthlyPlan.towerType || '-' }}</td>
-                    <td>{{ monthlyPlan.bladeType || '-' }}</td>
-                    <td>{{ monthlyPlan.wtgType || '-' }}</td>
-                    <td>{{ monthlyPlan.capMw || '-' }}MW</td>
-                    <td>{{ monthlyPlan.wtgCount || '-' }}</td>
-                    <td>
-                        <p-tag [value]="monthlyPlan?.status" [severity]="getSeverity(monthlyPlan?.status)" />
-                    </td>
-                    <td>{{ monthlyPlan.createdOn | date: 'medium' }}</td>
-                    <td>{{ monthlyPlan.createdByName || '-' }}</td>
-                    <td>
-                        <p-menu #menu [model]="items" [popup]="true" appendTo="body">
-                            <ng-template #item let-item>
-                                <div class="menu-action gap-2 px-3 py-1 cursor-pointer">
-                                    <span [innerHTML]="getSafeSvg(item.svgIcon)"></span>
-                                    <span>{{ item.label }}</span>
-                                </div>
-                            </ng-template>
-                        </p-menu>
-                        <button pButton pRipple text rounded severity="secondary" type="button"
-                            (click)="monthlyMenu($event, menu, monthlyPlan)">
-                            <i pButtonIcon>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    class="text-gray-500">
-                                    <rect width="24" height="24" fill="none" />
-                                    <path fill="currentColor"
-                                        d="M12 7a2 2 0 1 0-2-2a2 2 0 0 0 2 2m0 10a2 2 0 1 0 2 2a2 2 0 0 0-2-2m0-7a2 2 0 1 0 2 2a2 2 0 0 0-2-2" />
-                                </svg>
-                            </i>
-                        </button>
-                    </td>
+                    <td>{{ row.customerName || '-' }}</td>
+                    <td>{{ row.projectCode || '-' }}</td>
+                    <td>{{ row.spvName || '-' }}</td>
+                    <td>{{ row.wtgType || '-' }}</td>
+                    <td>{{ row.capMw || '-' }}MW</td>
+                    <td>{{ row.towerType || '-' }}</td>
+                    <td>{{ row.bladeType || '-' }}</td>
+                    <td>{{ row.totalQty }}</td>
+                    <td *ngFor="let m of monthColumns">{{ row.monthlyQty[m] || 0 }}</td>
+                </tr>
+            </ng-template>
+            <ng-template #footer>
+                <tr class="total-row">
+                    <td colspan="7">Sum</td>
+                    <td>{{ summaryGrandTotal }}</td>
+                    <td *ngFor="let m of monthColumns">{{ summaryTotals[m] || 0 }}</td>
                 </tr>
             </ng-template>
             <ng-template #emptymessage>
@@ -94,7 +138,7 @@
     [draggable]="false">
     <div class="form-grid">
         <label for="month">Select Month</label>
-        <p-datepicker view="month" dateFormat="mm/yy" [readonlyInput]="true" inputId="month" showIcon 
+        <p-datepicker view="month" dateFormat="mm/yy" [readonlyInput]="true" inputId="month" showIcon
             [iconDisplay]="'input'" appendTo="body" placeholder="Select Month" (onSelect)="selectedMonth($event)" fluid />
     </div>
 
@@ -104,7 +148,7 @@
                 <p>Total Records</p>
                 <h3>3</h3>
             </div>
-        
+
             <div class="summary-item">
                 <p>Total WTG Count</p>
                 <h3>9</h3>
@@ -114,7 +158,7 @@
                 <h3>112</h3>
             </div>
         </div>
-    
+
         <div class="component-tower-blade-list">
             @for (item of breakdownList; track $index) {
                 <div class="tower-blade-card">
