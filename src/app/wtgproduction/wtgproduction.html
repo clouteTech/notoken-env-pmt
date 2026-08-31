@@ -1,10 +1,14 @@
 <div class="card">
-    <h2>WTG Production</h2>
+    <div class="production-header">
+        <h2>WTG Production</h2>
+        <p-button label="Blade Allocation" icon="pi pi-box" (onClick)="openBladeAllocation()" />
+    </div>
     <div class="custom-container">
         <p-table [value]="wtgProductionList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
             <ng-template #header>
                 <tr>
                     <th>SL NO</th>
+                    <th>Customer Name</th>
                     <th>P-Code</th>
                     <th>Components</th>
                     <th>Sub Components</th>
@@ -24,6 +28,7 @@
             <ng-template #body let-prod let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
+                    <td>{{ prod.customerName || '-' }}</td>
                     <td>{{ prod.pCode }}</td>
                     <td>{{ prod.component }}</td>
                     <td>{{ prod.subComponent }}</td>
@@ -136,4 +141,27 @@
             </p-step-panel>
         </p-step-item>
     </p-stepper>
+</p-dialog>
+
+<p-dialog header="Blade Allocation" [modal]="true" [(visible)]="showBladeAllocationModal" [style]="{ width: '30rem' }"
+    [draggable]="false">
+    <form [formGroup]="bladeAllocationForm">
+        <div class="form-row">
+            <div class="form-field">
+                <label for="blade-alloc-customer">Customer</label>
+                <p-select [options]="customerOptions" formControlName="customerName" inputId="blade-alloc-customer"
+                    placeholder="Select Customer" appendTo="body" fluid (onChange)="onBladeAllocationCustomerChange()" />
+            </div>
+            <div class="form-field">
+                <label for="blade-alloc-pcode">P-Code</label>
+                <p-select [options]="pCodeOptionsForSelectedCustomer" formControlName="pCode" inputId="blade-alloc-pcode"
+                    placeholder="Select P-Code" appendTo="body" fluid />
+            </div>
+        </div>
+    </form>
+    <div class="submit-btn">
+        <button pButton pRipple type="button" (click)="proceedBladeAllocation()">
+            Proceed to Allocate
+        </button>
+    </div>
 </p-dialog>

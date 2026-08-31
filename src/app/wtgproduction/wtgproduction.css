@@ -3,6 +3,29 @@
     align-items: center;
 }
 
+.production-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.form-field {
+    display: grid;
+}
+
+.submit-btn {
+    display: flex;
+    justify-content: end;
+    margin-top: 12px;
+}
+
 .card {
     background: #fff;
     border-radius: 12px;

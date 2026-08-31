@@ -85,3 +85,88 @@
         </p-table>
     </div>
 </div>
+
+<p-dialog header="Edit Dispatch Details" [modal]="true" [(visible)]="showDispatchDetailsModal" [style]="{ width: '55rem' }"
+    [draggable]="false">
+    <div class="form-row">
+        <div class="form-field">
+            <label>Frame No</label>
+            <input type="text" pInputText [(ngModel)]="selectedDispatch.frameNo" />
+        </div>
+        <div class="form-field">
+            <label>Root Frame No</label>
+            <input type="text" pInputText [(ngModel)]="selectedDispatch.rootFrameNo" />
+        </div>
+        <div class="form-field">
+            <label>Tip Frame No</label>
+            <input type="text" pInputText [(ngModel)]="selectedDispatch.tipFrameNo" />
+        </div>
+        <div class="form-field">
+            <label>Transporter</label>
+            <input type="text" pInputText [(ngModel)]="selectedDispatch.transporter" />
+        </div>
+        <div class="form-field">
+            <label>Invoice Number</label>
+            <input type="text" pInputText [(ngModel)]="selectedDispatch.invoiceNumber" />
+        </div>
+        <div class="form-field">
+            <label>Invoice Date</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" placeholder="Select Date"
+                appendTo="body" fluid [(ngModel)]="selectedDispatch.invoiceDate" />
+        </div>
+        <div class="form-field">
+            <label>Vehicle No</label>
+            <input type="text" pInputText [(ngModel)]="selectedDispatch.vehicleNo" />
+        </div>
+        <div class="form-field">
+            <label>LR Number</label>
+            <input type="text" pInputText [(ngModel)]="selectedDispatch.lrNumber" />
+        </div>
+        <div class="form-field">
+            <label>LR Date</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" placeholder="Select Date"
+                appendTo="body" fluid [(ngModel)]="selectedDispatch.lrDate" />
+        </div>
+        <div class="form-field">
+            <label>DC No</label>
+            <input type="text" pInputText [(ngModel)]="selectedDispatch.dcNo" />
+        </div>
+        <div class="form-field">
+            <label>DC Date</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" placeholder="Select Date"
+                appendTo="body" fluid [(ngModel)]="selectedDispatch.dcDate" />
+        </div>
+        <div class="form-field">
+            <label>Vehicle In Date</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" placeholder="Select Date"
+                appendTo="body" fluid [(ngModel)]="selectedDispatch.vehicleInDate" />
+        </div>
+        <div class="form-field">
+            <label>Delivery Plan</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" placeholder="Select Date"
+                appendTo="body" fluid [(ngModel)]="selectedDispatch.deliveryPlan" />
+        </div>
+        <div class="form-field">
+            <label>Delivery Actual</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" placeholder="Select Date"
+                appendTo="body" fluid [(ngModel)]="selectedDispatch.deliveryActual" />
+        </div>
+        <div class="form-field">
+            <label>Delivery Forecast</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" placeholder="Select Date"
+                appendTo="body" fluid [(ngModel)]="selectedDispatch.deliveryForecast" />
+        </div>
+        <div class="form-field">
+            <label>Delivery Delay Reason</label>
+            <input type="text" pInputText [(ngModel)]="selectedDispatch.deliveryDelayReason" />
+        </div>
+    </div>
+    <div class="submit-btn">
+        <button pButton pRipple type="button" (click)="submitDispatchDetails()">
+            Submit
+        </button>
+    </div>
+</p-dialog>
+
+<p-toast />
+<p-confirmdialog />

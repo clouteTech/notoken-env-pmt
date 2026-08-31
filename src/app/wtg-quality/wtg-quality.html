@@ -1,13 +1,21 @@
 <div class="card">
-    <h2>WTG Quality</h2>
-    <div class="custom-container">
+    <div class="quality-header">
+        <h2>WTG Quality</h2>
+        <button pButton pRipple type="button" severity="secondary" outlined (click)="toggleSummaryView()">
+            <span pButtonLabel>{{ showSummaryView ? 'View Details' : 'View Summary' }}</span>
+        </button>
+    </div>
+
+    <div class="custom-container" *ngIf="!showSummaryView">
         <p-table [value]="qualityList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
             <ng-template #header>
                 <tr>
                     <th>SL NO</th>
+                    <th>Customer Name</th>
                     <th>P-Code</th>
                     <th>Components</th>
                     <th>Sub Components</th>
+                    <th>Serial Number</th>
                     <th>Inspection Call Plan</th>
                     <th>Customer Inspection Actual</th>
                     <th>Customer In Progress Inspection</th>
@@ -19,9 +27,11 @@
             <ng-template #body let-quality let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
+                    <td>{{ quality.customerName || '-' }}</td>
                     <td>{{ quality.pCode || '-' }}</td>
                     <td>{{ quality.component || '-' }}</td>
                     <td>{{ quality.subComponent || '-' }}</td>
+                    <td>{{ quality.serialNo || '-' }}</td>
                     <td>{{ quality.inspectionCallPlan || '-' }}</td>
                     <td>{{ quality.customerInspectionActual || '-' }}</td>
                     <td>{{ quality.customerInprogressInspection || '-' }}</td>
@@ -36,7 +46,7 @@
                                 </div>
                             </ng-template>
                         </p-menu>
-                        <button pButton pRipple text rounded severity="secondary" type="button" (click)="menu.toggle($event)">
+                        <button pButton pRipple text rounded severity="secondary" type="button" (click)="qualityMenu($event, menu, quality)">
                             <i pButtonIcon>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
                                     <rect width="24" height="24" fill="none" />
@@ -50,24 +60,74 @@
             </ng-template>
         </p-table>
     </div>
+
+    <div class="custom-container" *ngIf="showSummaryView">
+        <p-table [value]="summaryRows" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }">
+            <ng-template #header>
+                <tr>
+                    <th>P-Code</th>
+                    <th>Customer Name</th>
+                    <th>No. of Nacelle Invited</th>
+                    <th>No. of Hub Invited</th>
+                    <th>No. of Blade Invited</th>
+                    <th>Inspection Completed</th>
+                    <th>MDCC Completed</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-summary>
+                <tr>
+                    <td>{{ summary.pCode }}</td>
+                    <td>{{ summary.customerName }}</td>
+                    <td>{{ summary.nacelleCount }}</td>
+                    <td>{{ summary.hubCount }}</td>
+                    <td>{{ summary.bladeCount }}</td>
+                    <td>{{ summary.inspectionCompletedCount }}</td>
+                    <td>{{ summary.mdccCompletedCount }}</td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="100%" style="text-align: center; padding: 1rem 0;">No Records Found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
 </div>
 
 <p-dialog header="Edit Quality Details" [modal]="true" [(visible)]="showQualDetailsModal" [style]="{ width: '40rem' }"
     [draggable]="false">
     <div class="form-row">
         <div class="form-field">
+            <label>Serial Number</label>
+            <input type="text" pInputText [(ngModel)]="selectedQuality.serialNo" [disabled]="!selectedQuality?.pCode" />
+        </div>
+        <div class="form-field">
+            <label for="inspection-call-plan">Inspection Call Plan</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'"
+                inputId="inspection-call-plan" placeholder="Select Date" appendTo="body" fluid
+                [(ngModel)]="selectedQuality.inspectionCallPlan" />
+        </div>
+        <div class="form-field">
             <label for="customer-inspection-actual">Customer Inspection Actual</label>
-            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" 
-                inputId="customer-inspection-actual" placeholder="Select Date" appendTo="body" fluid />
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'"
+                inputId="customer-inspection-actual" placeholder="Select Date" appendTo="body" fluid
+                [(ngModel)]="selectedQuality.customerInspectionActual" />
+        </div>
+        <div class="form-field">
+            <label for="mdcc-plan">MDCC Plan</label>
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'"
+                inputId="mdcc-plan" placeholder="Select Date" appendTo="body" fluid
+                [(ngModel)]="selectedQuality.mdccPlan" />
         </div>
         <div class="form-field">
             <label for="mdcc-actual">MDCC Actual</label>
-            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'" 
-                inputId="mdcc-actual" placeholder="Select Date" appendTo="body" fluid />
+            <p-datepicker [readonlyInput]="true" showIcon [iconDisplay]="'input'"
+                inputId="mdcc-actual" placeholder="Select Date" appendTo="body" fluid
+                [(ngModel)]="selectedQuality.mdccActual" />
         </div>
     </div>
     <div class="submit-btn">
-        <button pButton pRipple type="submit">
+        <button pButton pRipple type="button" (click)="submitQualityDetails()">
             Submit
         </button>
     </div>

@@ -4,6 +4,22 @@
     justify-content: space-between;
 }
 
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.form-field {
+    display: grid;
+}
+
+.submit-btn {
+    display: flex;
+    justify-content: end;
+    margin-top: 12px;
+}
+
 .card {
     background: #fff;
     border-radius: 12px;

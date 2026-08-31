@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule }    from 'primeng/button';
@@ -11,7 +11,7 @@ import { TableModule }     from 'primeng/table';
 import { ToastModule }     from 'primeng/toast';
 import { CardModule }      from 'primeng/card';
 import { MenuItem, MessageService }  from 'primeng/api';
-import { IconFieldModule } from 'primeng/iconfield'; 
+import { IconFieldModule } from 'primeng/iconfield';
 import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { DialogModule } from 'primeng/dialog';
@@ -23,6 +23,22 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MenuModule } from 'primeng/menu';
 import { StepperModule } from 'primeng/stepper';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { Router } from '@angular/router';
+
+// P-Code -> Customer lookup, matching the customer/project data used in Project Creation.
+// Traces every production row back to Customer -> P-Code -> Component per the agreed spec.
+const P_CODE_CUSTOMER_MAP: Record<string, string> = {
+  'P-8001': 'ReNew Power',
+  'P-8002': 'Adani Green Energy',
+  'P-8003': 'Suzlon Energy',
+  'P-8004': 'Greenko',
+  'P-8005': 'Tata Power Renewable',
+  'P-8006': 'JSW Energy',
+  'P-8007': 'ReNew Power',
+  'P-8008': 'Suzlon Energy',
+  'P-8009': 'Adani Green Energy',
+  'P-8010': 'Greenko',
+};
 
 @Component({
   selector: 'app-wtgproduction',
@@ -33,17 +49,27 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     ToastModule, CardModule,IconFieldModule,TagModule,InputIconModule,DialogModule,ConfirmDialogModule,
     FluidModule,ReactiveFormsModule,MultiSelectModule,CheckboxModule,MenuModule,StepperModule,FloatLabelModule
   ],
+  providers: [MessageService],
   templateUrl: './wtgproduction.html',
   styleUrl: './wtgproduction.css',
 })
 export class WTGProduction {
-showProductionModal = false;
+  showProductionModal = false;
+  showBladeAllocationModal = false;
 
   items: MenuItem[] = [];
 
-  constructor(private sanitizer: DomSanitizer){}
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
 
-  wtgProductionList = [
+  bladeAllocationForm = this.fb.group({
+    customerName: [''],
+    pCode: ['']
+  });
+
+  constructor(private sanitizer: DomSanitizer, private messageService: MessageService){}
+
+  wtgProductionList: any[] = [
     {
       pCode: "P-8001",
       component: "Blade",
@@ -480,6 +506,13 @@ showProductionModal = false;
 
   ngOnInit(): void {
     this.items = this.getMenuItems();
+
+    // Trace every row back to its Customer, matching the agreed
+    // Customer -> P-Code -> Component hierarchy.
+    this.wtgProductionList = this.wtgProductionList.map(row => ({
+      ...row,
+      customerName: P_CODE_CUSTOMER_MAP[row.pCode] || '-'
+    }));
   }
 
   getMenuItems(){
@@ -499,7 +532,7 @@ showProductionModal = false;
 
   getSafeSvg(svg: string): SafeHtml{
     return this.sanitizer.bypassSecurityTrustHtml(svg);
-  } 
+  }
 
   openProductionDetails(){
     try {
@@ -507,5 +540,55 @@ showProductionModal = false;
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // ── Blade Allocation: scoped to warehouse Blade stock for a given Customer/P-Code ──
+
+  get customerOptions(){
+    const names = Array.from(new Set(this.wtgProductionList.map(r => r.customerName).filter(Boolean)));
+    return names.map(n => ({ label: n, value: n }));
+  }
+
+  get pCodeOptionsForSelectedCustomer(){
+    const customerName = this.bladeAllocationForm.get('customerName')?.value;
+    if (!customerName) return [];
+
+    const codes = Array.from(new Set(
+      this.wtgProductionList
+        .filter(r => r.customerName === customerName && r.component === 'Blade')
+        .map(r => r.pCode)
+    ));
+    return codes.map(c => ({ label: c, value: c }));
+  }
+
+  onBladeAllocationCustomerChange(){
+    this.bladeAllocationForm.get('pCode')?.setValue('');
+  }
+
+  openBladeAllocation(){
+    this.bladeAllocationForm.reset({ customerName: '', pCode: '' });
+    this.showBladeAllocationModal = true;
+  }
+
+  proceedBladeAllocation(){
+    const customerName = this.bladeAllocationForm.get('customerName')?.value;
+    const pCode = this.bladeAllocationForm.get('pCode')?.value;
+
+    if (!customerName || !pCode) {
+      this.messageService.add({ severity: 'warn', summary: 'Missing Selection', detail: 'Please select both Customer and P-Code.' });
+      return;
+    }
+
+    const bladeComponents = this.wtgProductionList
+      .filter(r => r.pCode === pCode && r.component === 'Blade')
+      .map(r => ({ componentName: r.component, serialNo: r.serialNo, pCode: r.pCode, customerName: r.customerName }));
+
+    if (!bladeComponents.length) {
+      this.messageService.add({ severity: 'warn', summary: 'No Blade Stock', detail: `No Blade components found for ${pCode}.` });
+      return;
+    }
+
+    this.showBladeAllocationModal = false;
+    this.router.navigate(['/plantAllocation'], { state: { components: bladeComponents } });
   }
 }

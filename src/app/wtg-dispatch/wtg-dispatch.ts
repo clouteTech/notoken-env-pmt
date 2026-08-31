@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Shared } from '../shared/services/shared';
 
 @Component({
@@ -10,6 +10,11 @@ import { Shared } from '../shared/services/shared';
 })
 export class WtgDispatch {
   items: MenuItem[] = [];
+
+  showDispatchDetailsModal = false;
+  selectedDispatch: any = {};
+
+  constructor(private confirmationService: ConfirmationService, private messageService: MessageService){}
 
   wtgDispatchPlanList = [
     {
@@ -304,12 +309,46 @@ export class WtgDispatch {
     },
   ];
 
-  // Stub handlers — wire to real edit/delete APIs once dispatch plan CRUD is available.
   dispatchMenu(event: Event, menu: any, dispatch: any) {
+    this.selectedDispatch = dispatch;
     this.items = [
-      { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', dispatch) },
-      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', dispatch) }
+      { label: 'Edit', icon: 'pi pi-pencil', command: () => this.editDispatch(dispatch) },
+      { label: 'Delete', icon: 'pi pi-trash', command: () => this.deleteDispatch(dispatch) }
     ];
     menu.toggle(event);
+  }
+
+  editDispatch(dispatch: any){
+    this.selectedDispatch = dispatch;
+    this.showDispatchDetailsModal = true;
+  }
+
+  submitDispatchDetails(){
+    if (!this.selectedDispatch?.pCode) return;
+
+    this.showDispatchDetailsModal = false;
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Dispatch details updated.' });
+  }
+
+  deleteDispatch(dispatch: any){
+    this.confirmationService.confirm({
+      message: `Do you want to delete the dispatch record for ${dispatch.pCode} (${dispatch.frameNo})?`,
+      header: 'Delete Dispatch Record',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger'
+      },
+      accept: () => {
+        this.wtgDispatchPlanList = this.wtgDispatchPlanList.filter(d => d !== dispatch);
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Dispatch record deleted.' });
+      }
+    });
   }
 }

@@ -3,6 +3,13 @@
     align-items: center;
 }
 
+.quality-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
