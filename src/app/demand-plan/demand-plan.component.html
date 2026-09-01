@@ -196,7 +196,12 @@
 
   <div class="modal-section-label">Detailed Breakdown</div>
 
-  <div class="summary-table-wrap">
+  <div class="summary-empty" *ngIf="summaryRows.length === 0">
+    <i class="pi pi-inbox"></i>
+    <span>No demand data entered yet. Add a project and WTG rows above to see the summary here.</span>
+  </div>
+
+  <div class="summary-table-wrap" *ngIf="summaryRows.length > 0">
     <p-table
       [value]="summaryRows"
       [tableStyle]="{'min-width':'1650px'}"
