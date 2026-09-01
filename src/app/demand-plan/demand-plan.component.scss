@@ -115,7 +115,7 @@
 }
 
 .rt-cell   { background: #edf7f3; color: var(--accent2) !important; font-weight: 700; text-align: center; }
-.tv        { color: var(--accent2); font-weight: 700; text-align: center; }
+.tv        { color: var(--accent2); font-weight: 700; }
 .total-label {
   text-align: right;
   font-size: 10px;
@@ -178,25 +178,114 @@
 .modal-section-label {
   font-size: 10px; font-weight: 700;
   color: var(--text3); text-transform: uppercase;
-  letter-spacing: .8px; margin-bottom: 10px;
+  letter-spacing: .8px; margin-bottom: 0px;
 }
 .sum-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 .s-tile {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 14px 16px; text-align: center;
+  border-radius: var(--r); padding: 8px 14px; text-align: center;
 }
-.s-tile-lbl { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 6px; }
-.s-tile-val { font-size: 26px; font-weight: 700; color: var(--accent); }
+.s-tile-lbl { font-size: 9px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 2px; }
+.s-tile-val { font-size: 18px; font-weight: 700; color: var(--accent); }
 
 /* Table overflow fix */
 .table-wrap {
   overflow-x: auto;
   width: 100%;
   min-width: 0;
-  padding: 0 16px 14px;
   box-sizing: border-box;
+}
+
+/* ── Plan Summary dialog ── */
+::ng-deep .summary-dialog {
+  /* Flex items default to min-width:auto, which lets a wide child (the table below)
+     force this whole chain wider than the dialog's own width/max-width instead of
+     scrolling internally. Zeroing min-width down the chain is what actually lets the
+     table's own overflow-x:auto take over instead of the dialog growing past the
+     viewport. */
+  min-width: 0;
+
+  /* The dialog is given a fixed height (see [style] on <p-dialog>) so the table below
+     can be told scrollHeight="flex" and have it actually stretch/shrink to exactly the
+     space left over after the tiles/label/header/footer — instead of a guessed px/vh
+     value that either clips the grand-total row on short viewports or leaves dead
+     space on tall ones. That requires .p-dialog-content itself to be a flex column
+     with min-height:0 so it can shrink, and only the table wrap set to grow/shrink
+     into the remaining space. */
+  .p-dialog-content {
+    overflow: hidden !important;
+    padding: 12px 20px !important;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .p-dialog-header {
+    padding: 12px 20px !important;
+  }
+  .p-dialog-footer {
+    padding: 10px 20px !important;
+  }
+}
+
+.sum-tiles,
+.modal-section-label {
+  flex-shrink: 0;
+}
+
+.summary-table-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: auto;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Pin the "Sum" column to the right edge while the table scrolls horizontally.
+   Only the tbody cells get this: nesting position:sticky;right:0 inside a cell
+   whose ROW ANCESTOR (thead / tfoot) is ITSELF already independently sticky
+   (vertically pinned top/bottom by PrimeNG) visibly corrupts that cell's
+   rendering during scroll — confirmed twice now, tried with and without an
+   explicit top on the header cell. Regular tbody rows aren't sticky themselves,
+   so their last cell can safely be sticky on its own without that conflict —
+   which is why the body's Sum values pin correctly while the "Sum" header
+   label and the GRAND TOTAL row's total don't: they simply scroll with the
+   row underneath them instead. */
+::ng-deep .summary-table {
+  .p-datatable-tbody > tr > td:last-child {
+    position: sticky !important;
+    right: 0;
+    z-index: 2;
+    background: #fff;
+  }
+  /* Keep every row a single line — wrapped text (e.g. long SPV names) was the real
+     reason only ~2 rows fit before; horizontal scroll handles the width instead. */
+  .p-datatable-thead > tr > th,
+  .p-datatable-tbody > tr > td {
+    white-space: nowrap;
+  }
+}
+
+.summary-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.summary-footer-hint {
+  font-size: 12px;
+  color: var(--text3);
+}
+.summary-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }

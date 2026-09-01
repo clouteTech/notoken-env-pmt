@@ -39,6 +39,13 @@ export class AppComponent implements OnInit, OnDestroy {
     if (window.innerWidth <= 768) {
       this.sidebarOpen.set(false);
     }
+    this.syncSidebarBodyClass();
+  }
+
+  // Mirror sidebar state onto <body> so global styles (e.g. modal centering)
+  // can react to it even for content appended outside the app's own DOM subtree.
+  private syncSidebarBodyClass() {
+    document.body.classList.toggle('sidebar-collapsed', !this.sidebarOpen());
   }
 
   ngOnDestroy() {
@@ -149,8 +156,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleSidebar() { this.sidebarOpen.update(v => !v); }
-  closeSidebar()  { this.sidebarOpen.set(false); }
+  toggleSidebar() { this.sidebarOpen.update(v => !v); this.syncSidebarBodyClass(); }
+  closeSidebar()  { this.sidebarOpen.set(false); this.syncSidebarBodyClass(); }
   confirmLogout() { this.showLogoutConfirm = true; }
   cancelLogout()  { this.showLogoutConfirm = false; }
 

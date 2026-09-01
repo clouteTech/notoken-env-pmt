@@ -181,11 +181,13 @@
   [closable]="true"
   [draggable]="false"
   [resizable]="false"
+  appendTo="body"
+  styleClass="summary-dialog"
   header="Plan Summary"
-  [style]="{'width':'92vw','max-width':'1180px'}"
+  [style]="{'width':'85vw','max-width':'980px','height':'85vh','max-height':'85vh'}"
 >
   <!-- Stats tiles -->
-  <div class="sum-tiles mb-4">
+  <div class="sum-tiles mb-2">
     <div class="s-tile"><div class="s-tile-lbl">Projects</div><div class="s-tile-val">{{ summaryProjects.length }}</div></div>
     <div class="s-tile"><div class="s-tile-lbl">WTG Rows</div><div class="s-tile-val">{{ getTotalRows() }}</div></div>
     <!-- <div class="s-tile"><div class="s-tile-lbl">Total Qty</div><div class="s-tile-val">{{ summaryTotalQty }}</div></div> -->
@@ -194,21 +196,27 @@
 
   <div class="modal-section-label">Detailed Breakdown</div>
 
-  <div style="overflow-x:auto">
+  <div class="summary-table-wrap">
     <p-table
       [value]="summaryRows"
-      [tableStyle]="{'min-width':'900px'}"
-      styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+      [tableStyle]="{'min-width':'1650px'}"
+      styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped summary-table"
       [scrollable]="true"
-      scrollHeight="360px"
+      scrollHeight="flex"
     >
       <ng-template #header>
         <tr>
-          <th>Customer</th><th>Project</th><th>SPV</th><th>WTG Type</th>
-          <th>Cap</th><th>Tower</th><th>Blade</th><th>Qty</th>
+          <th style="min-width:140px">Customer</th>
+          <th style="min-width:110px">Project</th>
+          <th style="min-width:200px">SPV</th>
+          <th style="min-width:70px">WTG Type</th>
+          <th style="min-width:40px">Cap</th>
+          <th style="min-width:90px">Tower</th>
+          <th style="min-width:50px">Blade</th>
+          <th style="min-width:35px">Qty</th>
           <th *ngFor="let m of getMonthLabels(); trackBy: trackByIdx"
               style="font-size:10px;min-width:58px">{{m}}</th>
-          <th style="color:var(--accent2)">Sum</th>
+          <th style="color:var(--accent2);min-width:60px">Sum</th>
         </tr>
       </ng-template>
       <ng-template #body let-row>
@@ -228,20 +236,20 @@
       <ng-template #footer>
         <tr class="total-row">
           <td colspan="7" class="total-label">GRAND TOTAL</td>
-          <!-- <td class="tv">{{ summaryTotalQty }}</td> -->
-          <!-- <td *ngFor="let m of getMonthLabels(); let mi = index; trackBy: trackByIdx" class="tv">
-            {{ summaryColTotal(mi) }}
-          </td> -->
-          <!-- <td class="tv">{{ summaryTotalUnits }}</td> -->
+          <td class="tv">{{ summaryQtyTotal() }}</td>
+          <td *ngFor="let m of getMonthLabels(); let mi = index; trackBy: trackByIdx" class="tv">
+            {{ summaryMonthTotal(mi) }}
+          </td>
+          <td class="tv">{{ summaryGrandTotal() }}</td>
         </tr>
       </ng-template>
     </p-table>
   </div>
 
   <ng-template #footer>
-    <div class="flex align-items-center justify-content-between w-full">
-      <span style="font-size:12px;color:var(--text3)">Review all entries before submitting.</span>
-      <div class="flex gap-2">
+    <div class="summary-footer">
+      <span class="summary-footer-hint">Review all entries before submitting.</span>
+      <div class="summary-footer-actions">
         <p-button label="Close" severity="secondary" [outlined]="true" (onClick)="closeSummary()" />
         <p-button label="Submit Plan" icon="pi pi-check" (onClick)="submitPlan()" />
       </div>

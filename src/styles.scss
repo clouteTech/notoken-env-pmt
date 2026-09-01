@@ -344,9 +344,12 @@ body {
 .p-dialog .p-dialog-header { border-bottom: 1px solid var(--border); }
 .p-dialog .p-dialog-footer { border-top: 1px solid var(--border); }
 
-/* Center modals within the page content area (right of the sidebar), not the full viewport */
+/* Center modals within the page content area (right of the sidebar), not the full viewport.
+   AppComponent mirrors the sidebar's open/collapsed state onto <body>, so this covers
+   dialogs rendered inline as well as ones using appendTo="body" (which land elsewhere
+   under <body>, not necessarily as a sibling of .layout). */
 @media (min-width: 769px) {
-  .layout:not(.sidebar-collapsed) .main .p-dialog-mask {
+  body:not(.sidebar-collapsed) .p-dialog-mask {
     padding-left: var(--sidebar-w);
   }
 }

@@ -508,10 +508,21 @@ export class DemandPlanComponent implements OnInit {
   // qtyTotal(rows: WtgRow[]): number  { return rows.reduce((s, r) => s + (r.qty ?? 0), 0); }
   // grandTotal(rows: WtgRow[]): number { return rows.reduce((s, r) => s + this.rowTotal(r), 0); }
 
-  get summaryProjects(): ProjectEntry[] { return this.projects.filter(p => p.spv && p.rows.length > 0); }
+  // Real project entries from the live form (project selected + at least one SPV with WTG rows)
+  private get enteredProjects(): any[] {
+    const arr = (this.projectsArray.value ?? []) as any[];
+    return arr.filter(p => p.projectId && (p.spvs ?? []).some((s: any) => s.spvId && (s.wtgs ?? []).length > 0));
+  }
+
+  get summaryProjects(): any[] {
+    return this.enteredProjects;
+  }
   // get summaryTotalQty():   number { return this.summaryProjects.reduce((s, p) => s + this.qtyTotal(p.rows), 0); }
   // get summaryTotalUnits(): number { return this.summaryProjects.reduce((s, p) => s + this.grandTotal(p.rows), 0); }
-  getTotalRows():    number { return this.summaryProjects.reduce((s, p) => s + p.rows.length, 0); }
+  getTotalRows(): number {
+    return this.enteredProjects.reduce((s, p) =>
+      s + (p.spvs ?? []).reduce((ss: number, spv: any) => ss + (spv.wtgs ?? []).length, 0), 0);
+  }
   // summaryColTotal(mi: number): number { return this.summaryProjects.reduce((s, p) => s + this.colTotal(p.rows, mi), 0); }
 
   openSummary() {
@@ -529,15 +540,48 @@ export class DemandPlanComponent implements OnInit {
     // this.msgSvc.add({ severity: 'success', summary: 'Submitted', detail: 'Demand plan submitted successfully!', life: 3000 });
   }
 
-  // summary flat rows for p-table
+  // summary flat rows for p-table — built from the live form's entered projects/SPVs/WTGs
   get summaryRows(): any[] {
+    const entered = this.enteredProjects;
+    if (!entered.length) return [];
+
+    const customerId = this.yearlyDemandPlanForm.get('customerId')?.value;
+    const customerName = this.customerInfoList.find(c => c.customerId === customerId)?.customerName ?? '';
+
     const rows: any[] = [];
-    this.summaryProjects.forEach(p => {
-      p.rows.forEach(row => {
-        // rows.push({ customer: this.customer, project: p.projectCode, spv: p.spv, ...row, total: this.rowTotal(row) });
+    entered.forEach(p => {
+      const projectCode = this.customerProjectList.find(pr => pr.projectId === p.projectId)?.projectCode ?? p.projectId;
+      (p.spvs ?? []).forEach((spv: any) => {
+        if (!spv.spvId || !(spv.wtgs ?? []).length) return;
+        const spvName = this.projectSpvList.find(s => s.customerSpvId === spv.spvId)?.spvName ?? spv.spvId;
+        spv.wtgs.forEach((wtg: any) => {
+          const mon = this.monthFields.map(m => Number(wtg[m.key] ?? 0));
+          rows.push({
+            customer: customerName,
+            project: projectCode,
+            spv: spvName,
+            wtg: wtg.wtgType,
+            cap: wtg.capMw,
+            tower: wtg.towerType,
+            blade: wtg.bladeType,
+            qty: wtg.totalQty,
+            mon,
+            total: mon.reduce((a, b) => a + b, 0)
+          });
+        });
       });
     });
     return rows;
+  }
+
+  summaryQtyTotal(): number {
+    return this.summaryRows.reduce((s, r) => s + Number(r.qty ?? 0), 0);
+  }
+  summaryMonthTotal(mi: number): number {
+    return this.summaryRows.reduce((s, r) => s + Number(r.mon?.[mi] ?? 0), 0);
+  }
+  summaryGrandTotal(): number {
+    return this.summaryRows.reduce((s, r) => s + Number(r.total ?? 0), 0);
   }
 
   trackByUid(_: number, p: ProjectEntry) { return p.uid; }
