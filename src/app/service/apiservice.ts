@@ -638,6 +638,10 @@ export class Apiservice {
     return this.postMethod('yearly-demand-plan/wtg-details', params);
   }
 
+  saveYearlyDemandPlan(params: any): Observable<any>{
+    return this.postMethod('yearly-demand-plan/save', params);
+  }
+
   // Monthly Demand Plan
   
   fetchAllMonthlyDemandPlan(params: any): Observable<any>{

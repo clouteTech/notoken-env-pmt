@@ -180,6 +180,13 @@
   color: var(--text3); text-transform: uppercase;
   letter-spacing: .8px; margin-bottom: 10px;
 }
+.sum-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text2);
+}
 .sum-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -199,4 +206,20 @@
   min-width: 0;
   padding: 0 16px 14px;
   box-sizing: border-box;
+}
+
+/* ── Plan Summary: Detailed Breakdown table ──
+   PrimeNG's [scrollable]="true" + scrollHeight already creates a single
+   internal container that scrolls both axes with a sticky <thead>. Previously
+   this table was also wrapped in an extra `overflow-x:auto` div, which created
+   a second, competing scroll context and broke the header's sticky
+   positioning during vertical scroll (the Row Total header would scroll away
+   with the rows). The fix removed that wrapper (see template) and this rule
+   reinforces the sticky header explicitly so it — including Row Total —
+   always stays pinned to the top of the table while scrolling vertically. */
+.summary-table .p-datatable-thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f0f4f9;
 }
