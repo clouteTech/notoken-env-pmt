@@ -3,7 +3,7 @@
         <h2>Monthly Demand Plan</h2>
         <p-menu #menu [model]="actionItems" [popup]="true" appendTo="body" />
         <button pButton pRipple type="button" (click)="menu.toggle($event)">
-            <span pButtonLabel>Actions</span>
+            <span pButtonLabel>Action</span>
             <i pButtonIcon>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                     <rect width="24" height="24" fill="none" />
@@ -37,7 +37,7 @@
                     <th>Status</th>
                     <th>Created On</th>
                     <th>Created By</th>
-                    <th>Actions</th>
+                    <th>Action</th>
                 </tr>
             </ng-template>
             <ng-template #body let-monthlyPlan let-i="rowIndex">
@@ -146,4 +146,4 @@
             </button>
         </div>
     </ng-template>
-</p-dialog>
+</p-dialog>sssss

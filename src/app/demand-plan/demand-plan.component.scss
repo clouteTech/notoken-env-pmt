@@ -138,7 +138,13 @@
 }
 
 /* ── Empty state ── */
-.empty-st { text-align: center; padding: 52px 24px; color: var(--text3); }
+.empty-state-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 290px);
+}
+.empty-st { text-align: center; padding: 24px; color: var(--text3); }
 .empty-icon {
   width: 52px; height: 52px;
   background: var(--surface); border-radius: 50%;
@@ -148,11 +154,38 @@
 .empty-st h3 { font-size: 15px; color: var(--text2); margin-bottom: 6px; font-weight: 600; }
 .empty-st p  { font-size: 13px; }
 
+.empty-hint {
+  padding: 24px;
+  text-align: center;
+  color: var(--text3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;  
+  min-height: calc(100vh - 365px);
+}
+.empty-hint-icon {
+  width: 52px; height: 52px;
+  background: var(--surface); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+}
+
+.empty-hint h3 { font-size: 15px; color: var(--text2); margin-bottom: 6px; font-weight: 600; }
+.empty-hint p  { font-size: 13px; }
+
 /* ── Summary dialog ── */
 .modal-section-label {
   font-size: 10px; font-weight: 700;
   color: var(--text3); text-transform: uppercase;
   letter-spacing: .8px; margin-bottom: 10px;
+}
+.sum-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text2);
 }
 .sum-tiles {
   display: grid;
@@ -167,4 +200,26 @@
 .s-tile-val { font-size: 26px; font-weight: 700; color: var(--accent); }
 
 /* Table overflow fix */
-.table-wrap { overflow-x: auto; }
+.table-wrap {
+  overflow-x: auto;
+  width: 100%;
+  min-width: 0;
+  padding: 0 16px 14px;
+  box-sizing: border-box;
+}
+
+/* ── Plan Summary: Detailed Breakdown table ──
+   PrimeNG's [scrollable]="true" + scrollHeight already creates a single
+   internal container that scrolls both axes with a sticky <thead>. Previously
+   this table was also wrapped in an extra `overflow-x:auto` div, which created
+   a second, competing scroll context and broke the header's sticky
+   positioning during vertical scroll (the Row Total header would scroll away
+   with the rows). The fix removed that wrapper (see template) and this rule
+   reinforces the sticky header explicitly so it — including Row Total —
+   always stays pinned to the top of the table while scrolling vertically. */
+.summary-table .p-datatable-thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f0f4f9;
+}

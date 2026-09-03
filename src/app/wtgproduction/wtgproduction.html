@@ -5,32 +5,38 @@
             <ng-template #header>
                 <tr>
                     <th>SL NO</th>
-                    <th>Component</th>
+                    <th>P-Code</th>
+                    <th>Components</th>
+                    <th>Sub Components</th>
                     <th>Production Plan Start</th>
-                    <th>Production Plan Finish</th>
                     <th>Production Actual Start</th>
+                    <th>Production Forecast Start</th>
+                    <th>Production Start Delay Reason</th>
+                    <th>Production Plan Finish</th>
                     <th>Production Actual Finish</th>
-                    <th>Production Delay Reason</th>
+                    <th>Production Forecast Finish</th>
+                    <th>Production Finish Delay Reason</th>
                     <th>Serial Number</th>
-                    <th>Final QC Date</th>
-                    <th>Project Code</th>
-                    <th>Production Status</th>
-                    <th>Actions</th>
+                    <th>Final QC</th>
+                    <th>Action</th>
                 </tr>
             </ng-template>
             <ng-template #body let-prod let-i="rowIndex">
                 <tr>
                     <td>{{ i + 1 }}</td>
-                    <td>{{ prod.component }}</td>
-                    <td>{{ prod.proStart }}</td>
-                    <td>{{ prod.proEnd }}</td>
-                    <td>{{ prod.proActualStart }}</td>
-                    <td>{{ prod.proActualEnd }}</td>
-                    <td>{{ prod.proDelayReason }}</td>
-                    <td>{{ prod.serialNo }}</td>
-                    <td>{{ prod.finalQCDate }}</td>
                     <td>{{ prod.pCode }}</td>
-                    <td>{{ prod.status }}</td>
+                    <td>{{ prod.component }}</td>
+                    <td>{{ prod.subComponent }}</td>
+                    <td>{{ prod.proPlanStart }}</td>
+                    <td>{{ prod.proActualStart }}</td>
+                    <td>{{ prod.proForecastStart }}</td>
+                    <td>{{ prod.proStartDelayReason }}</td>
+                    <td>{{ prod.proPlanFinish }}</td>
+                    <td>{{ prod.proActualFinish }}</td>
+                    <td>{{ prod.proForecastFinish }}</td>
+                    <td>{{ prod.proFinishDelayReason }}</td>
+                    <td>{{ prod.serialNo }}</td>
+                    <td>{{ prod.finalQC }}</td>
                     <td>
                         <p-menu #menu [model]="items" [popup]="true" appendTo="body">
                             <ng-template #item let-item>

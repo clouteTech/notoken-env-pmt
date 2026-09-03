@@ -22,46 +22,103 @@ export class WtgQuality implements OnInit {
 
   qualityList = [
     {
+      pCode: 'P-8001',
       component: 'Nacelle',
-      serialNumber: 'NAC-CHN-001',
-      finalQcDate: '2026-04-02',
-      projectCode: 'P-8001',
+      subComponent: 'Root Section',
       inspectionCallPlan: '2026-04-05',
       customerInspectionActual: '2026-04-06',
+      customerInprogressInspection: '2026-04-04',
       mdccPlan: '2026-04-08',
       mdccActual: '2026-04-09'
     },
       {
-      slNo: 2,
+      pCode: 'P-8002',
       component: 'Hub',
-      serialNumber: 'HUB-CHN-002',
-      finalQcDate: '2026-04-03',
-      projectCode: 'P-8002',
+      subComponent: 'Root Section',
       inspectionCallPlan: '2026-04-06',
       customerInspectionActual: '2026-04-07',
+      customerInprogressInspection: '2026-04-05',
       mdccPlan: '2026-04-09',
       mdccActual: '2026-04-10'
     },
     {
-      slNo: 3,
+      pCode: 'P-8003',
       component: 'Blade',
-      serialNumber: 'BLD-TRY-003',
-      finalQcDate: '2026-04-04',
-      projectCode: 'P-8003',
+      subComponent: 'Root Section',
       inspectionCallPlan: '2026-04-07',
       customerInspectionActual: '2026-04-08',
+      customerInprogressInspection: '2026-04-06',
       mdccPlan: '2026-04-10',
       mdccActual: '2026-04-11'
     },
     {
-      slNo: 4,
+      pCode: 'P-8004',
       component: 'Tower',
-      serialNumber: 'TWR-PUN-004',
-      finalQcDate: '2026-04-05',
-      projectCode: 'P-8004',
+      subComponent: 'Root Section',
       inspectionCallPlan: '2026-04-08',
       customerInspectionActual: null,
+      customerInprogressInspection: null,
       mdccPlan: '2026-04-11',
+      mdccActual: null
+    },
+    {
+      pCode: 'P-8005',
+      component: 'Converter Panel',
+      subComponent: 'Root Section',
+      inspectionCallPlan: '2026-04-09',
+      customerInspectionActual: '2026-04-10',
+      customerInprogressInspection: '2026-04-08',
+      mdccPlan: '2026-04-12',
+      mdccActual: '2026-04-13'
+    },
+    {
+      pCode: 'P-8006',
+      component: 'Nacelle',
+      subComponent: 'Root Section',
+      inspectionCallPlan: '2026-04-10',
+      customerInspectionActual: null,
+      customerInprogressInspection: null,
+      mdccPlan: '2026-04-13',
+      mdccActual: null
+    },
+    {
+      pCode: 'P-8007',
+      component: 'Hub',
+      subComponent: 'Root Section',
+      inspectionCallPlan: '2026-04-11',
+      customerInspectionActual: '2026-04-12',
+      customerInprogressInspection: '2026-04-10',
+      mdccPlan: '2026-04-14',
+      mdccActual: '2026-04-15'
+    },
+    {
+      pCode: 'P-8008',
+      component: 'Blade',
+      subComponent: 'Root Section',
+      inspectionCallPlan: '2026-04-12',
+      customerInspectionActual: '2026-04-13',
+      customerInprogressInspection: '2026-04-11',
+      mdccPlan: '2026-04-15',
+      mdccActual: null
+    },
+    {
+      pCode: 'P-8009',
+      component: 'Tower',
+      subComponent: 'Root Section',
+      inspectionCallPlan: '2026-04-13',
+      customerInspectionActual: '2026-04-14',
+      customerInprogressInspection: '2026-04-12',
+      mdccPlan: '2026-04-16',
+      mdccActual: '2026-04-17'
+    },
+    {
+      pCode: 'P-8010',
+      component: 'Converter Panel',
+      subComponent: 'Root Section',
+      inspectionCallPlan: '2026-04-14',
+      customerInspectionActual: null,
+      customerInprogressInspection: null,
+      mdccPlan: '2026-04-17',
       mdccActual: null
     }
   ]

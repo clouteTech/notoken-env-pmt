@@ -136,16 +136,39 @@ body {
   min-width: var(--sidebar-w);
   background: #3B82F6;
   border-right: 1px solid var(--border);
-  padding: 16px 12px;
+  padding: 12px 10px 6px 10px;
   flex-shrink: 0;
   position: sticky;
   top: var(--header-h);
   height: calc(100vh - var(--header-h));
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: width .25s cubic-bezier(.4,0,.2,1), min-width .25s cubic-bezier(.4,0,.2,1), padding .25s;
   z-index: 90;
+}
+
+.sb-nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.sb-nav::-webkit-scrollbar {
+  width: 6px;
+}
+.sb-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sb-nav::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+}
+.sb-nav:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .layout.sidebar-collapsed .sidebar {
@@ -176,6 +199,7 @@ body {
 
 .sb-submenu {
   display: grid;
+  gap: 2px;
   margin-left: 28px;
   margin-top: 4px;
 }
@@ -214,8 +238,9 @@ body {
 }
 
 .sb-exit {
-  margin-top: auto;
-  padding: 12px;
+  flex-shrink: 0;
+  margin-top: 6px;
+  padding: 10px;
   border: 1px dashed rgba(255, 255, 255, 0.35);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
@@ -292,48 +317,109 @@ body {
 
 /* ══ PrimeNG global fixes ══ */
 
-/* p-button accent color */
-::ng-deep .p-button:not(.p-button-outlined):not(.p-button-text) {
-  &:not([severity]),
-  &[severity=""] {
-    background: var(--accent) !important;
-    border-color: var(--accent) !important;
-  }
-}
-::ng-deep .p-button:not(.p-button-outlined):not(.p-button-text):not([severity]):hover,
-::ng-deep .p-button:not(.p-button-outlined):not(.p-button-text)[severity=""]:hover {
-  background: var(--accent2) !important;
-  border-color: var(--accent2) !important;
-}
-
 /* p-tag success */
-::ng-deep .p-tag.p-tag-success {
+.p-tag.p-tag-success {
   background: var(--accent-lt) !important;
   color: var(--accent2) !important;
-  border: 1px solid var(--accent-bd);
+}
+
+/* Compact status labels (p-tag) across all tables */
+.p-tag {
+  padding: 2px 8px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  min-height: 0 !important;
+}
+.p-tag .p-tag-icon {
+  font-size: 10px !important;
 }
 
 /* p-select focus */
-::ng-deep .p-select:focus-within {
+.p-select:focus-within {
   border-color: var(--accent) !important;
   box-shadow: 0 0 0 3px rgba(0,168,107,.12) !important;
 }
 
 /* p-dialog */
-::ng-deep .p-dialog .p-dialog-header { border-bottom: 1px solid var(--border); }
-::ng-deep .p-dialog .p-dialog-footer { border-top: 1px solid var(--border); }
+.p-dialog .p-dialog-header { border-bottom: 1px solid var(--border); }
+.p-dialog .p-dialog-footer { border-top: 1px solid var(--border); }
 
 /* pInputText styling */
-::ng-deep input.p-inputtext,
-::ng-deep textarea.p-inputtext,
-::ng-deep .p-inputtext {
+input.p-inputtext,
+textarea.p-inputtext,
+.p-inputtext {
   font-family: 'Inter', sans-serif !important;
   color: var(--text) !important;
 }
-::ng-deep input.p-inputtext:focus,
-::ng-deep textarea.p-inputtext:focus {
+input.p-inputtext:focus,
+textarea.p-inputtext:focus {
   border-color: var(--accent) !important;
   box-shadow: 0 0 0 3px rgba(0,168,107,.12) !important;
+}
+
+/* ══ Compact, uniform PrimeNG tables (all p-table instances) ══ */
+.p-datatable-thead > tr > th {
+  padding: 10px 12px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+.p-datatable-tbody > tr > td {
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+}
+
+/* Sticky Action column (last column) in every table */
+.p-datatable-thead > tr > th:last-child {
+  position: sticky !important;
+  right: 0;
+  z-index: 3;
+  background: var(--surface);
+}
+.p-datatable-tbody > tr > td:last-child {
+  position: sticky !important;
+  right: 0;
+  z-index: 2;
+  background: #fff;
+}
+.p-datatable-tbody > tr:hover > td:last-child {
+  background: var(--surface);
+}
+
+/* Compact, uniform PrimeNG buttons across the app */
+.p-button:not(.p-button-icon-only) {
+  padding: 5px 12px !important;
+  font-size: 12.5px !important;
+  min-height: 30px !important;
+}
+.p-button .p-button-label {
+  font-size: 12.5px !important;
+}
+.p-button.p-button-icon-only {
+  width: 28px !important;
+  height: 28px !important;
+}
+.p-button-icon {
+  font-size: 12px !important;
+}
+.p-button-icon svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Compact icons inside p-menu popup items (e.g. the "+" on "Create Component Serial") */
+.p-menu-item-icon {
+  font-size: 13px !important;
+}
+
+/* Dropdown/select trigger arrow everywhere (incl. table header controls & paginator) */
+.p-select-dropdown-icon,
+.p-select-dropdown .p-icon {
+  width: 14px !important;
+  height: 14px !important;
+}
+.p-select-label {
+  padding: 6px 10px !important;
+  font-size: 12.5px !important;
 }
 
 /* Scrollbar */
@@ -396,6 +482,21 @@ option:disabled { color: #bbb !important; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/* Compact, uniform page headings across the app */
+.main h2 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+}
+
+/* Uniform gap between the heading/button row and the table below it,
+   applied to whatever the first child of a .card is (a lone h2, or a
+   header row wrapping the h2 + add button) so the heading and its
+   button always stay aligned on the same line */
+.card > *:first-child {
+  margin-bottom: 12px;
 }
 
 .dialog-header {

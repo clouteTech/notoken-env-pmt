@@ -1,13 +1,14 @@
 <div class="card">
     <div class="card-header">
         <h2>Yearly Demand Plans</h2>
-        <p-button label="Create Yearly Demand Plan" icon="pi pi-plus" routerLink="/dashboard"></p-button>
+        <p-button label="Create Yearly Demand Plan" icon="pi pi-plus" 
+            routerLink="/yearly-demand-plans/create"></p-button>
     </div>
 
     <div class="custom-container">
         <p-table [value]="yearlyDemandPlanList" [rowHover]="true" [tableStyle]="{ 'min-width': 'max-content' }"
             [paginator]="true" [rows]="size" [first]="first" [showCurrentPageReport]="true" [lazy]="true"
-            [totalRecords]="totalRecords"
+            [totalRecords]="totalRecords" [loading]="loading"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
             (onLazyLoad)="loadYearlyPlan($event)"
             [rowsPerPageOptions]="[10, 25, 50]">
@@ -15,41 +16,41 @@
                 <tr>
                     <th>SL NO</th>
                     <th>Plan Year</th>
-                    <th>Customer Name</th>
+                    <th>Customer</th>
                     <th>Total Projects</th>
                     <th>Total SPVs</th>
                     <th>Total WTGs</th>
-                    <th>Actions</th>
+                    <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </ng-template>
             <ng-template #body let-yearlyPlan let-i="rowIndex">
                 <tr>
-                    <td>{{ i + 1 }}</td>
+                    <td>{{ first + i + 1 }}</td>
                     <td>{{ yearlyPlan.planYear }}</td>
-                    <td>{{ yearlyPlan.customer.customerName }}</td>
-                    <td>2</td>
-                    <td>4</td>
-                    <td>8</td>
                     <td>
-                        <!-- <p-menu #menu [model]="items" [popup]="true" appendTo="body">
-                            <ng-template #item let-item>
-                                <div class="menu-action gap-2 px-3 py-1 cursor-pointer">
-                                    <span [innerHTML]="getSafeSvg(item.svgIcon)"></span>
-                                    <span>{{ item.label }}</span>
-                                </div>
-                            </ng-template>
-                        </p-menu>
-                        <button pButton pRipple text rounded severity="secondary" type="button"
-                            (click)="menu.toggle($event)">
+                        <div class="customer-info">
+                            <span class="customer-name">{{ yearlyPlan.customer?.customerName }}</span>
+                            <small *ngIf="yearlyPlan.customer?.customerCode">{{ yearlyPlan.customer?.customerCode }}</small>
+                        </div>
+                    </td>
+                    <td>{{ yearlyPlan.totalProjects }}</td>
+                    <td>{{ yearlyPlan.totalSpvs }}</td>
+                    <td>{{ yearlyPlan.totalWtgs }}</td>
+                    <td>
+                        <p-tag [value]="yearlyPlan.status" [severity]="yearlyPlan.status === 'DRAFT' ? 'warn' : 'success'" />
+                    </td>
+                    <td>
+                        <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
+                        <button pButton pRipple text rounded severity="secondary" type="button" (click)="yearlyPlanMenu($event, menu, yearlyPlan)">
                             <i pButtonIcon>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    class="text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
                                     <rect width="24" height="24" fill="none" />
                                     <path fill="currentColor"
                                         d="M12 7a2 2 0 1 0-2-2a2 2 0 0 0 2 2m0 10a2 2 0 1 0 2 2a2 2 0 0 0-2-2m0-7a2 2 0 1 0 2 2a2 2 0 0 0-2-2" />
                                 </svg>
                             </i>
-                        </button> -->
+                        </button>
                     </td>
                 </tr>
             </ng-template>
@@ -61,3 +62,6 @@
         </p-table>
     </div>
 </div>
+
+<p-toast />
+<p-confirmdialog />
