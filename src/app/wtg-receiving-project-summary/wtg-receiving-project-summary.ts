@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { Shared } from '../shared/services/shared';
 
 @Component({
@@ -10,6 +10,11 @@ import { Shared } from '../shared/services/shared';
 })
 export class WtgReceivingProjectSummary {
   items: MenuItem[] = [];
+
+  chooseDownloadTemplate = false;
+  chooseUploadTemplate = false;
+
+  constructor(private messageService: MessageService){}
 
   wtgProjects = [
     {
@@ -84,11 +89,39 @@ export class WtgReceivingProjectSummary {
     }
   ];
 
+  exportReceiving(){
+    try {
+      this.chooseDownloadTemplate = true;      
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openImportDialog(){
+    try {
+      this.chooseUploadTemplate = true;      
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   // Stub handlers — wire to real edit/delete APIs once project CRUD is available here.
   receivingMenu(event: Event, menu: any, receiving: any) {
     this.items = [
       { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', receiving) },
-      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', receiving) }
+      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', receiving) },
+      {
+        label: 'Import',
+        icon: 'pi pi-upload',
+        command: () => this.openImportDialog()
+      },
+      {
+        label: 'Export',
+        icon: 'pi pi-download',
+        command: () => this.exportReceiving()
+      }
     ];
     menu.toggle(event);
   }

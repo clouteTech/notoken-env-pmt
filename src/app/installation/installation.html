@@ -69,53 +69,6 @@
       </div>
       <span class="summary-table-count">{{ projectList.length }} Records</span>
     </div>
-    <!-- <div class="summary-table-wrap">
-      <table class="summary-table">
-        <thead>
-          <tr>
-            <th class="summary-th">S.No</th>
-            <th class="summary-th">Open WTG</th>
-            <th class="summary-th">Project Code</th>
-            <th class="summary-th">Project Name</th>
-            <th class="summary-th">WTG Count</th>
-            <th class="summary-th">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let row of summaryRows; let i = index" class="summary-tr" [class.summary-tr-even]="i % 2 === 0">
-            <td class="summary-td summary-td-sno">{{ i + 1 }}</td>
-            <td class="summary-td summary-td-btn">
-              <button class="open-wtg-btn" (click)="openWtgPopup(row)">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-                Open WTG
-              </button>
-            </td>
-            <td class="summary-td">
-              <span class="summary-pcode-badge">{{ row.projectCode }}</span>
-            </td>
-            <td class="summary-td">{{ row.projectName }}</td>
-            <td class="summary-td">
-              <span class="summary-wtg-count">{{ row.wtgCount }}</span>
-            </td>
-            <td class="summary-td">
-              <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
-              <button pButton pRipple text rounded severity="secondary" type="button" (click)="menu.toggle($event)">
-                <i pButtonIcon>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-gray-500">
-                    <rect width="24" height="24" fill="none" />
-                    <path fill="currentColor"
-                      d="M12 7a2 2 0 1 0-2-2a2 2 0 0 0 2 2m0 10a2 2 0 1 0 2 2a2 2 0 0 0-2-2m0-7a2 2 0 1 0 2 2a2 2 0 0 0-2-2" />
-                  </svg>
-                </i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div> -->
     <div class="summary-table-wrap">
     
       <p-table [value]="projectList" responsiveLayout="scroll" styleClass="summary-p-table">
@@ -124,7 +77,7 @@
         <ng-template #header>
           <tr>
             <th class="summary-th">S.No</th>
-            <th class="summary-th">Open WTG</th>
+            <!-- <th class="summary-th">Open WTG</th> -->
             <th class="summary-th">
               <div class="summary-th-content">
                 <span>Project Code</span>
@@ -134,7 +87,7 @@
             <th class="summary-th">
               <div class="summary-th-content">
                 <span>Customer Name</span>
-                <p-columnFilter type="text" field="projectName" display="menu" [showAddButton]="false" 
+                <p-columnFilter type="text" field="customer.customerName" display="menu" [showAddButton]="false" 
                   [showMatchModes]="false" [showOperator]="false" />
               </div>     
             </th>
@@ -153,7 +106,7 @@
             </td>
     
             <!-- Open WTG -->
-            <td class="summary-td summary-td-btn">
+            <!-- <td class="summary-td summary-td-btn">
               <button class="open-wtg-btn" (click)="openWtgPopup(row)">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
     
@@ -165,13 +118,14 @@
     
                 Open WTG
               </button>
-            </td>
+            </td> -->
     
             <!-- Project Code -->
             <td class="summary-td">
-              <span class="summary-pcode-badge">
+              <!-- <span class="summary-pcode-badge">
                 {{ row.projectCode }}
-              </span>
+              </span> -->
+              <p-button [label]="row.projectCode" [link]="true" (click)="openWtgPopup(row)" />
             </td>
     
             <!-- Project Name -->
@@ -245,49 +199,6 @@
       </span>
     </div>
   </ng-template>
-  <!-- <ng-template pTemplate="content">
-    <div class="view-popup-body">
-      <div class="view-table-container">
-        <table class="view-data-table">
-          <thead>
-            <tr class="view-group-header-row">
-              <th class="view-th-fixed view-th-frozen view-th-col1" rowspan="2" style="min-width:90px">WTG ID</th>
-              <th class="view-th-fixed view-th-frozen view-th-col2" rowspan="2" style="min-width:110px">Location No.</th>
-              <th class="view-th-fixed view-th-frozen view-th-col3" rowspan="2" style="min-width:110px">Maximo ID</th>
-              <th class="view-th-fixed view-th-frozen view-th-col4" rowspan="2" style="min-width:100px">WTG Type</th>
-              <th class="view-th-fixed view-th-frozen view-th-col5" rowspan="2" style="min-width:130px">Tower Type</th>
-              <th class="view-th-fixed view-th-frozen view-th-col5" rowspan="2" style="min-width:130px">Section Count</th>
-              <th class="view-th-fixed view-th-frozen view-th-col6" rowspan="2" style="min-width:110px">Main Crane Supplier</th>
-              <th *ngFor="let grp of getViewStepGroups()" [attr.colspan]="grp.colCount" class="view-th-step-group" [class]="'step-group-' + (grp.stepIdx % 8)">{{ grp.label }}</th>
-            </tr>
-            <tr class="view-field-header-row">
-              <ng-container *ngFor="let grp of getViewStepGroups()">
-                <th *ngFor="let col of stepColumnDefs[grp.stepIdx]" class="view-th-field" [class]="'step-field-' + (grp.stepIdx % 8)">{{ col.header }}</th>
-              </ng-container>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let wtg of getViewWtgRows(); let rowIdx = index" [class.view-row-even]="rowIdx % 2 === 0" class="view-data-row">
-              <td class="view-td-fixed view-td-frozen view-td-col1"><span class="wtg-badge">{{ wtg.wtgId }}</span></td>
-              <td class="view-td-fixed view-td-frozen view-td-col2">{{ wtg.locationNo }}</td>
-              <td class="view-td-fixed view-td-frozen view-td-col3">{{ wtg.maximoId }}</td>
-              <td class="view-td-fixed view-td-frozen view-td-col4">{{ wtg.wtgType }}</td>
-              <td class="view-td-fixed view-td-frozen view-td-col5">{{ wtg.sectionCount }}</td>
-              <td class="view-td-fixed view-td-frozen view-td-col5">{{ wtg.towerType }}</td>
-              <td class="view-td-fixed view-td-frozen view-td-col6">
-                <span class="crane-supplier-badge" [class.crane-zero]="isCraneSupplierFixed(rowIdx)">
-                  {{ isCraneSupplierFixed(rowIdx) ? 0 : getCraneSupplierDisplay(rowIdx) }}
-                </span>
-              </td>
-              <ng-container *ngFor="let grp of getViewStepGroups()">
-                <td *ngFor="let col of stepColumnDefs[grp.stepIdx]" class="view-td-value" [class.view-td-filled]="hasViewValue(grp.stepIdx, rowIdx, col.field)" [class]="'step-cell-' + (grp.stepIdx % 8)">{{ getViewValue(grp.stepIdx, rowIdx, col.field, col.type) }}</td>
-              </ng-container>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </ng-template> -->
   <ng-template pTemplate="content">
     <div class="view-popup-body">
       <div class="view-table-container">

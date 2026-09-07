@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { Shared } from '../shared/services/shared';
 
 @Component({
@@ -9,7 +9,12 @@ import { Shared } from '../shared/services/shared';
   styleUrl: './wtg-dispatch.css',
 })
 export class WtgDispatch {
+  chooseDownloadTemplate = false;
+  chooseUploadTemplate = false;
+
   items: MenuItem[] = [];
+
+  constructor(private messageService: MessageService){}
 
   wtgDispatchPlanList = [
     {
@@ -304,11 +309,39 @@ export class WtgDispatch {
     }
   ];
 
+  exportDispatch(){
+    try {
+      this.chooseDownloadTemplate = true;      
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openImportDialog(){
+    try {
+      this.chooseUploadTemplate = true;      
+    } catch (error) {
+      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   // Stub handlers — wire to real edit/delete APIs once dispatch plan CRUD is available.
   dispatchMenu(event: Event, menu: any, dispatch: any) {
     this.items = [
       { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', dispatch) },
-      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', dispatch) }
+      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', dispatch) },
+      {
+        label: 'Import',
+        icon: 'pi pi-upload',
+        command: () => this.openImportDialog()
+      },
+      {
+        label: 'Export',
+        icon: 'pi pi-download',
+        command: () => this.exportDispatch()
+      }
     ];
     menu.toggle(event);
   }
