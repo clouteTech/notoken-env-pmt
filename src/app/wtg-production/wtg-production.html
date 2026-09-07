@@ -144,7 +144,7 @@
       '640px': '90vw'
     }">
     <div class="flex justify-content-center gap-5 py-4">
-        <div class="dl-item">
+        <div class="dl-item" (click)="uploadTemplate()">
             <div class="dl-icon" style="background: #ede9fe; color: #6d28d9;">
                 <i class="pi pi-upload"></i>
             </div>
@@ -161,7 +161,7 @@
   }">
     <div class="flex justify-content-center gap-5 py-4">
 
-        <div class="dl-item">
+        <div class="dl-item" (click)="downloadTemplate()">
             <div class="dl-icon" style="background: #dbeafe; color: #1d4ed8;">
                 <i class="pi pi-download"></i>
             </div>
@@ -170,3 +170,5 @@
 
     </div>
 </p-dialog>
+
+<p-toast />

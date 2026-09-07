@@ -132,7 +132,6 @@ export class AllocationApproval {
   }
 
   review(item: any){
-    console.log(item);
     item.status = 'Reviewed';
     item.reviewedBy = this.getCurrentUser();
     item.reviewedOn = this.getToday();
@@ -140,8 +139,6 @@ export class AllocationApproval {
     // item.menuItems = this.getMenuItems(item);
 
     // this.allocationApprovalList = [...this.allocationApprovalList];
-
-    console.log(this.allocationApprovalList);
   }
 
   getMenuItems() {
@@ -183,7 +180,6 @@ export class AllocationApproval {
 
   openMenu(menu: any, event: any, allocation: any) {
     this.selectedAllocation = allocation;
-    console.log(this.selectedAllocation);
     this.items = this.getMenuItems();
     menu.toggle(event);
   }
