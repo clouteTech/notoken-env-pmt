@@ -327,6 +327,30 @@ export class WtgDispatch {
     }
   }
 
+  downloadTemplate(){
+    try {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Coming Soon',
+        detail: 'Dispatch template download will be available soon.'
+      });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  uploadTemplate(){
+    try {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Coming Soon',
+          detail: 'Dispatch template upload will be available soon.'
+        });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   // Stub handlers — wire to real edit/delete APIs once dispatch plan CRUD is available.
   dispatchMenu(event: Event, menu: any, dispatch: any) {
     this.items = [

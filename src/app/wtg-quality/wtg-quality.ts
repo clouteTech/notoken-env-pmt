@@ -152,6 +152,30 @@ export class WtgQuality implements OnInit {
     }
   }
 
+  downloadTemplate(){
+    try {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Coming Soon',
+        detail: 'Quality template download will be available soon.'
+      });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  uploadTemplate(){
+    try {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Coming Soon',
+          detail: 'Quality template upload will be available soon.'
+        });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   getMenuItems(){
     return [
       {

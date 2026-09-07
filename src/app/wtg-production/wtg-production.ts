@@ -488,11 +488,34 @@ export class WTGProduction {
     this.items = this.getMenuItems();
   }
 
+  downloadTemplate(){
+    try {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Coming Soon',
+        detail: 'Production template download will be available soon.'
+      });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  uploadTemplate(){
+    try {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Coming Soon',
+          detail: 'Production template upload will be available soon.'
+        });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
   exportProduction(){
     try {
       this.chooseDownloadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -501,7 +524,6 @@ export class WTGProduction {
     try {
       this.chooseUploadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -534,7 +556,6 @@ export class WTGProduction {
     try {
       this.showProductionModal = true;
     } catch (error) {
-      console.log(error);
     }
   }
 
