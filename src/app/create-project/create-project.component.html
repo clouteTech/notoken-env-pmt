@@ -20,40 +20,19 @@
             <tr>
                 <th pSortableColumn="SlNo" style="min-width:3rem">Sl no <p-sortIcon field="SlNo"/></th>
                 <th pSortableColumn="Pcode" style="min-width:7rem">Project code <p-sortIcon field="Pcode"/></th>
-                <!-- <th style="min-width:14rem">Project description</th> -->
-                <!-- <th style="min-width:11rem">Site name</th> -->
                 <th style="min-width:7rem">Customer</th>
                  <th style="min-width:7rem">Probability</th>
-               <!-- <th style="min-width:8rem">State</th> -->
                 <th style="min-width:5rem">WTG qty</th>
                 <th style="min-width:6rem">Total Capacity</th>
                 <th style="min-width:6rem">Action</th>
-                <!-- <th style="min-width:9rem">Project manager</th> -->
-                <!-- <th style="min-width:11rem">Cluster head</th>
-                <th style="min-width:9rem">Site incharge</th>
-                <th style="min-width:8rem">Start date</th>
-                <th style="min-width:8rem">Complete date</th>
-                <th style="min-width:8rem">Contractual COD</th>
-                <th style="min-width:8rem">Expected COD</th>
-                <th style="min-width:8rem">Actual COD</th>
-                <th style="min-width:5rem">Delay</th>
-                <th style="min-width:12rem">Remarks</th> -->
             </tr>
         </ng-template>
         <ng-template #body let-row let-rowIndex="rowIndex">
             <tr>
                 <td><span class="dpr-sl">{{ rowIndex + 1 }}</span></td>
                 <td><span class="dpr-pcode">{{ row.projectCode }}</span></td>
-                <!-- <td><span class="dpr-desc" [title]="row.FPD">{{ row.FPD }}</span></td> -->
-                <!-- <td><span class="dpr-site">{{ row.SiteName }}</span></td> -->
                 <td><span class="dpr-cust-badge">{{ row.customer?.customerName }}</span></td>
                  <td>{{ row.probability }}</td>
-               <!-- <td>
-                    <span class="dpr-state">
-                        <i class="pi pi-map-marker" style="font-size:11px"></i>
-                        {{ row.State }}
-                    </span>
-                </td>-->
                 <td><span class="dpr-qty-pill">{{ row.totalWtgs  }}</span></td>
                  <td>{{ row.totalCapacity }}</td>
                 <td>
@@ -68,16 +47,6 @@
                         </i>
                     </button>
                 </td>
-                <!--<td>{{ row.PM }}</td>
-                <td>{{ row.StateHead }}</td>
-                <td>{{ row.ConstructionManager }}</td>
-                <td class="dpr-date">{{ row.StartDate }}</td>
-                <td class="dpr-date">{{ row.CompleteDate }}</td>
-                <td class="dpr-date">{{ row.ContractualCoD }}</td>
-                <td class="dpr-date">{{ row.ExpectedCoD }}</td>
-                <td class="dpr-date">{{ row.ActualCoD }}</td>
-                <td><span class="dpr-delay-chip">{{ row.Delay }}</span></td>
-                <td><span class="dpr-remarks" [title]="row.Remarks">{{ row.Remarks }}</span></td>  -->
             </tr>
         </ng-template>
         <ng-template #emptymessage>
@@ -158,11 +127,6 @@
                     <p-select appendTo="body" [filter]="true" [options]="projectTerm" [(ngModel)]="projectTermValue"
                         optionLabel="label" optionValue="value" styleClass="s1-select" placeholder="Select Project Term"/>
                 </div>
-                <!-- <div class="s1-field">
-                    <label class="s1-label">Multiple SPV</label>
-                    <p-select appendTo="body" [options]="multipleSPVOptions" [(ngModel)]="selectedMultpleSPV"
-                        optionLabel="label" optionValue="value" styleClass="s1-select" />
-                </div> -->
             </div>
 
             <!-- Section: Team -->
@@ -193,72 +157,7 @@
                     <p-select appendTo="body" [filter]="true" [(ngModel)]="selectedSiteManager" placeholder="Select Site Manager"
                         [options]="PMOptions" optionLabel="userName" optionValue="userId" styleClass="s1-select" />
                 </div>
-                <!-- <div class="s1-field s1-field--inline">
-                    <label class="s1-label">Tower Scope</label>
-                    <p-checkbox [(ngModel)]="towerScopeChecked" binary="true" />
-                </div> -->
             </div>
-
-            <!-- Section: Key Dates -->
-            <!-- <div class="s1-section-title">Key Dates</div>
-            <div class="s1-grid">
-                <div class="s1-field">
-                    <label class="s1-label">Start of First Anchor Cage Supply</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateAnchorCage" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Start of First Component Supply</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateComponentSupply" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Start of First Site Activity</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateSiteActivity" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Start of First Commissioning Activity</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateCommissioning" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Contractual COD</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateContractualCOD" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Expected COD</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateExpectedCOD" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Term Sheet Sign Date <span class="s1-req">*</span></label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateTermSheet" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Advance 1 Payment <span class="s1-req">*</span></label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateAdvance1" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Advance 2 Payment</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateAdvance2" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Advance 3 Payment</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateAdvance3" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">BG Release Date</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateBGRelease" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Supply Contract Sign Date</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateSupplyContract" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">Service Sign Date</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateServiceSign" styleClass="s1-select" />
-                </div>
-                <div class="s1-field">
-                    <label class="s1-label">LTSA Sign Date</label>
-                    <p-datepicker appendTo="body" placeholder="Select Date" [(ngModel)]="dateLTSASign" styleClass="s1-select" />
-                </div>
-            </div> -->
 
             <div class="s1-footer">
                 <button pButton label="Next: Add SPV Details" icon="pi pi-arrow-right"
@@ -298,12 +197,6 @@
                                 <div class="s2-kv"><span class="s2-k">Project Probability</span><span class="s2-v">{{ projectProbalityValue || '—' }}</span></div>
                                 <div class="s2-kv"><span class="s2-k">Contract Status</span><span class="s2-v">{{ ContractStatusValue || '—' }}</span></div>
                                 <div class="s2-kv"><span class="s2-k">Project Term</span><span class="s2-v">{{ projectTermValue || '—' }}</span></div>
-                                <!-- <div class="s2-kv"><span class="s2-k">Multiple SPV</span><span class="s2-v">{{ selectedMultpleSPV || '—' }}</span></div> -->
-                                <!-- <div class="s2-kv"><span class="s2-k">Tower Scope</span>
-                                    <span class="s2-v">
-                                        <i class="pi" [ngClass]="towerScopeChecked ? 'pi-check-circle s2-icon-yes' : 'pi-times-circle s2-icon-no'"></i>
-                                    </span>
-                                </div> -->
                             </div>
                         </div>
 
@@ -318,27 +211,6 @@
                                 <div class="s2-kv"><span class="s2-k">Site Manager</span><span class="s2-v">{{ selectedSiteManager || '—' }}</span></div>
                             </div>
                         </div>
-
-                        <!-- Dates row -->
-                        <!-- <div class="s2-summary-section">
-                            <span class="s2-section-badge">Key Dates</span>
-                            <div class="s2-kv-grid">
-                                <div class="s2-kv"><span class="s2-k">Anchor Cage Supply</span><span class="s2-v">{{ dateAnchorCage ? (dateAnchorCage | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Component Supply</span><span class="s2-v">{{ dateComponentSupply ? (dateComponentSupply | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">First Site Activity</span><span class="s2-v">{{ dateSiteActivity ? (dateSiteActivity | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Commissioning</span><span class="s2-v">{{ dateCommissioning ? (dateCommissioning | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Contractual COD</span><span class="s2-v">{{ dateContractualCOD ? (dateContractualCOD | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Expected COD</span><span class="s2-v">{{ dateExpectedCOD ? (dateExpectedCOD | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Term Sheet Sign</span><span class="s2-v">{{ dateTermSheet ? (dateTermSheet | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Advance 1</span><span class="s2-v">{{ dateAdvance1 ? (dateAdvance1 | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Advance 2</span><span class="s2-v">{{ dateAdvance2 ? (dateAdvance2 | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Advance 3</span><span class="s2-v">{{ dateAdvance3 ? (dateAdvance3 | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">BG Release</span><span class="s2-v">{{ dateBGRelease ? (dateBGRelease | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Supply Contract</span><span class="s2-v">{{ dateSupplyContract ? (dateSupplyContract | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">Service Sign</span><span class="s2-v">{{ dateServiceSign ? (dateServiceSign | date:'dd-MM-yyyy') : '—' }}</span></div>
-                                <div class="s2-kv"><span class="s2-k">LTSA Sign</span><span class="s2-v">{{ dateLTSASign ? (dateLTSASign | date:'dd-MM-yyyy') : '—' }}</span></div>
-                            </div>
-                        </div> -->
 
                     </p-accordion-content>
                 </p-accordion-panel>
@@ -364,7 +236,7 @@
                                 <div class="spv-block-title">
                                     <span class="spv-idx">SPV {{ si + 1 }}</span>
                                     <p-select appendTo="body" [filter]="true"
-                                        [options]="spvOptsList[si] ?? spvOptions"
+                                        [options]="spvOptsList[si]"
                                         [ngModel]="spvEntry.spv"
                                         (onChange)="onSpvSelect(spvEntry, $event.value)"
                                         optionLabel="label" optionValue="value"

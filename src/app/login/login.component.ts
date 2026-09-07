@@ -133,7 +133,7 @@ export class LoginComponent implements OnInit {
           sessionStorage.setItem("token", val.data.token);
 
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login Successfully' });
-          this.router.navigate(['/foundation1']);
+          this.router.navigate(['/foundation']);
         },
         error: err => {
           console.log(err);

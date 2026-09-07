@@ -59,7 +59,7 @@ export const routes: Routes = [
   },
    {
     path: 'WTGProduction',
-    loadComponent: () => import('./wtgproduction/wtgproduction').then(m => m.WTGProduction),
+    loadComponent: () => import('./wtg-production/wtg-production').then(m => m.WTGProduction),
     canActivate: [authGuard]
   },
   {
@@ -83,16 +83,6 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'foundation1',
-    loadComponent: () => import('./foundation1/foundation1').then(m => m.Foundation1),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'foundation_11',
-    loadComponent: () => import('./foundation-11/foundation-11').then(m => m.Foundation11),
-    canActivate: [authGuard]
-  },
-  {
     path: 'wtg-receiving',
     loadComponent: () => import('./wtg-receiving-project-summary/wtg-receiving-project-summary').then(m => m.WtgReceivingProjectSummary),
     canActivate: [authGuard]
@@ -103,18 +93,8 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'commisioning',
+    path: 'commissioning',
     loadComponent: () => import('./commisioning/commisioning').then(m => m.Commisioning),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'commisioning1',
-    loadComponent: () => import('./commisioning1/commisioning1').then(m => m.Commisioning1),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'commisioning_11',
-    loadComponent: () => import('./commisioning-11/commisioning-11').then(m => m.Commisioning11),
     canActivate: [authGuard]
   },
   {

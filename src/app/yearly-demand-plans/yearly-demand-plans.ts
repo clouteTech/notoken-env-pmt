@@ -111,7 +111,6 @@ export class YearlyDemandPlans implements OnInit {
 
       return { ...plan, totalProjects, totalSpvs, totalWtgs };
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
       return { ...plan, totalProjects: 0, totalSpvs: 0, totalWtgs: 0 };
     }
@@ -131,21 +130,16 @@ export class YearlyDemandPlans implements OnInit {
         sortDirection: "asc"
       }
 
-      console.log(data);
-
       this.loading = true;
 
       this.apiService.fetchAllYearlyDemandPlan(data).subscribe({
         next: val => {
-          console.log(val);
 
           this.yearlyDemandPlanList = (val.data.content ?? []).map((plan: any) => this.mapYearlyDemandPlan(plan));
           this.totalRecords = val.data.totalElements ?? 0;
           this.loading = false;
         },
         error: err => {
-          console.log(err);
-
           this.loading = false;
 
           if (err.status === 400) {
@@ -156,8 +150,6 @@ export class YearlyDemandPlans implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
-
       this.loading = false;
 
       this.messageService.add({
@@ -170,7 +162,6 @@ export class YearlyDemandPlans implements OnInit {
 
   loadYearlyPlan(event: any){
     try {
-      console.log(event);
       this.first = event.first;
 
       this.page = event.first / event.rows;
@@ -178,7 +169,6 @@ export class YearlyDemandPlans implements OnInit {
 
       this.fetchAllYearlyDemandPlan();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -192,7 +182,6 @@ export class YearlyDemandPlans implements OnInit {
       ];
       menu.toggle(event);
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

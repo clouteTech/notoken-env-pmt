@@ -323,6 +323,10 @@ export class Apiservice {
     return this.postMethod('master/customer/create', params);
   }
 
+  updateCustomer(params: any): Observable<any>{
+    return this.postMethod('master/customer/update', params);
+  }
+
   foundationExport(params: any): Observable<any>{
      return this.postMethod(
     'foundation/export',
@@ -646,6 +650,10 @@ export class Apiservice {
   
   fetchAllMonthlyDemandPlan(params: any): Observable<any>{
     return this.postMethod('monthly-demand-plan/search', params);
+  }
+
+  fetchMonthlyDetailsFromYearlyPlan(params: any): Observable<any>{
+    return this.postMethod('monthly-demand-plan/component-requirements', params);
   }
 
   fetchAllComponentSerialList(params: any): Observable<any>{
