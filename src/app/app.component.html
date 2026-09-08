@@ -66,7 +66,7 @@
         </button>
 
         <!-- start uncomment this -->
-
+        <div class="sb-label">Forecast Order</div>
         <button class="sb-item" [class.active]="activeMenu === 'yearlyDemandPlans'" (click)="navigate('yearlyDemandPlans')">
           <i class="pi pi-chart-bar"></i>
           Yearly Demand Plan
@@ -80,6 +80,7 @@
           Allocation Acceptance
         </button>
 
+        <div class="sb-label">Plan Order</div>
          <button class="sb-item" [class.active]="activeMenu === 'WTGProduction'" (click)="navigate('WTGProduction')">
           <i class="pi pi-cog"></i>
           WTG Production
@@ -106,7 +107,7 @@
           </svg>
           <span>Foundation</span>
         </button> -->
-         <button class="sb-item" [class.active]="activeMenu === 'Foundation1'" (click)="navigate('Foundation1')">
+         <button class="sb-item" [class.active]="activeMenu === 'Foundation'" (click)="navigate('Foundation')">
           <i class="pi pi-sitemap"></i>
           <span>Foundation</span>
         </button>
@@ -131,7 +132,7 @@
           <i class="pi pi-wrench"></i>
           Installation
         </button>
-        <button class="sb-item" [class.active]="activeMenu === 'Commisioning1'" (click)="navigate('Commisioning1')">
+        <button class="sb-item" [class.active]="activeMenu === 'Commisioning'" (click)="navigate('Commisioning')">
           <i class="pi pi-bolt"></i>
           <span>Commissioning</span>
         </button>

@@ -56,12 +56,9 @@ export class WtgTypes implements OnInit {
     try {
       this.apiService.fetchAllWTGTypes('').subscribe({
         next: val => {
-          console.log(val);
           this.wtgTypeList = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           } else {
@@ -70,7 +67,7 @@ export class WtgTypes implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
       this.wtgTypeList = MOCK_WTG_TYPES;
     }
   }
@@ -80,18 +77,15 @@ export class WtgTypes implements OnInit {
       if (this.wtgTypeForm.valid) {
         if (!this.selectedWTGType) { 
           const data = this.wtgTypeForm.value;
-          console.log(data);
     
           this.apiService.createWTGTypes(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created WTG Type' });
               this.showWTGTypeModal = false;
               this.fetchAllWTGTypes();
             },
             error: err => {
-              console.log(err);
-
+    
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -101,17 +95,14 @@ export class WtgTypes implements OnInit {
           })
         } else {
           const data = this.wtgTypeForm.value;
-          console.log(data);
   
           this.apiService.updateWTGType(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated WTG Type' });
               this.showWTGTypeModal = false;
               this.fetchAllWTGTypes();
             },
             error: err => {
-              console.log(err);
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -125,7 +116,7 @@ export class WtgTypes implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -152,7 +143,7 @@ export class WtgTypes implements OnInit {
       this.showWTGTypeModal = true;
       this.wtgTypeForm.patchValue(this.selectedWTGType);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -186,7 +177,7 @@ export class WtgTypes implements OnInit {
     try {
       this.showWTGTypeModal = true;
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -225,17 +216,12 @@ export class WtgTypes implements OnInit {
           wtgTypeId: this.selectedWTGType.wtgTypeId
         }
 
-        console.log(data);
-
         this.apiService.deleteWTGType(data).subscribe({
           next: val => {
-            console.log(val);
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted WTG Type' });
             this.fetchAllWTGTypes();
           },
           error: err => {
-            console.log(err);
-
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
             } else {

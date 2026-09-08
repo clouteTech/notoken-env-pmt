@@ -5,17 +5,197 @@ import { MenuItem, MessageService } from 'primeng/api';
 
 // Demo fallback data — shown only when the backend API cannot be reached.
 const MOCK_YEARLY_DEMAND_PLAN: any[] = [
-  { yearlyDemandPlanId: 1, planYear: 2026, customer: { customerId: 1, customerName: 'ReNew Power' } },
-  { yearlyDemandPlanId: 2, planYear: 2026, customer: { customerId: 2, customerName: 'Adani Green Energy' } },
-  { yearlyDemandPlanId: 3, planYear: 2027, customer: { customerId: 3, customerName: 'Suzlon Energy' } },
-  { yearlyDemandPlanId: 4, planYear: 2026, customer: { customerId: 4, customerName: 'Greenko' } },
-  { yearlyDemandPlanId: 5, planYear: 2027, customer: { customerId: 5, customerName: 'Tata Power Renewable' } },
-  { yearlyDemandPlanId: 6, planYear: 2026, customer: { customerId: 1, customerName: 'ReNew Power' } },
-  { yearlyDemandPlanId: 7, planYear: 2025, customer: { customerId: 2, customerName: 'Adani Green Energy' } },
-  { yearlyDemandPlanId: 8, planYear: 2027, customer: { customerId: 3, customerName: 'Suzlon Energy' } },
-  { yearlyDemandPlanId: 9, planYear: 2026, customer: { customerId: 4, customerName: 'Greenko' } },
-  { yearlyDemandPlanId: 10, planYear: 2027, customer: { customerId: 5, customerName: 'Tata Power Renewable' } },
+  {
+    yearlyDemandPlanId: 1,
+    planYear: 2026,
+    customer: {
+      customerId: 1,
+      customerName: 'ReNew Power',
+      customerCode: 'REN001'
+    },
+    totalProjects: 2,
+    totalSpvs: 2,
+    totalWtgs: 2,
+    status: 'DRAFT'
+  },
+  {
+    yearlyDemandPlanId: 2,
+    planYear: 2026,
+    customer: {
+      customerId: 2,
+      customerName: 'Adani Green Energy',
+      customerCode: 'ADN001'
+    },
+    totalProjects: 2,
+    totalSpvs: 2,
+    totalWtgs: 3,
+    status: 'DRAFT'
+  },
+  {
+    yearlyDemandPlanId: 3,
+    planYear: 2027,
+    customer: {
+      customerId: 3,
+      customerName: 'Suzlon Energy',
+      customerCode: 'SUZ001'
+    },
+    totalProjects: 3,
+    totalSpvs: 3,
+    totalWtgs: 3,
+    status: 'DRAFT'
+  },
+  {
+    yearlyDemandPlanId: 4,
+    planYear: 2026,
+    customer: {
+      customerId: 4,
+      customerName: 'Greenko',
+      customerCode: 'GRK001'
+    },
+    totalProjects: 1,
+    totalSpvs: 1,
+    totalWtgs: 1,
+    status: 'DRAFT'
+  },
+  {
+    yearlyDemandPlanId: 5,
+    planYear: 2027,
+    customer: {
+      customerId: 5,
+      customerName: 'Tata Power Renewable',
+      customerCode: 'TPR001'
+    },
+    totalProjects: 4,
+    totalSpvs: 4,
+    totalWtgs: 5,
+    status: 'DRAFT'
+  },
+  {
+    yearlyDemandPlanId: 6,
+    planYear: 2026,
+    customer: {
+      customerId: 1,
+      customerName: 'ReNew Power',
+      customerCode: 'REN001'
+    },
+    totalProjects: 2,
+    totalSpvs: 2,
+    totalWtgs: 2,
+    status: 'DRAFT'
+  },
+  {
+    yearlyDemandPlanId: 7,
+    planYear: 2025,
+    customer: {
+      customerId: 2,
+      customerName: 'Adani Green Energy',
+      customerCode: 'ADN001'
+    },
+    totalProjects: 2,
+    totalSpvs: 2,
+    totalWtgs: 3,
+    status: 'DRAFT'
+  },
+  {
+    yearlyDemandPlanId: 8,
+    planYear: 2027,
+    customer: {
+      customerId: 3,
+      customerName: 'Suzlon Energy',
+      customerCode: 'SUZ001'
+    },
+    totalProjects: 3,
+    totalSpvs: 3,
+    totalWtgs: 3,
+    status: 'DRAFT'
+  },
+  {
+    yearlyDemandPlanId: 9,
+    planYear: 2026,
+    customer: {
+      customerId: 4,
+      customerName: 'Greenko',
+      customerCode: 'GRK001'
+    },
+    totalProjects: 2,
+    totalSpvs: 2,
+    totalWtgs: 2,
+    status: 'DRAFT'
+  },
+  {
+    yearlyDemandPlanId: 10,
+    planYear: 2027,
+    customer: {
+      customerId: 5,
+      customerName: 'Tata Power Renewable',
+      customerCode: 'TPR001'
+    },
+    totalProjects: 4,
+    totalSpvs: 4,
+    totalWtgs: 5,
+    status: 'DRAFT'
+  }
 ];
+
+interface Customer {
+  customerId: number;
+  customerName: string;
+  customerCode: string;
+  status: boolean;
+}
+
+interface Project {
+  project: {
+    projectId: number;
+    projectCode: string;
+  };
+  spvs: Spv[];
+}
+
+interface Spv {
+  spv: {
+    customerSpvId: number;
+    spvName: string;
+    status: boolean;
+  };
+  wtgs: Wtg[];
+}
+
+interface Wtg {
+  yearlyDemandPlanDetailId: number;
+  wtgConfigId: number;
+  projectId: number;
+  spvId: number;
+  wtgType: string;
+  towerType: string;
+  bladeType: string;
+  capMw: number;
+  totalQty: number;
+
+  janQty: number;
+  febQty: number;
+  marQty: number;
+  aprQty: number;
+  mayQty: number;
+  junQty: number;
+  julQty: number;
+  augQty: number;
+  sepQty: number;
+  octQty: number;
+  novQty: number;
+  decQty: number;
+}
+
+interface YearlyDemandPlan {
+  yearlyDemandPlanId: number;
+  planYear: number;
+  customer: Customer;
+  status: string;
+  projects: Project[];
+  totalProjects?: number;
+  totalSpvs?: number;
+  totalWtgs?: number;
+}
 
 @Component({
   selector: 'app-yearly-demand-plans',
@@ -30,8 +210,9 @@ export class YearlyDemandPlans implements OnInit {
   page = 0;
   size = 10;
   totalRecords = 0;
+  loading = false;
 
-  yearlyDemandPlanList: any[] = [];
+  yearlyDemandPlanList: YearlyDemandPlan[] = [];
 
   items: MenuItem[] = [];
 
@@ -39,6 +220,34 @@ export class YearlyDemandPlans implements OnInit {
 
   ngOnInit(): void {
       this.fetchAllYearlyDemandPlan();
+  }
+
+  // Counts are always derived from the API's nested projects → spvs → wtgs
+  // arrays — never hardcoded — and default to 0 when an array is null/missing.
+  private mapYearlyDemandPlan(plan: any): YearlyDemandPlan {
+    try {
+      const totalProjects = plan?.projects?.length ?? 0;
+
+      const totalSpvs = plan?.projects?.reduce(
+        (total: number, project: any) => total + (project?.spvs?.length ?? 0),
+        0
+      ) ?? 0;
+
+      const totalWtgs = plan?.projects?.reduce(
+        (projectTotal: number, project: any) =>
+          projectTotal +
+          (project?.spvs?.reduce(
+            (spvTotal: number, spv: any) => spvTotal + (spv?.wtgs?.length ?? 0),
+            0
+          ) ?? 0),
+        0
+      ) ?? 0;
+
+      return { ...plan, totalProjects, totalSpvs, totalWtgs };
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+      return { ...plan, totalProjects: 0, totalSpvs: 0, totalWtgs: 0 };
+    }
   }
 
   fetchAllYearlyDemandPlan(){
@@ -49,23 +258,23 @@ export class YearlyDemandPlans implements OnInit {
         projectId: null,
         spvId: null,
         status: null,
-        page: 0,
-        size: 10,
+        page: this.page,
+        size: this.size,
         sortBy: "createdOn",
         sortDirection: "asc"
       }
 
-      console.log(data);
+      this.loading = true;
 
       this.apiService.fetchAllYearlyDemandPlan(data).subscribe({
         next: val => {
-          console.log(val);
-          this.yearlyDemandPlanList = val.data.content;
 
+          this.yearlyDemandPlanList = (val.data.content ?? []).map((plan: any) => this.mapYearlyDemandPlan(plan));
           this.totalRecords = val.data.totalElements ?? 0;
+          this.loading = false;
         },
         error: err => {
-          console.log(err);
+          this.loading = false;
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -76,7 +285,7 @@ export class YearlyDemandPlans implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
+      this.loading = false;
 
       this.yearlyDemandPlanList = MOCK_YEARLY_DEMAND_PLAN;
       this.totalRecords = MOCK_YEARLY_DEMAND_PLAN.length;
@@ -90,21 +299,28 @@ export class YearlyDemandPlans implements OnInit {
   }
 
   loadYearlyPlan(event: any){
-    console.log(event);
-    this.first = event.first;
+    try {
+      this.first = event.first;
 
-    this.page = event.first / event.rows;
-    this.size = event.rows;
+      this.page = event.first / event.rows;
+      this.size = event.rows;
 
-    this.fetchAllYearlyDemandPlan();
+      this.fetchAllYearlyDemandPlan();
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
   }
 
   // Stub handlers — wire to real edit/delete APIs once yearly demand plan CRUD is available.
-  yearlyPlanMenu(event: Event, menu: any, yearlyPlan: any) {
-    this.items = [
-      { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', yearlyPlan) },
-      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', yearlyPlan) }
-    ];
-    menu.toggle(event);
+  yearlyPlanMenu(event: Event, menu: any, yearlyPlan: YearlyDemandPlan) {
+    try {
+      this.items = [
+        { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', yearlyPlan) },
+        { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', yearlyPlan) }
+      ];
+      menu.toggle(event);
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule }    from 'primeng/button';
@@ -11,7 +11,7 @@ import { TableModule }     from 'primeng/table';
 import { ToastModule }     from 'primeng/toast';
 import { CardModule }      from 'primeng/card';
 import { MenuItem, MessageService }  from 'primeng/api';
-import { IconFieldModule } from 'primeng/iconfield';
+import { IconFieldModule } from 'primeng/iconfield'; 
 import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { DialogModule } from 'primeng/dialog';
@@ -23,6 +23,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MenuModule } from 'primeng/menu';
 import { StepperModule } from 'primeng/stepper';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { Shared } from '../shared/services/shared';
 import { Router } from '@angular/router';
 
 // P-Code -> Customer lookup, matching the customer/project data used in Project Creation.
@@ -47,15 +48,20 @@ const P_CODE_CUSTOMER_MAP: Record<string, string> = {
     SelectModule, DatePickerModule,
     AccordionModule, TableModule,
     ToastModule, CardModule,IconFieldModule,TagModule,InputIconModule,DialogModule,ConfirmDialogModule,
-    FluidModule,ReactiveFormsModule,MultiSelectModule,CheckboxModule,MenuModule,StepperModule,FloatLabelModule
+    FluidModule,ReactiveFormsModule,MultiSelectModule,CheckboxModule,MenuModule,StepperModule,FloatLabelModule,
+    Shared
   ],
   providers: [MessageService],
-  templateUrl: './wtgproduction.html',
-  styleUrl: './wtgproduction.css',
+  templateUrl: './wtg-production.html',
+  styleUrl: './wtg-production.css',
 })
 export class WTGProduction {
   showProductionModal = false;
+  chooseUploadTemplate = false;
+  chooseDownloadTemplate = false;
   showBladeAllocationModal = false;
+
+  selectedProduction: any;
 
   items: MenuItem[] = [];
 
@@ -66,10 +72,10 @@ export class WTGProduction {
     customerName: [''],
     pCode: ['']
   });
-
+  
   constructor(private sanitizer: DomSanitizer, private messageService: MessageService){}
 
-  wtgProductionList: any[] = [
+ wtgProductionList: any[] = [
     {
       pCode: "P-8001",
       component: "Blade",
@@ -515,32 +521,46 @@ export class WTGProduction {
     }));
   }
 
-  getMenuItems(){
-    return [
-      {
-        label: 'Edit Production Details',
-        svgIcon: `
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-            <rect width="24" height="24" fill="none" />
-            <path fill="currentColor" d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-.71-.29a1 1 0 0 0-.71.29l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8a1.2 1.2 0 0 0 .22-.33a1 1 0 0 0 0-.24a.7.7 0 0 0 0-.14ZM6.83 20H4v-2.83l9.93-9.93l2.83 2.83ZM18.17 8.66l-2.83-2.83l1.42-1.41l2.82 2.82Z" />
-          </svg>
-        `,
-        command: () => this.openProductionDetails()
-      }
-    ]
-  }
-
-  getSafeSvg(svg: string): SafeHtml{
-    return this.sanitizer.bypassSecurityTrustHtml(svg);
-  }
-
-  openProductionDetails(){
+  downloadTemplate(){
     try {
-      this.showProductionModal = true;
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Coming Soon',
+        detail: 'Production template download will be available soon.'
+      });
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
+
+  uploadTemplate(){
+    try {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Coming Soon',
+          detail: 'Production template upload will be available soon.'
+        });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  exportProduction(){
+    try {
+      this.chooseDownloadTemplate = true;      
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openImportDialog(){
+    try {
+      this.chooseUploadTemplate = true;      
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
 
   // ── Blade Allocation: scoped to warehouse Blade stock for a given Customer/P-Code ──
 
@@ -590,5 +610,42 @@ export class WTGProduction {
 
     this.showBladeAllocationModal = false;
     this.router.navigate(['/plantAllocation'], { state: { components: bladeComponents } });
+  }
+
+  getMenuItems(){
+    return [
+      {
+        label: 'Edit Production Details',
+        icon: 'pi pi-pencil',
+        command: () => this.openProductionDetails()
+      },
+      {
+        label: 'Import',
+        icon: 'pi pi-upload',
+        command: () => this.openImportDialog()
+      },
+      {
+        label: 'Export',
+        icon: 'pi pi-download',
+        command: () => this.exportProduction()
+      }
+    ]
+  }
+
+  getSafeSvg(svg: string): SafeHtml{
+    return this.sanitizer.bypassSecurityTrustHtml(svg);
+  } 
+
+  openProductionDetails(){
+    try {
+      this.showProductionModal = true;
+    } catch (error) {
+    }
+  }
+
+  openMenu(menu: any, event: any, selectedProd: any){
+    this.selectedProduction = selectedProd;
+    this.items = this.getMenuItems();
+    menu.toggle(event);
   }
 }

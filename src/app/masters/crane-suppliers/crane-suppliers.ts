@@ -75,12 +75,9 @@ export class CraneSuppliers {
     try {
       this.apiService.fetchAllCraneSuppliers('').subscribe({
         next: val => {
-          console.log(val);
           this.craneSupplierList = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           } else {
@@ -89,7 +86,6 @@ export class CraneSuppliers {
         }
       })
     } catch (error) {
-      console.log(error);
       this.craneSupplierList = MOCK_CRANE_SUPPLIERS;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -100,18 +96,14 @@ export class CraneSuppliers {
       if (this.craneSupplierForm.valid) {
         if (!this.selectedCraneSupplier) {
           const data = this.craneSupplierForm.value;
-          console.log(data);
-    
+
           this.apiService.createCraneSupplier(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Crane Supplier' });
               this.showSupplierModal = false;
               this.fetchAllCraneSuppliers();
             },
             error: err => {
-              console.log(err);
-
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -121,18 +113,14 @@ export class CraneSuppliers {
           })
         } else {
           const data = this.craneSupplierForm.value;
-          console.log(data);
-
+  
           this.apiService.updateCraneSupplier(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Crane Supplier' });
               this.showSupplierModal = false;
               this.fetchAllCraneSuppliers();
             },
             error: err => {
-              console.log(err);
-
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -145,7 +133,6 @@ export class CraneSuppliers {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -174,7 +161,6 @@ export class CraneSuppliers {
       this.actionName = 'Update';
       this.craneSupplierForm.patchValue(this.selectedCraneSupplier);
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -200,16 +186,13 @@ export class CraneSuppliers {
             const data = {
               supplierId: this.selectedCraneSupplier.supplierId
             }
-            console.log(data);
 
             this.apiService.deleteCraneSupplier(data).subscribe({
               next: val => {
-                console.log(val);
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Crane Supplier' });
                 this.fetchAllCraneSuppliers();
               },
               error: err => {
-                console.log(err);
 
                 if (err.status === 400) {
                   this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -220,13 +203,11 @@ export class CraneSuppliers {
               }
             })
           } catch (error) {
-            console.log(error);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
           }
         }
       });
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -235,7 +216,6 @@ export class CraneSuppliers {
     try {
       this.showSupplierModal = true;
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

@@ -16,6 +16,9 @@ export class WtgDispatch {
 
   constructor(private confirmationService: ConfirmationService, private messageService: MessageService){}
 
+  chooseDownloadTemplate = false;
+  chooseUploadTemplate = false;
+
   wtgDispatchPlanList = [
     {
       pCode: "P-8001",
@@ -73,64 +76,6 @@ export class WtgDispatch {
       deliveryPlan: "2026-04-05",
       deliveryActual: "2026-04-05",
       deliveryForecast: "2026-04-05",
-      deliveryDelayReason: "No Delay"
-    },
-    {
-      pCode: "P-8003",
-      component: "Nacelle",
-      subComponent: "Root Section",
-      dispatchPlanStart: "2026-04-06",
-      dispatchActualStart: "2026-04-05",
-      dispatchForecastStart: "2026-04-05",
-      dispatchStartDelayReason: "No Delay",
-      dispatchPlanFinish: "2026-04-06",
-      dispatchActualFinish: "2026-04-06",
-      dispatchForecastFinish: "2026-04-06",
-      dispatchFinishDelayReason: "No Delay",
-      frameNo: "FRM-003",
-      rootFrameNo: "-",
-      tipFrameNo: "-",
-      transporter: "FastMove Cargo",
-      invoiceNumber: "INV-2026-0003",
-      invoiceDate: "2026-04-06",
-      vehicleNo: "TN-13-AB-1003",
-      lrNumber: "LR-0003",
-      lrDate: "2026-04-06",
-      dcNo: "DC-0003",
-      dcDate: "2026-04-06",
-      vehicleInDate: "2026-04-07",
-      deliveryPlan: "2026-04-08",
-      deliveryActual: "2026-04-08",
-      deliveryForecast: "2026-04-08",
-      deliveryDelayReason: "No Delay"
-    },
-    {
-      pCode: "P-8004",
-      component: "Hub",
-      subComponent: "Root Section",
-      dispatchPlanStart: "2026-04-09",
-      dispatchActualStart: "2026-04-08",
-      dispatchForecastStart: "2026-04-08",
-      dispatchStartDelayReason: "No Delay",
-      dispatchPlanFinish: "2026-04-09",
-      dispatchActualFinish: "2026-04-09",
-      dispatchForecastFinish: "2026-04-09",
-      dispatchFinishDelayReason: "No Delay",
-      frameNo: "FRM-004",
-      rootFrameNo: "-",
-      tipFrameNo: "-",
-      transporter: "ABC Logistics",
-      invoiceNumber: "INV-2026-0004",
-      invoiceDate: "2026-04-09",
-      vehicleNo: "TN-14-AB-1004",
-      lrNumber: "LR-0004",
-      lrDate: "2026-04-09",
-      dcNo: "DC-0004",
-      dcDate: "2026-04-09",
-      vehicleInDate: "2026-04-10",
-      deliveryPlan: "2026-04-11",
-      deliveryActual: "2026-04-11",
-      deliveryForecast: "2026-04-11",
       deliveryDelayReason: "No Delay"
     },
     {
@@ -309,13 +254,44 @@ export class WtgDispatch {
     },
   ];
 
-  dispatchMenu(event: Event, menu: any, dispatch: any) {
-    this.selectedDispatch = dispatch;
-    this.items = [
-      { label: 'Edit', icon: 'pi pi-pencil', command: () => this.editDispatch(dispatch) },
-      { label: 'Delete', icon: 'pi pi-trash', command: () => this.deleteDispatch(dispatch) }
-    ];
-    menu.toggle(event);
+  exportDispatch(){
+    try {
+      this.chooseDownloadTemplate = true;      
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  openImportDialog(){
+    try {
+      this.chooseUploadTemplate = true;      
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  downloadTemplate(){
+    try {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Coming Soon',
+        detail: 'Dispatch template download will be available soon.'
+      });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
+  }
+
+  uploadTemplate(){
+    try {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Coming Soon',
+          detail: 'Dispatch template upload will be available soon.'
+        });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
+    }
   }
 
   editDispatch(dispatch: any){
@@ -350,5 +326,24 @@ export class WtgDispatch {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Dispatch record deleted.' });
       }
     });
+  }
+
+  // Stub handlers — wire to real edit/delete APIs once dispatch plan CRUD is available.
+  dispatchMenu(event: Event, menu: any, dispatch: any) {
+    this.items = [
+      { label: 'Edit', icon: 'pi pi-pencil', command: () => console.log('edit', dispatch) },
+      { label: 'Delete', icon: 'pi pi-trash', command: () => console.log('delete', dispatch) },
+      {
+        label: 'Import',
+        icon: 'pi pi-upload',
+        command: () => this.openImportDialog()
+      },
+      {
+        label: 'Export',
+        icon: 'pi pi-download',
+        command: () => this.exportDispatch()
+      }
+    ];
+    menu.toggle(event);
   }
 }

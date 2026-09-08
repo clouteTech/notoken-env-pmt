@@ -180,6 +180,13 @@
   color: var(--text3); text-transform: uppercase;
   letter-spacing: .8px; margin-bottom: 0px;
 }
+.sum-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text2);
+}
 .sum-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));

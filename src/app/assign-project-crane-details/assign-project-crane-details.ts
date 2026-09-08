@@ -111,7 +111,6 @@ export class AssignProjectCraneDetails implements OnInit {
     
     this.route.paramMap.subscribe((param) => {
       const id = param.get('id');
-      console.log(id);
 
       if (id) {
         this.projectId = Number(id);
@@ -120,19 +119,15 @@ export class AssignProjectCraneDetails implements OnInit {
     });
 
     this.selectedProject = history.state.project;
-    console.log(this.selectedProject);
   }
 
   fetchAllProjectCraneDetails(){
     try {
       this.apiService.fetchAllProjectCraneDetails('').subscribe({
         next: val => {
-          console.log(val);
           this.projectCraneList = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           } else {
@@ -141,8 +136,6 @@ export class AssignProjectCraneDetails implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
-
       this.projectCraneList = MOCK_PROJECT_CRANE_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -152,12 +145,9 @@ export class AssignProjectCraneDetails implements OnInit {
     try {
       this.apiService.fetchCraneInfo('').subscribe({
         next: val => {
-          console.log(val);
           this.craneInfoList = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           } else {
@@ -166,8 +156,6 @@ export class AssignProjectCraneDetails implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
-
       this.craneInfoList = MOCK_CRANE_INFO_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -199,16 +187,11 @@ export class AssignProjectCraneDetails implements OnInit {
         craneId: craneId
       }
 
-      console.log(data);
-
       this.apiService.fetchCraneSuppliers(data).subscribe({
         next: val => {
-          console.log(val);
           this.supplierList = val.data.suppliers;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           } else {
@@ -217,8 +200,6 @@ export class AssignProjectCraneDetails implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
-
       this.supplierList = MOCK_CRANE_SUPPLIER_LIST;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -236,19 +217,15 @@ export class AssignProjectCraneDetails implements OnInit {
           supplierId: formValue.supplierId,
           registrationNumber: formValue.registrationNumber
         };
-        console.log(data);
   
         this.apiService.assignPrjCraneDetail(data).subscribe({
           next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success',
+            this.messageService.add({ severity: 'success', summary: 'Success', 
                   detail: `Successfully Crane Detail Assigned` });
             this.showPrjCraneDetail = false;
             this.fetchAllProjectCraneDetails();
           },
           error: err => {
-            console.log(err);
-
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
             } else {
@@ -266,19 +243,16 @@ export class AssignProjectCraneDetails implements OnInit {
           registrationNumber: formValue.registrationNumber,
           status: formValue.status
         };
-        console.log(data);
   
         this.apiService.updatePrjCraneDetail(data).subscribe({
           next: val => {
-            console.log(val);
-            this.messageService.add({ severity: 'success', summary: 'Success',
+            this.messageService.add({ severity: 'success', summary: 'Success', 
                   detail: `Successfully Crane Detail Updated` });
             this.showPrjCraneDetail = false;
             this.fetchAllProjectCraneDetails();
           },
           error: err => {
-            console.log(err);
-
+      
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
             } else {
@@ -288,8 +262,6 @@ export class AssignProjectCraneDetails implements OnInit {
         })
       }
     } catch (error) {
-      console.log(error);
-
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -316,18 +288,14 @@ export class AssignProjectCraneDetails implements OnInit {
               projectCraneDetailId: this.selectedPrjCrane.projectCraneDetailId
             }
 
-            console.log(data);
-
             this.apiService.deletePrjCraneDetail(data).subscribe({
               next: val => {
-                console.log(val);
-                this.messageService.add({ severity: 'success', summary: 'Success',
+                this.messageService.add({ severity: 'success', summary: 'Success', 
                       detail: `Successfully Deleted Crane Detail` });
                 this.fetchAllProjectCraneDetails();
               },
               error: err => {
-                console.log(err);
-
+          
                 if (err.status === 400) {
                   this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
                 } else {
@@ -336,13 +304,11 @@ export class AssignProjectCraneDetails implements OnInit {
               }
             })
           } catch (error) {
-            console.log(error);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -398,7 +364,6 @@ export class AssignProjectCraneDetails implements OnInit {
       this.showPrjCraneDetail = true;
       this.fetchCraneInfo();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -420,7 +385,6 @@ export class AssignProjectCraneDetails implements OnInit {
 
       this.actionName = 'Update';
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -442,7 +406,6 @@ export class AssignProjectCraneDetails implements OnInit {
 
   prjCraneMenu(event: Event, menu: any, crane: any){
     this.selectedPrjCrane = crane;
-    console.log(this.selectedPrjCrane);
     menu.toggle(event);
   }
 

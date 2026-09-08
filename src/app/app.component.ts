@@ -120,11 +120,7 @@ export class AppComponent implements OnInit, OnDestroy {
     else if(menu === 'WTGDispatch') this.router.navigate(['/wtg-dispatch']);
     else if(menu === 'WTGReceiving') this.router.navigate(['/wtg-receiving']);
     else if(menu === 'Foundation') this.router.navigate(['/foundation']);
-    else if(menu === 'Foundation1') this.router.navigate(['/foundation1']);
-    else if(menu === 'Foundation_11') this.router.navigate(['/foundation_11']);
-    else if(menu === 'Commisioning') this.router.navigate(['/commisioning']);
-    else if(menu === 'Commisioning1') this.router.navigate(['/commisioning1']);
-    else if(menu === 'Commisioning_11') this.router.navigate(['/commisioning_11']);
+    else if(menu === 'Commisioning') this.router.navigate(['/commissioning']);
     else if(menu === 'components') this.router.navigate(['/components']);
     else if(menu === 'towerType') this.router.navigate(['/tower-types']);
     else if(menu === 'bladeType') this.router.navigate(['/blade-types']);

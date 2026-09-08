@@ -64,22 +64,16 @@ export class AddCustomer {
 
         ]
       }
-      console.log(data)
       this.apiService.createCustomer(data)
         .subscribe({
           next: val => {
-            console.log(val.data.spvDetails);
             //this.customerDetail = val.data;
             //this.spvList = val.data.spvDetails;
               this.messageService.add({ severity: 'success', summary: 'Success', detail: val.detail });
 
           },
           error: err => {
-            console.log(err);
-            console.log(err.error);
-            console.log(err.error?.detail);
-
-            if (err.error?.status === 400) {
+            if (err.error.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
             } else {
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Customer' });

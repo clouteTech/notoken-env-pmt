@@ -156,7 +156,7 @@ export class LoginComponent implements OnInit {
           sessionStorage.setItem("token", val.data.token);
 
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login Successfully' });
-          this.router.navigate(['/foundation1']);
+          this.router.navigate(['/foundation']);
         },
         error: err => {
           console.log(err);
@@ -181,7 +181,7 @@ export class LoginComponent implements OnInit {
       sessionStorage.setItem('token', 'demo-token');
 
       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login Successfully (Demo Mode)' });
-      this.router.navigate(['/foundation1']);
+      this.router.navigate(['/foundation']);
     } else {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid OTP. Use 123456 in demo mode.' });
     }

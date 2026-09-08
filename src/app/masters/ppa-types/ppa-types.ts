@@ -58,11 +58,9 @@ export class PpaTypes implements OnInit {
     try {
       this.apiService.fetchAllPpaTypes('').subscribe({
         next: val => {
-          console.log(val);
           this.ppaTypeList = val.data;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -72,7 +70,11 @@ export class PpaTypes implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please Try Again.'
+      });
       this.ppaTypeList = MOCK_PPA_TYPES;
     }
   }
@@ -82,18 +84,14 @@ export class PpaTypes implements OnInit {
       if (this.ppaTypeForm.valid) {
         if (!this.selectedPpaType) { 
           const data = this.ppaTypeForm.value;
-          console.log(data);
     
           this.apiService.createPpaType(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
               this.showPpaModal = false;
               this.fetchAllPpaTypes();
             },
             error: err => {
-              console.log(err);
-
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -103,18 +101,15 @@ export class PpaTypes implements OnInit {
           })
         } else {
           const data = this.ppaTypeForm.value;
-          console.log(data);
   
           this.apiService.updatePpaType(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
               this.showPpaModal = false;
               this.fetchAllPpaTypes();
             },
             error: err => {
-              console.log(err);
-
+  
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -154,7 +149,11 @@ export class PpaTypes implements OnInit {
       this.showPpaModal = true;
       this.ppaTypeForm.patchValue(this.selectedPpaType);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please Try Again.'
+      });
     }
   }
 
@@ -162,7 +161,11 @@ export class PpaTypes implements OnInit {
     try {
       this.showPpaModal = true;
     } catch (error) {
-      console.log(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please Try Again.'
+      });;
     }
   }
 
@@ -200,17 +203,13 @@ export class PpaTypes implements OnInit {
         const data = {
           ppaTypeId: this.selectedPpaType.ppaTypeId
         }
-        console.log(data);
 
         this.apiService.deletePpaType(data).subscribe({
           next: val => {
-            console.log(val);
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted PPA Type' });
             this.fetchAllPpaTypes();
           },
           error: err => {
-            console.log(err);
-
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
             } else {

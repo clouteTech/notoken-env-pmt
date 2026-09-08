@@ -62,11 +62,9 @@ export class Clusters implements OnInit {
     try {
       this.apiService.fetchAllClusters('').subscribe({
         next: val => {
-          console.log(val);
           this.clusterList = val.data;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -76,7 +74,7 @@ export class Clusters implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
       this.clusterList = MOCK_CLUSTERS;
     }
   }
@@ -86,18 +84,15 @@ export class Clusters implements OnInit {
       if (this.clusterForm.valid) {   
         if (!this.selectedCluster) {
           const data = this.clusterForm.value;
-          console.log(data);
   
           this.apiService.createCluster(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Cluster' });
               this.showClusterModal = false;
               this.fetchAllClusters();
             },
             error: err => {
-              console.log(err);
-
+  
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -107,17 +102,14 @@ export class Clusters implements OnInit {
           })
         } else {
           const data = this.clusterForm.value;
-          console.log(data);
-
+  
           this.apiService.updateCluster(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Cluster' });
               this.showClusterModal = false;
               this.fetchAllClusters();
             },
             error: err => {
-              console.log(err);
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -131,7 +123,7 @@ export class Clusters implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -158,7 +150,7 @@ export class Clusters implements OnInit {
       this.showClusterModal = true;
       this.clusterForm.patchValue(this.selectedCluster);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -181,16 +173,13 @@ export class Clusters implements OnInit {
           const data = {
             clusterId: this.selectedCluster.clusterId
           }
-          console.log(data);
 
           this.apiService.deleteCluster(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Cluster' });
               this.fetchAllClusters();
             },
             error: err => {
-              console.log(err);
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -223,7 +212,7 @@ export class Clusters implements OnInit {
     try {
       this.showClusterModal = true
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 

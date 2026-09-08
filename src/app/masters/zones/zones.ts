@@ -59,12 +59,9 @@ export class Zones implements OnInit {
     try {
       this.apiService.fetchAllZones('').subscribe({
         next: val => {
-          console.log(val);
           this.zoneList = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           } else {
@@ -73,7 +70,6 @@ export class Zones implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.zoneList = MOCK_ZONES;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -84,18 +80,15 @@ export class Zones implements OnInit {
       if (this.zoneForm.valid) {   
         if (!this.selectedZone) {
           const data = this.zoneForm.value;
-          console.log(data);
-  
+
           this.apiService.createZone(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Zone' });
               this.showZoneModal = false;
               this.fetchAllZones();
             },
             error: err => {
-              console.log(err);
-
+    
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -105,18 +98,15 @@ export class Zones implements OnInit {
           })
         } else {
           const data = this.zoneForm.value;
-          console.log(data);
   
           this.apiService.updateZone(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Zone' });
               this.showZoneModal = false;
               this.fetchAllZones();
             },
             error: err => {
-              console.log(err);
-
+  
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -129,7 +119,6 @@ export class Zones implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
 
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -159,7 +148,7 @@ export class Zones implements OnInit {
       this.actionName = 'Update';
       this.zoneForm.patchValue(this.selectedZone);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -182,18 +171,12 @@ export class Zones implements OnInit {
           const data = {
             zoneId: this.selectedZone.zoneId
           }
-
-          console.log(data);
-
           this.apiService.deleteZone(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Zone' });
               this.fetchAllZones();
             },
             error: err => {
-              console.log(err);
-
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -210,7 +193,6 @@ export class Zones implements OnInit {
     try {
       this.showZoneModal = true;
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

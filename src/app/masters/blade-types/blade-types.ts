@@ -64,11 +64,9 @@ export class BladeTypes implements OnInit {
     try {
       this.apiService.fetchAllBladeTypes('').subscribe({
         next: val => {
-          console.log(val);
           this.bladeTypeList = val.data;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -79,7 +77,6 @@ export class BladeTypes implements OnInit {
       })
     } catch (error) {
       console.log(error);
-      this.bladeTypeList = MOCK_BLADE_TYPES;
     }
   }
 
@@ -88,18 +85,16 @@ export class BladeTypes implements OnInit {
       if (this.bladeTypeForm.valid) {
         if (!this.selectedBladeType) {
           const data = this.bladeTypeForm.value;
-          console.log(data);
     
           this.apiService.createBladeType(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Blade Type' });
               this.showBladeTypeModal = false;
               this.fetchAllBladeTypes();
             },
             error: err => {
               console.log(err);
-
+    
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -110,17 +105,16 @@ export class BladeTypes implements OnInit {
         } else {
           const data = this.bladeTypeForm.value;
           console.log(data);
-
+  
           this.apiService.updateBladeType(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Blade Type' });
               this.showBladeTypeModal = false;
               this.fetchAllBladeTypes();
             },
             error: err => {
               console.log(err);
-
+    
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -133,7 +127,7 @@ export class BladeTypes implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -161,7 +155,7 @@ export class BladeTypes implements OnInit {
       this.actionName = 'Update';
       this.bladeTypeForm.patchValue(this.selectedBladeType);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -169,7 +163,7 @@ export class BladeTypes implements OnInit {
     try {
       this.showBladeTypeModal = true;
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -227,18 +221,12 @@ export class BladeTypes implements OnInit {
           const data = {
             bladeTypeId: this.selectedBladeType.bladeTypeId
           }
-
-          console.log(data);
-
           this.apiService.deleteBladeType(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Blade Type' });
               this.fetchAllBladeTypes();
             },
             error: err => {
-              console.log(err);
-
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {

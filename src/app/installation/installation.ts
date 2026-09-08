@@ -478,9 +478,7 @@ export class Installation implements OnInit {
         cols.forEach(col => { group[col.field] = [null]; });
         return this.fb.group(group);
       });
-      console.log(rowForms);
       this.stepForms.push(rowForms);
-      console.log(this.stepForms);
     }
 
     this.fetchProjectList();
@@ -509,11 +507,9 @@ export class Installation implements OnInit {
 
       this.apiService.projectSearch(data).subscribe({
         next: val => {
-          console.log(val);
           this.projectList = val.data.content;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -523,7 +519,6 @@ export class Installation implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.projectList = MOCK_INSTALLATION_PROJECTS;
       this.messageService.add({
         severity: 'error',
@@ -822,12 +817,9 @@ export class Installation implements OnInit {
         if (stepIdx === this.steps.length - 1) {
           const payload = this.buildInstallationPayload();
   
-          console.log(payload);
-  
           this.apiService.installationCreate(payload).subscribe({
             next: val => {
-              console.log(val);
-
+  
               this.messageService.add({
                 severity: 'success',
                 summary: 'Step Saved',
@@ -835,8 +827,6 @@ export class Installation implements OnInit {
               });
             },
             error: err => {
-              console.log(err);
-
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               } else {
@@ -861,7 +851,6 @@ export class Installation implements OnInit {
       }
       
     } catch (error) {
-      console.log(error);
 
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -902,9 +891,7 @@ export class Installation implements OnInit {
     if(!towerInstallations?.length) return;
 
     towerInstallations.forEach((tower: any) => {
-      console.log(tower);
       const section = tower.section;
-      console.log('Section:', section);
 
       form.patchValue({
         towerInstallationId: tower.towerInstallationId,
@@ -923,7 +910,6 @@ export class Installation implements OnInit {
     if(!bladeInstallations?.length) return;
 
     bladeInstallations.forEach((blade: any) => {
-      console.log(blade);
       const bladeNo = blade.bladeNo;
 
       form.patchValue({
@@ -949,7 +935,6 @@ export class Installation implements OnInit {
 
       this.installationActivityDetails.forEach((item: any, rowIdx: number) => {
         const form = this.stepForms[0]?.[rowIdx];
-        console.log(form);
 
         if(!form) return;
 
@@ -1010,7 +995,6 @@ export class Installation implements OnInit {
         this.patchBladeInstallations(form, item.bladeInstallations);
       })
     } catch(error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -1039,11 +1023,8 @@ export class Installation implements OnInit {
 
         return this.fb.group(group);
       });
-
-      // console.log(rowForms);
       
       this.stepForms.push(rowForms);
-      console.log(this.stepForms);
     }
   }
 
@@ -1053,11 +1034,8 @@ export class Installation implements OnInit {
         projectId: this.selectedProject.projectId
       }
 
-      console.log(data);
-
       this.apiService.fetchInstallationActivities(data).subscribe({
         next: val => {
-          console.log(val);
           this.installationActivityDetails = val.data;
 
           if(this.showEditInstallationModal){
@@ -1068,13 +1046,12 @@ export class Installation implements OnInit {
           this.patchInstallationActivities();
 
 
-          console.log(
-            'Edit Installation Data:',
-            this.editInstallationActivityDetails
-          );
+          // console.log(
+          //   'Edit Installation Data:',
+          //   this.editInstallationActivityDetails
+          // );
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -1130,10 +1107,8 @@ export class Installation implements OnInit {
         return this.fb.group(group);
       });
 
-      // console.log(rowForms);
       
       this.stepForms.push(rowForms);
-      console.log(this.stepForms);
     }
   }
 
@@ -1148,15 +1123,11 @@ export class Installation implements OnInit {
         projectId: this.selectedProject.projectId
       }
 
-      console.log(data);
-
       this.apiService.fetchPrjWTGDetails(data).subscribe({
         next: val => {
-          console.log(val);
           this.prjWTGDetails = val.data.filter(
             (wtg: any) => wtg.location && wtg.location.locationId
           );
-          console.log(this.prjWTGDetails);
 
           this.createForms();
           // Installation activities are patched into stepForms — must run after
@@ -1176,7 +1147,6 @@ export class Installation implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.prjWTGDetails = MOCK_INSTALLATION_WTG_DETAILS;
       this.createForms();
     }
@@ -1188,15 +1158,11 @@ export class Installation implements OnInit {
         projectId: this.selectedProject.projectId
       }
 
-      console.log(data);
-
       this.apiService.fetchPrjCraneDetails(data).subscribe({
         next: val => {
-          console.log(val);
           this.prjCraneDetails = val.data;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -1207,7 +1173,6 @@ export class Installation implements OnInit {
       })
 
     } catch (error) {
-      console.log(error);
       this.prjCraneDetails = MOCK_INSTALLATION_CRANE_DETAILS;
     }
   }
@@ -1218,20 +1183,14 @@ export class Installation implements OnInit {
         supplierId: supplierId
       }
 
-      console.log(data);
-
       this.apiService.fetchCranesBySupplier(data).subscribe({
         next: val => {
-          console.log(val);
           this.rowSupplierCraneList[rowIdx] = val?.data?.cranes;
         },
         error: err => {
-          console.log(err);
         }
       })
     } catch(error){
-      console.log(error);
-
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -1326,11 +1285,8 @@ export class Installation implements OnInit {
         projectId: this.selectedProject.projectId
       }
 
-      console.log(data);
-
       this.apiService.installationExport(data).subscribe({
         next: (val: Blob) => {
-          console.log(val);
           const url = window.URL.createObjectURL(val);
           const a = document.createElement('a');
           a.href = url;
@@ -1341,7 +1297,6 @@ export class Installation implements OnInit {
           this.chooseDownloadTemplate = false;
         },
         error: async(err) => {
-          console.log(err);
           if (err.error instanceof Blob) {
             const text = await err.error.text();
             const json = JSON.parse(text);
@@ -1353,7 +1308,6 @@ export class Installation implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
     }
   }
 
@@ -1381,7 +1335,6 @@ export class Installation implements OnInit {
 
     this.apiService.installationImport(formData).subscribe({
       next: val => {
-        console.log(val);
 
         this.messageService.add({
           severity: 'success',
@@ -1395,7 +1348,6 @@ export class Installation implements OnInit {
         this.selectedFile = null;
       },
       error: err => {
-        console.log(err);
 
         this.messageService.add({
           severity: 'error',
@@ -1410,7 +1362,6 @@ export class Installation implements OnInit {
     try {
       this.displayImportDialog = true;
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -1431,7 +1382,6 @@ export class Installation implements OnInit {
         );
       })
       .map(({ wtg, rowIdx }) => {
-        console.log(wtg);
         const form = this.stepForms[0][rowIdx];
           
         const existingTowerInstallations = wtg.towerInstallations ?? [];
@@ -1643,11 +1593,9 @@ export class Installation implements OnInit {
         return;
       }
       const payload = this.buildEditInstallationPayload();
-      console.log(payload);
 
       this.apiService.updateInstallation(payload).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
@@ -1655,7 +1603,6 @@ export class Installation implements OnInit {
           })
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -1665,7 +1612,6 @@ export class Installation implements OnInit {
         }
       })
     } catch(error){
-      console.log(error);
 
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -1702,7 +1648,6 @@ export class Installation implements OnInit {
       this.fetchInstallationActivities();
       this.fetchPrjCraneDetails();
     } catch(error){
-      console.log(error);
     }
   }
 
@@ -1743,7 +1688,6 @@ export class Installation implements OnInit {
     try {
       this.chooseUploadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -1752,7 +1696,6 @@ export class Installation implements OnInit {
     try {
       this.chooseDownloadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -1763,7 +1706,6 @@ export class Installation implements OnInit {
 
   openMenu(menu: any, event: any, project: any){
     this.selectedProject = project;
-    console.log(this.selectedProject);
     this.items = this.getMenuItems();
     menu.toggle(event);
   }
