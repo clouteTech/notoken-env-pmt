@@ -62,23 +62,17 @@ export class Plants implements OnInit {
         size: 10,
         search: null
       }
-
-      console.log(data);
-
       this.apiService.fetchAllPlants(data).subscribe({
         next: val => {
-          console.log(val);
           this.plantList = val.data.content;
         },
         error: err => {
-          console.log(err);
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -111,18 +105,14 @@ export class Plants implements OnInit {
       if (this.plantForm.valid) {
         if (!this.selectedPlant) {
           const data = this.plantForm.value;
-          console.log(data);
           
           this.apiService.createPlant(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Plant' });
               this.showPlantModal = false;
               this.fetchPlantList();
             },
             error: err => {
-              console.log(err);
-    
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
@@ -130,18 +120,14 @@ export class Plants implements OnInit {
           })
         } else {
           const data = this.plantForm.value;
-          console.log(data);
   
           this.apiService.updatePlant(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Plant' });
               this.showPlantModal = false;
               this.fetchPlantList();
             },
             error: err => {
-              console.log(err);
-    
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
@@ -152,7 +138,6 @@ export class Plants implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -163,15 +148,11 @@ export class Plants implements OnInit {
         userGroupId: 5
       }
 
-      console.log(data);
-
       this.apiService.fetchUsersByUserGroup(data).subscribe({
         next: val => {
-          console.log(val);
           this.userList = val.data;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -179,7 +160,6 @@ export class Plants implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -189,7 +169,6 @@ export class Plants implements OnInit {
       this.showPlantModal = true;
       this.fetchUsersByUsergroup();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -205,7 +184,7 @@ export class Plants implements OnInit {
       this.fetchUsersByUsergroup();
       // console.log(this.plantForm.value);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -249,16 +228,13 @@ export class Plants implements OnInit {
           const data = {
             plantId: this.selectedPlant.id
           }
-          console.log(data);
 
           this.apiService.deletePlant(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Plant' });
               this.fetchPlantList();
             },
             error: err => {
-              console.log(err);
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -266,7 +242,6 @@ export class Plants implements OnInit {
             }
           })
         } catch (error) {
-          console.log(error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
         }
       }
@@ -275,7 +250,6 @@ export class Plants implements OnInit {
 
   plantMenu(event: Event, menu: any, plant: any){
     this.selectedPlant = plant;
-    console.log(this.selectedPlant);
     menu.toggle(event);
   }
 

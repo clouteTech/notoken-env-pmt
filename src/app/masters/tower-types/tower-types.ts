@@ -48,11 +48,9 @@ export class TowerTypes implements OnInit {
     try {
       this.apiService.fetchAllTowerTypes('').subscribe({
         next: val => {
-          console.log(val);
           this.towerTypeList = val.data;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -60,7 +58,7 @@ export class TowerTypes implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -69,17 +67,14 @@ export class TowerTypes implements OnInit {
       if (this.towerTypeForm.valid) {   
         if (!this.selectedTowerType) {     
           const data = this.towerTypeForm.value;
-          console.log(data);
     
           this.apiService.createTowerType(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Tower Type' });
               this.showTowerTypeModal = false;
               this.fetchAllTowerType();
             },
             error: err => {
-              console.log(err);
     
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -88,19 +83,14 @@ export class TowerTypes implements OnInit {
           })
         } else {
           const data = this.towerTypeForm.value;
-          console.log(data);
-  
+
           this.apiService.updateTowerType(data).subscribe({
-            next: val => {
-              console.log(val);
-  
+            next: val => { 
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Tower Type' });
               this.showTowerTypeModal = false;
               this.fetchAllTowerType();
             },
             error: err => {
-              console.log(err);
-    
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
@@ -111,7 +101,7 @@ export class TowerTypes implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -121,7 +111,7 @@ export class TowerTypes implements OnInit {
       this.actionName = 'Update';
       this.towerTypeForm.patchValue(this.selectedTowerType);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -140,7 +130,7 @@ export class TowerTypes implements OnInit {
     try {
       this.showTowerTypeModal = true;
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -179,17 +169,12 @@ export class TowerTypes implements OnInit {
             towerTypeId: this.selectedTowerType.towerTypeId
           }
 
-          console.log(data);
-
           this.apiService.deleteTowerType(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Tower Type' });
               this.fetchAllTowerType();
             },
             error: err => {
-              console.log(err);
-
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }

@@ -313,7 +313,6 @@ export class WtgDispatch {
     try {
       this.chooseDownloadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -322,7 +321,6 @@ export class WtgDispatch {
     try {
       this.chooseUploadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

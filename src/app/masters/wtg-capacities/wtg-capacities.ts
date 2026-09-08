@@ -48,19 +48,16 @@ export class WtgCapacities implements OnInit {
     try {
       this.apiService.fetchAllCapacities('').subscribe({
         next: val => {
-          console.log(val);
           this.wtgCapacityList = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -69,18 +66,15 @@ export class WtgCapacities implements OnInit {
       if (this.wtgCapacityForm.valid) {
         if (!this.selectedCapacity) {  
           const data = this.wtgCapacityForm.value;
-          console.log(data);
     
           this.apiService.createCapacity(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Capacity' });
               this.showWtgCapacityModal = false;
               this.fetchAllCapacities();
             },
             error: err => {
-              console.log(err);
-    
+
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
@@ -88,18 +82,14 @@ export class WtgCapacities implements OnInit {
           })
         } else {
           const data = this.wtgCapacityForm.value;
-    
-          console.log(data);
   
           this.apiService.updateCapacity(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Capacity' });
               this.showWtgCapacityModal = false;
               this.fetchAllCapacities();
             },
             error: err => {
-              console.log(err);
   
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -111,7 +101,7 @@ export class WtgCapacities implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -135,7 +125,7 @@ export class WtgCapacities implements OnInit {
       this.showWtgCapacityModal = true;
       this.wtgCapacityForm.patchValue(this.selectedCapacity);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -143,7 +133,7 @@ export class WtgCapacities implements OnInit {
     try {
       this.showWtgCapacityModal = true;
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -182,16 +172,11 @@ export class WtgCapacities implements OnInit {
             capacityId: this.selectedCapacity.capacityId
           }
 
-          console.log(data);
-
           this.apiService.deleteCapacity(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Capacity' });
             },
             error: err => {
-              console.log(err);
-
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
