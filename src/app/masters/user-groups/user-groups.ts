@@ -68,17 +68,13 @@ export class UserGroups implements OnInit {
         sortDirection: 'asc'
       }
 
-      console.log(data);
-
       this.apiService.fetchAllUserGroups(data).subscribe({
         next: val => {
-          console.log(val);
           this.userGroupList = val.data.content;
 
           this.totalRecords = val.data.totalElements ?? 0;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -86,7 +82,7 @@ export class UserGroups implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -95,18 +91,14 @@ export class UserGroups implements OnInit {
       if(this.userGroupForm.valid){
         if (!this.selectedUsergroup) {
           const data = this.userGroupForm.value;
-          console.log(data);
   
           this.apiService.createUserGroup(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created User Group' });
               this.showUserGroupModal = false;
               this.fetchAllUserGroups();
             },
             error: err => {
-              console.log(err);
-  
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
@@ -114,17 +106,14 @@ export class UserGroups implements OnInit {
           })
         } else {
           const data = this.userGroupForm.value;
-          console.log(data);
-  
+
           this.apiService.updateUserGroup(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated User Group' });
               this.showUserGroupModal = false;
               this.fetchAllUserGroups();
             },
             error: err => {
-              console.log(err);
   
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -136,7 +125,7 @@ export class UserGroups implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -145,7 +134,7 @@ export class UserGroups implements OnInit {
       this.showUserGroupModal = true;
       this.userGroupForm.patchValue(this.selectedUsergroup);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -169,16 +158,12 @@ export class UserGroups implements OnInit {
             userGroupId: this.selectedUsergroup.userGroupId
           }
 
-          console.log(data);
-
           this.apiService.deleteUserGroup(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted User Group' });
               this.fetchAllUserGroups();
             },
             error: err => {
-              console.log(err);
 
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -233,17 +218,13 @@ export class UserGroups implements OnInit {
         roleId: role.roleId
       }
 
-      console.log(data);
-
       this.apiService.assignRolesToUsergroup(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Role Assigned Successfully' });
           this.fetchUsergroup();
           this.fetchAllUserGroups();
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -251,7 +232,6 @@ export class UserGroups implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -263,17 +243,13 @@ export class UserGroups implements OnInit {
         roleId: role.roleId
       }
 
-      console.log(data);
-
       this.apiService.removeRolesToUsergroup(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Role Removed Successfully' });
           this.fetchUsergroup();
           this.fetchAllUserGroups();
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -281,7 +257,6 @@ export class UserGroups implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -291,12 +266,10 @@ export class UserGroups implements OnInit {
       this.roleModalLoading = true;
       this.apiService.fetchRoleInfo('').subscribe({
         next: val => {
-          console.log(val);
           this.roleInfoList = val.data;
           this.roleModalLoading = false;
         },
         error: err => {
-          console.log(err);
           this.roleModalLoading = false;
 
           if (err.status === 400) {
@@ -305,7 +278,6 @@ export class UserGroups implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.roleModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -317,11 +289,8 @@ export class UserGroups implements OnInit {
         userGroupId: this.selectedUsergroup.userGroupId
       }
 
-      console.log(data);
-
       this.apiService.fetchUserGroup(data).subscribe({
         next: val => {
-          console.log(val);
           this.assignedRoles = val.data.roles ?? [];
         },
         error: err => {
@@ -331,7 +300,6 @@ export class UserGroups implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -343,7 +311,6 @@ export class UserGroups implements OnInit {
       this.fetchRoleInfo();
       this.fetchUsergroup();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -352,7 +319,7 @@ export class UserGroups implements OnInit {
     try {
       this.showUserGroupModal = true;
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -387,7 +354,6 @@ export class UserGroups implements OnInit {
   }
 
   loadUser(event: any) {
-    console.log(event);
     this.first = event.first;
 
     this.page = event.first / event.rows;

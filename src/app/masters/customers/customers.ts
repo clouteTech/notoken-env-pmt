@@ -92,6 +92,18 @@ export class Customers {
         error: err => {
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          } else if (err.status === 0 || err.status >= 500) {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Service Unavailable',
+              detail: 'Unable to update the customer at the moment. Please try again later.'
+            });
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Unable to update the customer. Please try again.'
+            });
           }
         }
       })

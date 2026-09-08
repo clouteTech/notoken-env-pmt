@@ -61,19 +61,15 @@ export class Cranes implements OnInit {
     try {
       this.apiService.fetchAllCranes('').subscribe({
         next: val => {
-          console.log(val);
           this.craneList = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -83,18 +79,14 @@ export class Cranes implements OnInit {
       if (this.craneForm.valid) {    
         if (!this.selectedCrane) {
           const data = this.craneForm.value;
-          console.log(data);
     
           this.apiService.createCrane(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Crane' });
               this.showCraneModal = false;
               this.fetchAllCranes();
             },
             error: err => {
-              console.log(err);
-    
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
@@ -102,18 +94,14 @@ export class Cranes implements OnInit {
           })
         } else {
           const data = this.craneForm.value;
-          console.log(data);
   
           this.apiService.updateCrane(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Crane' });
               this.showCraneModal = false;
               this.fetchAllCranes();
             },
             error: err => {
-              console.log(err);
-    
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
@@ -124,7 +112,6 @@ export class Cranes implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -144,7 +131,6 @@ export class Cranes implements OnInit {
         this.assignSuppliersToCrane(supplier);
       }
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -179,16 +165,13 @@ export class Cranes implements OnInit {
         craneId: this.selectedCrane.craneId,
         supplierId: supplier.supplierId
       }
-      console.log(data);
 
       this.apiService.assignSuppliersToCrane(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Supplier Assigned Successfully' });
           this.fetchCraneSuppliers();
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -196,7 +179,6 @@ export class Cranes implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -207,24 +189,19 @@ export class Cranes implements OnInit {
         craneId: this.selectedCrane.craneId,
         supplierId: supplier.supplierId
       }
-      console.log(data);
 
       this.apiService.removeSuppliersFromCrane(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Supplier Removed Successfully' });
           this.fetchCraneSuppliers();
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -234,23 +211,17 @@ export class Cranes implements OnInit {
       const data = {
         craneId: this.selectedCrane.craneId
       }
-      console.log(data);
-
       this.apiService.fetchCraneSuppliers(data).subscribe({
         next: val => {
-          console.log(val);
           this.assignedSuppliers = val.data.suppliers;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -275,24 +246,19 @@ export class Cranes implements OnInit {
           const data = {
             craneId: this.selectedCrane.craneId
           }
-          console.log(data);
 
           this.apiService.deleteCrane(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Crane' });
               this.fetchAllCranes();
             },
             error: err => {
-              console.log(err);
-
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
             }
           })
         } catch (error) {
-          console.log(error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
         }
       }
@@ -304,12 +270,10 @@ export class Cranes implements OnInit {
       this.supplierModalLoading = true;
       this.apiService.fetchSupplierInfo('').subscribe({
         next: val => {
-          console.log(val);
           this.supplierList = val.data;
           this.supplierModalLoading = false;
         },
         error: err => {
-          console.log(err);
           this.supplierModalLoading = false;
 
           if (err.status === 400) {
@@ -318,7 +282,6 @@ export class Cranes implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.supplierModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -328,7 +291,6 @@ export class Cranes implements OnInit {
     try {
       this.showCraneModal = true;
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -339,7 +301,6 @@ export class Cranes implements OnInit {
       this.actionName = 'Update';
       this.craneForm.patchValue(this.selectedCrane);
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -351,7 +312,6 @@ export class Cranes implements OnInit {
       this.fetchSupplierInfo();
       this.fetchCraneSuppliers();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

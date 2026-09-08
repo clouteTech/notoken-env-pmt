@@ -88,16 +88,12 @@ export class CompanyUsers implements OnInit {
         sortDirection: 'asc'
       }
 
-      console.log(data);
-
       this.apiService.fetchAllCompanyUsers(data).subscribe({
         next: val => {
-          console.log(val);
           this.companyUserList = val.data.content;
           this.totalRecords = val.data.totalElements;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -105,7 +101,7 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -114,17 +110,14 @@ export class CompanyUsers implements OnInit {
       if (this.companyUserForm.valid) {  
         if (!this.selectedCompanyUser) {   
           const data = this.companyUserForm.value;
-          console.log(data);
     
           this.apiService.createCompanyUsers(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Company User' });
               this.showCompanyUserModal = false;
               this.fetchAllCompanyUser();
             },
             error: err => {
-              console.log(err);
     
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -133,17 +126,14 @@ export class CompanyUsers implements OnInit {
           })
         } else {
           const data = this.companyUserForm.value;
-          console.log(data);
   
           this.apiService.updateCompanyUsers(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Company User' });
               this.showCompanyUserModal = false;
               this.fetchAllCompanyUser();
             },
             error: err => {
-              console.log(err);
     
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -155,7 +145,7 @@ export class CompanyUsers implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -213,7 +203,6 @@ export class CompanyUsers implements OnInit {
         this.assignPlantToUser(plant);
       }
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -251,7 +240,6 @@ export class CompanyUsers implements OnInit {
         this.assignClustersToUser(cluster);
       }
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -277,23 +265,18 @@ export class CompanyUsers implements OnInit {
       const data = {
         userId: this.selectedCompanyUser.userId
       }
-      console.log(data);
 
       this.apiService.fetchActiveClustersFromUser(data).subscribe({
         next: val => {
-          console.log("assignedActiveClusters", val);
           this.assignedActiveClusters = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -304,24 +287,19 @@ export class CompanyUsers implements OnInit {
         userId: this.selectedCompanyUser.userId,
         clusterId: cluster.clusterId
       }
-      console.log(data);
 
       this.apiService.assignClustersToUser(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Cluster Assigned Successfully' });
           this.fetchActiveClustersFromUser();
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -332,24 +310,18 @@ export class CompanyUsers implements OnInit {
         userId: this.selectedCompanyUser.userId,
         clusterId: cluster.clusterId
       }
-      console.log(data);
-
       this.apiService.removeClustersFromUser(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Cluster Removed Successfully' });
           this.fetchActiveClustersFromUser();
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -368,7 +340,6 @@ export class CompanyUsers implements OnInit {
         this.assignDepartmentsToUser(department);
       }
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -394,15 +365,12 @@ export class CompanyUsers implements OnInit {
       const data = {
         userId: this.selectedCompanyUser.userId
       }
-      console.log(data);
 
       this.apiService.fetchActiveDepartmentsFromUser(data).subscribe({
         next: val => {
-          console.log("assignedActiveDepartments", val);
           this.assignedActiveDepartments = val.data;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -410,7 +378,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -421,16 +388,13 @@ export class CompanyUsers implements OnInit {
         userId: this.selectedCompanyUser.userId,
         departmentId: department.departmentId
       }
-      console.log(data);
 
       this.apiService.assignDepartmentsToUser(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Department Assigned Successfully' });
           this.fetchActiveDepartmentsFromUser();
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -438,7 +402,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -449,24 +412,19 @@ export class CompanyUsers implements OnInit {
         userId: this.selectedCompanyUser.userId,
         departmentId: department.departmentId
       }
-      console.log(data);
 
       this.apiService.removeDepartmentsFromUser(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Department Removed Successfully' });
           this.fetchActiveDepartmentsFromUser();
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -485,7 +443,6 @@ export class CompanyUsers implements OnInit {
         this.assignComponentsToUser(component);
       }
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -511,15 +468,12 @@ export class CompanyUsers implements OnInit {
       const data = {
         userId: this.selectedCompanyUser.userId
       }
-      console.log(data);
 
       this.apiService.fetchActiveComponentsFromUser(data).subscribe({
         next: val => {
-          console.log("assignedActiveComponents", val);
           this.assignedActiveComponents = val.data;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -527,7 +481,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -539,16 +492,13 @@ export class CompanyUsers implements OnInit {
         userId: this.selectedCompanyUser.userId,
         componentId: component.componentId
       }
-      console.log(data);
 
       this.apiService.assignComponentsToUser(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Component Assigned Successfully' });
           this.fetchActiveComponentsFromUser();
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -556,7 +506,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -567,16 +516,13 @@ export class CompanyUsers implements OnInit {
         userId: this.selectedCompanyUser.userId,
         componentId: component.componentId
       }
-      console.log(data);
 
       this.apiService.removeComponentsFromUser(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Component Removed Successfully' });
           this.fetchActiveComponentsFromUser();
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -584,7 +530,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -595,11 +540,9 @@ export class CompanyUsers implements OnInit {
       this.apiService.userGroupInfo('')
       .subscribe({
         next:val=>{
-          console.log(val);
           this.userGroupList = val.data;
           this.userGroupModalLoading = false;
         },error:(err)=>{
-          console.log(err);
           this.userGroupModalLoading = false;
 
           if (err.status === 400) {
@@ -608,7 +551,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.userGroupModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -619,14 +561,10 @@ export class CompanyUsers implements OnInit {
       const data = {
         userId: this.selectedCompanyUser.userId
       }
-      console.log(data);
 
       this.apiService.fetchCompanyUser(data).subscribe({
         next: val => {
-          console.log(val);
           this.assignedUserGroups = val.data?.userGroups ?? [];
-
-          console.log('Assigned Groups:', this.assignedUserGroups);
         },
         error: err => {
           if (err.status === 400) {
@@ -635,7 +573,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -645,12 +582,10 @@ export class CompanyUsers implements OnInit {
       this.plantModalLoading = true;
       this.apiService.fetchPlantInfo('').subscribe({
         next: val => {
-          console.log("plantInfoList", val);
           this.plantInfoList = val.data;
           this.plantModalLoading = false;
         },
         error: err => {
-          console.log(err);
           this.plantModalLoading = false;
 
           if (err.status === 400) {
@@ -659,7 +594,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.plantModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -672,18 +606,14 @@ export class CompanyUsers implements OnInit {
         plantId: plant.id
       }
 
-      console.log(data);
-
       this.apiService.assignPlantToUser(data).subscribe({
-        next: val => {
-          console.log("Plant Assigned Successfully:", val);   
+        next: val => { 
           this.assignedPlant = plant.id;
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Assigned Successfully' });
           this.fetchActivePlantsFromUser();
           // this.showPlantMappingModal = false;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -691,7 +621,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -718,19 +647,14 @@ export class CompanyUsers implements OnInit {
             plantId: plant.id
           }
 
-          console.log(data);
-
           this.apiService.removePlantFromUser(data).subscribe({
             next: val => {
-              console.log("Plant Removed Successfully:", val);
               this.assignedPlant = null;
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Plant Removed Successfully' });
               this.fetchActivePlantsFromUser();
               // this.showPlantMappingModal = false;
             },
             error: err => {
-              console.log(err);
-
               // if (err.status === 400) {
               //   this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               // }
@@ -741,7 +665,6 @@ export class CompanyUsers implements OnInit {
             }
           })
         } catch (error) {
-          console.log(error);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
         }
       }
@@ -754,20 +677,13 @@ export class CompanyUsers implements OnInit {
         userId: this.selectedCompanyUser.userId
       }
 
-      console.log(data);
-
       this.apiService.fetchActivePlantsFromUser(data).subscribe({
         next: val => {
-          console.log(val);
-          console.log('ACTIVE PLANTS:', val.data);
 
           const list = val.data ?? [];
           this.assignedPlant = list.length ? list[0] : null;
-
-          console.log('UPDATED assignedPlant:', this.assignedPlant);
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -775,7 +691,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -788,7 +703,6 @@ export class CompanyUsers implements OnInit {
       this.fetchUserGroupInfo();
       this.fetchCompanyUser();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -801,7 +715,6 @@ export class CompanyUsers implements OnInit {
       this.fetchCompanyUser();
       this.fetchActivePlantsFromUser();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -811,30 +724,25 @@ export class CompanyUsers implements OnInit {
       this.showCompanyUserModal = true;
       this.companyUserForm.patchValue(this.selectedCompanyUser);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
   assignUserGroups(usergroup: any){
     try{
-      console.log(usergroup);
 
       const data = {
         userId: this.selectedCompanyUser.userId,
         userGroupId: usergroup?.userGroupId
       }
 
-      console.log(data);
-
       this.apiService.assignGroup(data)
       .subscribe({
         next:(val)=>{
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'User Group Assigned Successfully' });
           this.fetchCompanyUser();
           this.fetchAllCompanyUser();
         },error:(err)=>{
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -849,18 +757,13 @@ export class CompanyUsers implements OnInit {
 
   removeUserGroups(usergroup: any){
     try {
-      console.log(usergroup);
-
       const data = {
         userId: this.selectedCompanyUser.userId,
         userGroupId: usergroup?.userGroupId
       }
-
-      console.log(data);
       
       this.apiService.removeUserGroup(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'User Group Removed Successfully' });
           this.fetchCompanyUser();
           this.fetchAllCompanyUser();
@@ -872,7 +775,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -882,7 +784,6 @@ export class CompanyUsers implements OnInit {
       this.clusterModalLoading = true;
       this.apiService.fetchClusterInfo('').subscribe({
         next: val => {
-          console.log(val);
           this.clusterInfoList = val.data;
           this.clusterModalLoading = false;
         },
@@ -894,7 +795,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.clusterModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -905,7 +805,6 @@ export class CompanyUsers implements OnInit {
       this.departmentModalLoading = true;
       this.apiService.fetchDepartmentInfo('').subscribe({
         next: val => {
-          console.log(val);
           this.departmentInfoList = val.data;
           this.departmentModalLoading = false;
         },
@@ -917,7 +816,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.departmentModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -928,12 +826,10 @@ export class CompanyUsers implements OnInit {
       this.componentModalLoading = true;
       this.apiService.fetchAllComponents('').subscribe({
         next: val => {
-          console.log(val);
           this.componentList = val.data;
           this.componentModalLoading = false;
         },
         error: err => {
-          console.log(err);
           this.componentModalLoading = false;
 
           if (err.status === 400) {
@@ -942,7 +838,6 @@ export class CompanyUsers implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.componentModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -968,17 +863,12 @@ export class CompanyUsers implements OnInit {
           userId: this.selectedCompanyUser.userId
         }
 
-        console.log(data);
-
         this.apiService.deleteCompanyUsers(data).subscribe({
           next: val => {
-            console.log(val);
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Company User' });
             this.fetchAllCompanyUser();
           },
           error: err => {
-            console.log(err);
-
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
             }
@@ -992,7 +882,7 @@ export class CompanyUsers implements OnInit {
     try {
       this.showCompanyUserModal = true;
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -1003,7 +893,6 @@ export class CompanyUsers implements OnInit {
       this.fetchClusterInfo();
       this.fetchActiveClustersFromUser();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -1015,7 +904,6 @@ export class CompanyUsers implements OnInit {
       this.fetchDepartmentInfo();
       this.fetchActiveDepartmentsFromUser();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -1027,7 +915,6 @@ export class CompanyUsers implements OnInit {
       this.fetchAllComponents();
       this.fetchActiveComponentsFromUser();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -1074,7 +961,6 @@ export class CompanyUsers implements OnInit {
 
   companyUserMenu(event: Event, menu: any, companyUser: any){
     this.selectedCompanyUser = companyUser;
-    console.log(this.selectedCompanyUser);
     menu.toggle(event);
   }
 
@@ -1085,7 +971,6 @@ export class CompanyUsers implements OnInit {
   }
 
   loadUser(event: any) {
-    console.log(event);
     this.first = event.first;
 
     this.page = event.first / event.rows;

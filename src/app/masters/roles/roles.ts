@@ -52,15 +52,11 @@ export class Roles implements OnInit {
         size: this.size
       }
 
-      console.log(data);
-
       this.apiService.fetchAllRoles(data).subscribe({
         next: val => {
-          console.log(val);
           this.roleList = val.data.content;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -70,7 +66,6 @@ export class Roles implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.roleList = MOCK_ROLES;
     }
   }
