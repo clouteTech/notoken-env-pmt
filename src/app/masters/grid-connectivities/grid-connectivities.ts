@@ -42,11 +42,9 @@ export class GridConnectivities {
     try {
       this.apiService.fetchAllGridConnectivities('').subscribe({
         next: val => {
-          console.log(val);
           this.gridConnectivityList = val.data;
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -54,7 +52,7 @@ export class GridConnectivities {
         }
       })
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -63,17 +61,14 @@ export class GridConnectivities {
       if (this.gridConnectivityForm.valid) {
         if (!this.selectedGridConnectivity) { 
           const data = this.gridConnectivityForm.value;
-          console.log(data);
     
           this.apiService.createGridConnectivity(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Grid Connectivity' });
               this.showConnectivityModal = false;
               this.fetchAllGridConnectivities();
             },
             error: err => {
-              console.log(err);
     
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -82,17 +77,14 @@ export class GridConnectivities {
           })
         } else {
           const data = this.gridConnectivityForm.value;
-          console.log(data);
-    
+
           this.apiService.updateGridConnectivity(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Grid Connectivity' });
               this.showConnectivityModal = false;
               this.fetchAllGridConnectivities();
             },
             error: err => {
-              console.log(err);
     
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -104,7 +96,7 @@ export class GridConnectivities {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -113,7 +105,7 @@ export class GridConnectivities {
       this.showConnectivityModal = true;
       this.gridConnectivityForm.patchValue(this.selectedGridConnectivity);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -130,7 +122,7 @@ export class GridConnectivities {
     try {
       this.showConnectivityModal = true;
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -168,17 +160,12 @@ export class GridConnectivities {
         const data = {
           gridConnectivityId: this.selectedGridConnectivity.gridConnectivityId
         }
-
-        console.log(data);
-
         this.apiService.deleteGridConnectivity(data).subscribe({
           next: val => {
-            console.log(val);
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Grid Connectivity' });
             this.fetchAllGridConnectivities();
           },
           error: err => {
-            console.log(err);
 
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });

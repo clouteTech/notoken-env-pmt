@@ -93,7 +93,6 @@ export class WtgReceivingProjectSummary {
     try {
       this.chooseDownloadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -127,7 +126,6 @@ export class WtgReceivingProjectSummary {
     try {
       this.chooseUploadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

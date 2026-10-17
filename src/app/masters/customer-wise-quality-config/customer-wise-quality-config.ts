@@ -24,7 +24,6 @@ export class CustomerWiseQualityConfig {
 
   addConfiguration(){
     try {
-      console.log(this.qualityConfigurationForm.value);
       const formValue = this.qualityConfigurationForm.value;
       const selectedComponent = formValue.componentName;
 
@@ -40,7 +39,7 @@ export class CustomerWiseQualityConfig {
   
       this.messageService.add({severity: 'success', summary: 'Success', detail: 'Quality Configuraion Added Successfully'});
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -66,7 +65,7 @@ export class CustomerWiseQualityConfig {
 
       this.messageService.add({severity: 'success', summary: 'Success', detail: 'Quality Configuraion Removed Successfully'});
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -79,16 +78,13 @@ export class CustomerWiseQualityConfig {
 
         return;
       }
-
-      console.log('Final Data:', this.qualityConfigList);
-
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
         detail: 'All components configured successfully'
       });
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 

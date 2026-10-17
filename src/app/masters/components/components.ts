@@ -38,12 +38,9 @@ export class Components implements OnInit {
     try {
       this.apiService.fetchAllComponents('').subscribe({
         next: val => {
-          console.log(val);
           this.componentList = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           } else {
@@ -52,7 +49,6 @@ export class Components implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.componentList = MOCK_COMPONENTS;
     }
   }

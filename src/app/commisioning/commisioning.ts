@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -84,7 +84,7 @@ export class Commisioning {
     { id: 2, label: 'COMMISSIONING', subLabel: 'USS/WTG Charge, Converter, Generation, COD & Certificate' },
     { id: 3, label: 'STPT', subLabel: 'Short-Term Performance Test' },
     { id: 4, label: 'HOTO', subLabel: 'Hand Over Take Over' },
-    { id: 5, label: 'HOTO Sign-Off', subLabel: 'Final Hand Over Take Over' },
+    // { id: 5, label: 'HOTO Sign-Off', subLabel: 'Final Hand Over Take Over' },
   ];
 
   stepColumnDefs: { [stepIdx: number]: { field: string; header: string; type: 'date' | 'text' | 'number' }[] } = {
@@ -134,13 +134,12 @@ export class Commisioning {
       { field: 'hotoActualFinish',   header: 'HOTO Audit - Actual Finish',    type: 'date' },
       // { field: 'hotoForecastFinish',   header: 'HOTO Forecast Finish',    type: 'date' },
       { field: 'hotoFinishDelayReason',   header: 'HOTO Finish Delay Reason',    type: 'text' },
-    ],
-    4: [
-      { field: 'hotoSignOffPlanStart',    header: 'HOTO Sign-Off Plan Start',     type: 'date' },
-      { field: 'hotoSignOffPlanActual',    header: 'HOTO Sign-Off Plan Actual',     type: 'date' },
-      { field: 'hotoSignOffSignOffFinish',    header: 'HOTO Sign-Off Finish',     type: 'date' },
-      { field: 'hotoSignOffDelayReason',    header: 'HOTO Sign-Off Delay Reason',     type: 'text' }
-    ],
+      { field: 'hotoSignOff',   header: 'HOTO Sign Off',    type: 'date' },
+      // { field: 'hotoSignOffPlanStart',    header: 'HOTO Sign-Off Plan Start',     type: 'date' },
+      // { field: 'hotoSignOffPlanActual',    header: 'HOTO Sign-Off Plan Actual',     type: 'date' },
+      // { field: 'hotoSignOffSignOffFinish',    header: 'HOTO Sign-Off Finish',     type: 'date' },
+      // { field: 'hotoSignOffDelayReason',    header: 'HOTO Sign-Off Delay Reason',     type: 'text' }
+    ]
   };
 
   constructor(
@@ -163,7 +162,7 @@ export class Commisioning {
     }
 
     for (let stepIdx = 0; stepIdx < this.steps.length; stepIdx++) {
-      const cols = this.stepColumnDefs[stepIdx];
+      const cols = this.stepColumnDefs[stepIdx] ?? [];
       const rowForms: FormGroup[] = this.wtgRows.map(() => {
         const group: any = {};
         cols.forEach(col => { group[col.field] = [null]; });

@@ -130,7 +130,6 @@ export class WtgQuality implements OnInit {
     try {
       this.showQualDetailsModal = true;
     } catch (error) {
-      console.log(error);
     }
   }
 
@@ -138,7 +137,6 @@ export class WtgQuality implements OnInit {
     try {
       this.chooseDownloadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -147,7 +145,6 @@ export class WtgQuality implements OnInit {
     try {
       this.chooseUploadTemplate = true;      
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }

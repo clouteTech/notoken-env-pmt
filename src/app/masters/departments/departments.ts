@@ -53,15 +53,16 @@ export class Departments implements OnInit {
     try {
       this.apiService.fetchAllDepartments('').subscribe({
         next: val => {
-          console.log(val);
           this.departmentList = val.data;
         },
         error: err => {
-          console.log(err);
+          if (err.status === 400) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
+          }
         }
       })
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -69,19 +70,15 @@ export class Departments implements OnInit {
     try {
       this.apiService.fetchUsersByUserGroup(data).subscribe({
         next: val => {
-          console.log(val);
           this.userList = val.data;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -93,11 +90,8 @@ export class Departments implements OnInit {
         userGroupId: 4
       }
 
-      console.log(data);
-
       this.fetchUsersByUserGroup(data);
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -107,11 +101,9 @@ export class Departments implements OnInit {
       const data = {
         userGroupId: 6
       }
-      console.log(data);
 
       this.fetchUsersByUserGroup(data);
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -121,18 +113,14 @@ export class Departments implements OnInit {
       if (this.departmentForm.valid) {   
         if (!this.selectedDepartment) {
           const data = this.departmentForm.value;
-          console.log(data);
   
           this.apiService.createDepartments(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created Department' });
               this.showDepartmentModal = false;
               this.fetchAllDepartments();
             },
             error: err => {
-              console.log(err);
-  
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
               }
@@ -140,17 +128,14 @@ export class Departments implements OnInit {
           })
         } else {
           const data = this.departmentForm.value;
-          console.log(data);
   
           this.apiService.updateDepartments(data).subscribe({
             next: val => {
-              console.log(val);
               this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Updated Department' });
               this.showDepartmentModal = false;
               this.fetchAllDepartments();
             },
             error: err => {
-              console.log(err);
   
               if (err.status === 400) {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -162,7 +147,7 @@ export class Departments implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill All Required field' });
       }
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -177,11 +162,9 @@ export class Departments implements OnInit {
         status: this.selectedDepartment.status
       });
 
-      console.log("department form:", this.departmentForm.value);
-
       this.fetchDepartmentHead();
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -227,12 +210,10 @@ export class Departments implements OnInit {
       this.deptClusterModalLoading = true;
       this.apiService.fetchClusterInfo('').subscribe({
         next: val => {
-          console.log(val);
           this.clusterInfoList = val.data;
           this.deptClusterModalLoading = false;
         },
         error: err => {
-          console.log(err);
           this.deptClusterModalLoading = false;
 
           if (err.status === 400) {
@@ -241,7 +222,6 @@ export class Departments implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.deptClusterModalLoading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
@@ -253,21 +233,15 @@ export class Departments implements OnInit {
         departmentId: this.selectedDepartment.departmentId
       }
 
-      console.log(data);
-
       this.apiService.fetchDepartmentById(data).subscribe({
         next: val => {
-          console.log(val);
           this.assignedClusters = val.data.clusters;
 
           this.assignedClusters.forEach((cluster: any) => {
             this.selectedClusterHeadId[cluster.clusterId] = cluster.clusterHeadId;
           });
-
-          console.log('Selected Cluster Heads:', this.selectedClusterHeadId);
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -275,7 +249,6 @@ export class Departments implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -288,17 +261,13 @@ export class Departments implements OnInit {
         clusterHeadId: this.selectedClusterHeadId[cluster.clusterId]
       }
 
-      console.log(data);
-
       this.apiService.assignClustersToDepartment(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Cluster Assigned Successfully' });
           this.fetchDepartmentById();
           this.fetchAllDepartments();
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -306,7 +275,6 @@ export class Departments implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -317,18 +285,13 @@ export class Departments implements OnInit {
         departmentId: this.selectedDepartment.departmentId,
         clusterId: cluster.clusterId
       }
-
-      console.log(data);
-
       this.apiService.removeClustersFromDepartment(data).subscribe({
         next: val => {
-          console.log(val);
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Cluster Removed Successfully' });
           this.fetchDepartmentById();
           this.fetchAllDepartments();
         },
         error: err => {
-          console.log(err);
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -336,7 +299,6 @@ export class Departments implements OnInit {
         }
       })
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -345,7 +307,6 @@ export class Departments implements OnInit {
     try {
       this.selectedClusterHeadId[clusterId] = userId;
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -358,7 +319,6 @@ export class Departments implements OnInit {
       this.fetchClusterHead();
       this.fetchDepartmentById();
     } catch (error) {
-      console.log(error);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
@@ -383,16 +343,12 @@ export class Departments implements OnInit {
           departmentId: this.selectedDepartment.departmentId
         }
 
-        console.log(data);
-
         this.apiService.deleteDepartments(data).subscribe({
           next: val => {
-            console.log(val);
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted Department' });
             this.fetchAllDepartments();
           },
           error: err => {
-            console.log(err);
 
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
@@ -408,7 +364,7 @@ export class Departments implements OnInit {
       this.showDepartmentModal = true;
       this.fetchDepartmentHead();
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 

@@ -111,13 +111,10 @@ SubmitBtnName:any = 'Submit';
       }
        this.apiService.customerGet(data).subscribe({
         next: val => {
-          console.log(val.data.spvDetails);
           this.customerDetail = val.data;
           this.spvList = val.data.spvDetails;
         },
         error: err => {
-          console.log(err);
-
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           }
@@ -244,17 +241,13 @@ SubmitBtnName:any = 'Submit';
             "customerId": val,
             "customerSpvId": this.selectedSPV.customerSpvId
         }
-        
-        console.log(data);
 
          this.apiService.spvDelete(data).subscribe({
           next: val => {
-            console.log(val);
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted PPA Type' });
             this.getCustomerList();
           },
           error: err => {
-            console.log(err);
 
             if (err.status === 400) {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });

@@ -200,14 +200,19 @@ export class MonthlyPlan implements OnInit {
         },
         error: err => {
           this.isLoadingComponentDetails = false;
-          this.componentDetailsError = true;
-          this.monthlyComponentDetails = null;
-          this.showComponentDetails = false;
+          this.monthlyComponentDetails = this.getMockMonthlyComponentDetails();
+          this.showComponentDetails = true;
+          this.componentDetailsError = false;
 
           if (err.status === 400) {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.detail });
           } else {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch component requirements. Please try again.' });
+            // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch component requirements. Please try again.' });
+             this.messageService.add({
+              severity: 'info',
+              summary: 'Mock Data',
+              detail: 'Showing mock data because the backend service is unavailable.'
+            });
           }
         }
       })
@@ -372,6 +377,82 @@ export class MonthlyPlan implements OnInit {
       summary: 'Not Available',
       detail: 'Component serial creation API is not available yet. This request could not be completed.'
     });
+  }
+
+  private getMockMonthlyComponentDetails() {
+    return {
+      totalRecords: 1,
+      totalWtgCount: 1,
+      totalComponentCount: 11,
+
+      wtgModels: [
+        {
+          wtgConfigId: 1,
+          wtgType: 'EN-3.3 MW',
+          capMw: 2.5,
+          towerType: '120HH-474T',
+          bladeType: 'Big',
+          wtgCount: 1,
+          componentCount: 11,
+          components: [
+            {
+              componentMasterId: 1,
+              componentName: 'Topflange',
+              requiredQty: 1,
+              createdQty: 1
+            },
+            {
+              componentMasterId: 2,
+              componentName: 'Bottomflange',
+              requiredQty: 1,
+              createdQty: 1
+            },
+            {
+              componentMasterId: 3,
+              componentName: 'Nacelle',
+              requiredQty: 1,
+              createdQty: 1
+            },
+            {
+              componentMasterId: 4,
+              componentName: 'Hub',
+              requiredQty: 1,
+              createdQty: 1
+            },
+            {
+                "componentMasterId": 221,
+                "componentName": "Blade",
+                "requiredQty": 3,
+                "createdQty": 0
+            },
+            {
+                "componentMasterId": 225,
+                "componentName": "Tower",
+                "requiredQty": 1,
+                "createdQty": 0
+            },
+            {
+                "componentMasterId": 229,
+                "componentName": "Site Accessories",
+                "requiredQty": 1,
+                "createdQty": 0
+            },
+            {
+                "componentMasterId": 234,
+                "componentName": "Converter Panel",
+                "requiredQty": 1,
+                "createdQty": 0
+            },
+            {
+                "componentMasterId": 239,
+                "componentName": "SCADA",
+                "requiredQty": 1,
+                "createdQty": 0
+            }
+          ]
+        }
+      ]
+    };
   }
 
   getSafeSvg(svg: string): SafeHtml{

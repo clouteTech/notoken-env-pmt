@@ -45,17 +45,14 @@ export class PlantWiseProductionConfig {
       this.messageService.add({severity: 'success', summary: 'Success', detail: 'Component(s) Assigned Successfully'});
 
       this.assignComponentForm.reset();
-      console.log(this.assignedComponents);
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
   addConfiguration(){
     try {
-      console.log(this.productionConfigForm.value);
       const formValue = this.productionConfigForm.value;
-      console.log(formValue);
 
       const selectedComponent = formValue.selectedComponent;
 
@@ -74,7 +71,7 @@ export class PlantWiseProductionConfig {
 
       this.messageService.add({severity: 'success', summary: 'Success', detail: 'Production Configuraion Added Successfully'});
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
@@ -101,7 +98,7 @@ export class PlantWiseProductionConfig {
       this.messageService.add({severity: 'success', summary: 'Success', detail: 'Production Configuraion Removed Successfully'});
 
     } catch (error) {
-      console.log(error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please Try Again' });
     }
   }
 
