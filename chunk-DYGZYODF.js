@@ -1,0 +1,1 @@
+import{Ub as n,Za as o,vb as a,wb as i}from"./chunk-7RAHWLBN.js";var e=class e{};e.\u0275fac=function(t){return new(t||e)},e.\u0275cmp=o({type:e,selectors:[["app-view-allocation"]],decls:2,vars:0,template:function(t,s){t&1&&(a(0,"p"),n(1,"view-allocation works!"),i())},encapsulation:2});var l=e;export{l as ViewAllocation};
