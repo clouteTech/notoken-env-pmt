@@ -217,5 +217,25 @@ export const routes: Routes = [
     loadComponent: () => import('./project-wtg-location-details/project-wtg-location-details').then(m => m.ProjectWtgLocationDetails),
     canActivate: [authGuard]
   },
-  { path: '**', redirectTo: 'login' }
+
+  {
+    path: 'plant-allocation',
+    loadComponent: () =>
+      import('./allocation/plant-allocation/plant-allocation')
+        .then(m => m.PlantAllocation),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'view-allocation',
+    loadComponent: () =>
+      import('./allocation/view-allocation/view-allocation')
+        .then(m => m.ViewAllocation),
+    canActivate: [authGuard]
+  },
+
+
+
+  { path: '**', redirectTo: 'login' },
+
+
 ];

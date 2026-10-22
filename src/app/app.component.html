@@ -102,7 +102,12 @@
           <span>WTG Receiving</span>
         </button>
 
+
+
         <!-- end -->
+
+
+
 
        <!--  <button class="sb-item" [class.active]="activeMenu === 'Foundation'" (click)="navigate('Foundation')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -141,6 +146,36 @@
           <span>Commissioning</span>
         </button>
 
+
+
+<button class="sb-item" (click)="toggleAllocationMenu()">
+  <i class="pi pi-database"></i>
+  <span>Allocation</span>
+
+  <span class="arrow" [class.rotate]="showAllocationMenu">
+    <i class="pi pi-angle-down"></i>
+  </span>
+</button>
+
+@if (showAllocationMenu) {
+  <div class="sb-submenu">
+
+    <button
+      class="sb-sub-item"
+      [class.active]="activeMenu === 'plant-allocation'"
+      (click)="navigate('plant-allocation')">
+      Plant-allocation
+    </button>
+
+    <button
+      class="sb-sub-item"
+      [class.active]="activeMenu === 'view-allocation'"
+      (click)="navigate('view-allocation')">
+      View-allocation
+    </button>
+
+  </div>
+}
         <!-- end -->
 
         <!-- <button class="sb-item" [class.active]="activeMenu === 'Commisioning_11'" (click)="navigate('Commisioning_11')">
