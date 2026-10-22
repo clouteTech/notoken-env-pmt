@@ -15,7 +15,7 @@ export class AppComponent implements OnInit, OnDestroy {
   sidebarOpen = signal(true);
   showLogoutConfirm = false;
   showMastersMenu = false;
-
+showAllocationMenu = false;
   currentRoute = '';
   activeMenu = 'create';
   private routeSub!: Subscription;
@@ -39,6 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
     if (window.innerWidth <= 768) {
       this.sidebarOpen.set(false);
     }
+    if (window.innerWidth <= 768) this.sidebarOpen.set(false);//plant all
   }
 
   ngOnDestroy() {
@@ -77,6 +78,8 @@ export class AppComponent implements OnInit, OnDestroy {
       { segment: 'company-users',       menu: 'companyUsers' },
       { segment: 'user-groups',         menu: 'userGroups' },
       { segment: 'roles',               menu: 'roles' },
+{ segment: 'plant-allocation', menu: 'plant-allocation' },
+{ segment: 'view-allocation', menu: 'view-allocation' },
     ];
 
     const match = routeMenuMap.find(r => url.includes(r.segment));
@@ -135,6 +138,12 @@ export class AppComponent implements OnInit, OnDestroy {
     else if(menu === 'userGroups') this.router.navigate(['/user-groups']);
     else if(menu === 'roles') this.router.navigate(['/roles']);
     if (window.innerWidth <= 768) this.sidebarOpen.set(false);
+else if (menu === 'plant-allocation') {
+  this.router.navigate(['/plant-allocation']);
+}
+else if (menu === 'view-allocation') {
+  this.router.navigate(['/view-allocation']);
+}
   }
 
   toggleMastersMenu() {
@@ -152,9 +161,17 @@ export class AppComponent implements OnInit, OnDestroy {
   confirmLogout() { this.showLogoutConfirm = true; }
   cancelLogout()  { this.showLogoutConfirm = false; }
 
+
+  // plant-all
+
+toggleAllocationMenu() {
+  this.showAllocationMenu = !this.showAllocationMenu;
+}
+
   doLogout() {
     this.showLogoutConfirm = false;
     this.auth.logout();
     this.router.navigate(['/login']);
   }
+  
 }
